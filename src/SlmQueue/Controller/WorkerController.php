@@ -35,16 +35,6 @@ class WorkerController extends ActionController
      */
     public function reserveAction ()
     {
-        $params = $this->getRequest()->params();
-
-        if (isset($params->watch)) {
-            $this->pheanstalk->watch($params->watch);
-        }
-        
-        if (isset($params->ignore)) {
-            $this->pheanstalk->ignore($params->ignore);
-        }
-        
         while (true) {
             $data = $this->pheanstalk->reserve();
             $job  = $this->load($data);

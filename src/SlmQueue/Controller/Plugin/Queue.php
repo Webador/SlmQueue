@@ -2,6 +2,9 @@
 
 namespace SlmQueue\Controller\Plugin;
 
+use Zend\Json\Json,
+    Pheanstalk;
+
 class Queue
 {
     protected $pheanstalk;
