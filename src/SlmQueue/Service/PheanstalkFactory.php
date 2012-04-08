@@ -33,10 +33,6 @@ class PheanstalkFactory
             }
         }
         
-        if (isset($options['use'])) {
-            $pheanstalk->use($options['use']);
-        }
-        
         if (isset($options['watch'])) {
             $watch = $options['watch'];
             if (!is_array($watch)) {
@@ -46,6 +42,10 @@ class PheanstalkFactory
                     $pheanstalk->watch($tube);
                 }
             }
+        }
+        
+        if (isset($options['use'])) {
+            $pheanstalk->use($options['use']);
         }
         
         return $pheanstalk;
