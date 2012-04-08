@@ -3,15 +3,17 @@
 namespace SlmQueue\Controller;
 
 use Zend\Mvc\Controller\ActionController;
-        
-use Zend\Json\Json,
-    SlmQueue\Job\Job,
-    SlmQueue\Job\LocatorAware,
-    SlmQueue\Job\Producer;
 
-use SlmQueue\Exception\ReleasableException,
-    SlmQueue\Exception\BuryableException,
-    Exception;
+use Pheanstalk;
+use Pheanstalk_Job;
+use Zend\Json\Json;
+use SlmQueue\Job\Job;
+use SlmQueue\Job\LocatorAware;
+use SlmQueue\Job\Producer;
+
+use SlmQueue\Exception\ReleasableException;
+use SlmQueue\Exception\BuryableException;
+use SlmQueue\Exception\RuntimeException;
 
 class WorkerController extends ActionController
 {
@@ -52,12 +54,27 @@ class WorkerController extends ActionController
      */
     protected function load ($data)
     {
-        /**
-         * @todo $data is a Pheanstalk_Job
-         */
-        $job = Json::decode($data);
+        $data   = Json::decode($job->getData());
+        $params = array('id' => $job->getId());
+        if (isset($data->params)) {
+            $params += (array) $data->params;
+        }
         
-        $job = $this->getLocator()->get($job->name, $job->params);
+        if (!class_exists($data->name, true)) {
+            throw new RuntimeException(sprintf(
+                'Class %s is not a valid class name',
+                $data->name
+            ));
+        }
+
+        $job = new $data->name;
+        if (!$job instanceof Job) {
+            throw new RuntimeException(sprintf(
+                'Job %s is not an instance of SlmQueue\Job\Job',
+                $data->name
+            ));
+        }
+        $job->setParams($params);
         
         if ($job instanceof LocatorAware) {
             $job->setLocator($this->getLocator());
