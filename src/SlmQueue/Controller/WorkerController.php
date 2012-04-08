@@ -38,10 +38,10 @@ class WorkerController extends ActionController
     public function reserveAction ()
     {
         while (true) {
-            $data = $this->pheanstalk->reserve();
-            $job  = $this->load($data);
+            $job = $this->pheanstalk->reserve();
+            $job = $this->loadJob($job);
             
-            $this->execute($job);
+            $this->executeJob($job);
             $this->sleep();
         }
     }
@@ -52,7 +52,7 @@ class WorkerController extends ActionController
      * @param string $data
      * @return Job 
      */
-    protected function load ($data)
+    protected function loadJob (Pheanstalk_Job $job)
     {
         $data   = Json::decode($job->getData());
         $params = array('id' => $job->getId());
@@ -92,7 +92,7 @@ class WorkerController extends ActionController
      *
      * @param Job $job
      */
-    protected function execute (Job $job)
+    protected function executeJob (Job $job)
     {
         try {
             $job();
