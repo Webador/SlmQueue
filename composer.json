@@ -1,0 +1,26 @@
+{
+    "name": "juriansluiman/slm-queue",
+    "description": "Queue management with Beanstalkd for jobs in Zend Framework 2",
+    "type": "library",
+    "keywords": [
+        "zf2",
+        "beanstalk",
+    ],
+    "homepage": "https://github.com/juriansluiman/SlmQueue",
+    "authors": [
+        {
+            "name": "Jurian Sluiman",
+            "email": "jurian@juriansluiman.nl",
+            "homepage": "http://juriansluiman.nl"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3.",
+        "zendframework/zendframework": "dev-master"
+    },
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    }
+}
