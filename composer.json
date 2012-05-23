@@ -4,7 +4,7 @@
     "type": "library",
     "keywords": [
         "zf2",
-        "beanstalk",
+        "beanstalk"
     ],
     "homepage": "https://github.com/juriansluiman/SlmQueue",
     "authors": [
