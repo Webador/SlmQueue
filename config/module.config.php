@@ -1,31 +1,26 @@
 <?php
 
 return array(
-    'di' => array(
-         'definition' => array(
-            'class' => array(
-                'SlmQueue\Service\PheanstalkFactory' => array(
-                    'instantiator' => array('SlmQueue\Service\PheanstalkFactory', 'create'),
-                    'methods' => array(
-                        'create' => array(
-                            'options' => array('type' => false, 'required' => true),
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'slmqueue-worker' => array(
+                    'type' => 'simple',
+                    'options' => array(
+                        'route'    => 'queue --start',
+                        'defaults' => array(
+                            'controller' => 'SlmQueue\Controller\WorkerController',
+                            'action'     => 'reserve'
                         ),
                     ),
                 ),
             ),
         ),
-        'instance' => array(
-            'alias' => array(
-                'Pheanstalk' => 'SlmQueue\Service\PheanstalkFactory'
-            ),
-            
-            'SlmQueue\Service\PheanstalkFactory' => array(
-                'parameters' => array(
-                    'options' => array(
-                        'host' => '0.0.0.0',
-                    )
-                ),
-            ),
+    ),
+
+    'controllers' => array(
+        'invokables' => array(
+            'SlmQueue\Controller\WorkerController' => 'SlmQueue\Controller\WorkerController'
         ),
     ),
 );

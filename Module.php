@@ -2,9 +2,12 @@
 
 namespace SlmQueue;
 
-use Zend\Module\Consumer\AutoloaderProvider;
+use Zend\ModuleManager\Feature;
 
-class Module implements AutoloaderProvider
+class Module implements
+    Feature\AutoloaderProviderInterface,
+    Feature\ConfigProviderInterface,
+    Feature\ServiceProviderInterface
 {
     public function getAutoloaderConfig()
     {
@@ -19,9 +22,14 @@ class Module implements AutoloaderProvider
             ),
         );
     }
-    
+
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
+    }
+
+    public function getServiceConfig()
+    {
+        return include __DIR__ . '/config/service.config.php';
     }
 }
