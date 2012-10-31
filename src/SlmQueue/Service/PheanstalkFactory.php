@@ -3,51 +3,47 @@
 namespace SlmQueue\Service;
 
 use Pheanstalk;
+use Zend\ServiceManager\FactoryInterface;
 
-class PheanstalkFactory
+class PheanstalkFactory implements FactoryInterface
 {
-    public static function create (array $options)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $host = $options['host'];
-        $port = Pheanstalk::DEFAULT_PORT;
-        $connectTimeout = null;
-        
-        if (isset($options['port'])) {
-            $port = $options['port'];
-        }
-        
-        if (isset($options['connect_timeout'])) {
-            $connectTimeout = $options['connect_timeout'];
-        }
-        
-        $pheanstalk = new Pheanstalk($host, $port, $connectTimeout);
-        
-        if (isset($options['ignore'])) {
-            $ignore = $options['ignore'];
+        $config  = $serviceLocator->get('config');
+        $config  = $config['slm_queue'];
+
+        $host    = $config['host'];
+        $port    = $config['port'] ?: Pheanstalk::DEFAULT_PORT;
+        $timeout = $config['connection_timeout'] ?: null;
+
+        $pheanstalk = new Pheanstalk($host, $port, $timeout);
+
+        if (isset($config['ignore'])) {
+            $ignore = $config['ignore'];
             if (!is_array($ignore)) {
-                $pheanstalk->ignore($ignore);
-            } else {
-                foreach ($ignore as $tube) {
-                    $pheanstalk->ignore($tube);
-                }
+                $ignore = (array) $ignore;
+            }
+
+            foreach ($ignore as $tube) {
+                $pheanstalk->ignore($tube);
             }
         }
-        
-        if (isset($options['watch'])) {
-            $watch = $options['watch'];
+
+        if (isset($config['watch'])) {
+            $watch = $config['watch'];
             if (!is_array($watch)) {
-                $pheanstalk->watch($watch);
-            } else {
-                foreach ($watch as $tube) {
-                    $pheanstalk->watch($tube);
-                }
+                $watch = (array) $watch;
+            }
+
+            foreach ($watch as $tube) {
+                $pheanstalk->watch($tube);
             }
         }
-        
-        if (isset($options['use'])) {
-            $pheanstalk->use($options['use']);
+
+        if (isset($config['use'])) {
+            $pheanstalk->use($config['use']);
         }
-        
+
         return $pheanstalk;
     }
 }

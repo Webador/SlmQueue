@@ -3,13 +3,8 @@
 namespace SlmQueue\Controller;
 
 use Zend\Mvc\Controller\ActionController;
-
-use Pheanstalk;
-use Pheanstalk_Job;
-use Zend\Json\Json;
-use SlmQueue\Job\Job;
-use SlmQueue\Job\LocatorAware;
-use SlmQueue\Job\Producer;
+use SlmQueue\Service\BeanstalkInterface;
+use SlmQueue\Options\ModuleOptions;
 
 use SlmQueue\Exception\ReleasableException;
 use SlmQueue\Exception\BuryableException;
@@ -18,18 +13,39 @@ use SlmQueue\Exception\RuntimeException;
 class WorkerController extends ActionController
 {
     /**
-     * @var Pheanstalk
+     * @var BeanstalkInterface
      */
-    protected $pheanstalk;
+    protected $beanstalk;
+
+    /**
+     * @var ModuleOptions
+     */
+    protected $options;
+
+    /**
+     * @var bool
+     */
+    protected $stopped;
 
     /**
      * Constructor
      *
-     * @param Pheanstalk $pheanstalk
+     * @param BeanstalkInterface $beanstalk
      */
-    public function __construct (Pheanstalk $pheanstalk)
+    public function __construct (BeanstalkInterface $beanstalk, ModuleOptions $options)
     {
-        $this->pheanstalk = $pheanstalk;
+        $this->beanstalk = $beanstalk;
+        $this->options   = $options;
+    }
+
+    public function getBeanstalk()
+    {
+        return $this->beanstalk;
+    }
+
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**
@@ -37,87 +53,53 @@ class WorkerController extends ActionController
      */
     public function reserveAction ()
     {
+        $this->prepare();
+
+        $beanstalk = $this->getBeanstalk();
+        $options   = $this->getOptions();
+
+        $i = 1;
         while (true) {
-            $job = $this->pheanstalk->reserve();
-            $job = $this->loadJob($job);
-            
-            $this->executeJob($job);
-            $this->sleep();
-        }
-    }
-    
-    /**
-     * Get job from queue data
-     * 
-     * @param string $data
-     * @return Job 
-     */
-    protected function loadJob (Pheanstalk_Job $job)
-    {
-        $data   = Json::decode($job->getData());
-        $params = array('id' => $job->getId());
-        if (isset($data->params)) {
-            $params += (array) $data->params;
-        }
-        
-        if (!class_exists($data->name, true)) {
-            throw new RuntimeException(sprintf(
-                'Class %s is not a valid class name',
-                $data->name
-            ));
-        }
+            $job = $beanstalk->reserve();
+            $beanstalk->execute($job);
 
-        $job = new $data->name;
-        if (!$job instanceof Job) {
-            throw new RuntimeException(sprintf(
-                'Job %s is not an instance of SlmQueue\Job\Job',
-                $data->name
-            ));
+            if ($i === $options->getMaxRuns()) {
+                break;
+            }
+            if (memory_get_usage() * 1024 * 1024 > $options->getMaxMemory()) {
+                break;
+            }
+            if ($this->stopped()) {
+                break;
+            }
+
+            $i++;
         }
-        $job->setParams($params);
-        
-        if ($job instanceof LocatorAware) {
-            $job->setLocator($this->getLocator());
-        }
-        
-        if ($job instanceof Producer) {
-            $job->setPheanstalk($this->pheanstalk);
-        }
-        
-        return $job;
     }
 
-    /**
-     * Execute the job
-     *
-     * @param Job $job
-     */
-    protected function executeJob (Job $job)
+    protected function prepare()
     {
-        try {
-            $job();
-            $this->pheanstalk->delete($job);
-            
-        } catch (ReleasableException $e) {
-            /**
-             * @todo Set default delay time
-             */
-            $this->pheanstalk->release($job);
-            
-        } catch (BuryableException $e) {
-            $this->pheanstalk->bury($job);
-            
-        } catch (Exception $e) {
-            throw $e;
+        declare(ticks = 1);
+        pcntl_signal(SIGTERM, array($this, 'signal'));
+        pcntl_signal(SIGINT,  array($this, 'signal'));
+    }
+
+    protected function signal($signo)
+    {
+        switch($signo) {
+            case SIGTERM:
+            case SIGINT:
+                $this->stopped(true);
+                break;
         }
     }
-    
-    protected function sleep ()
+
+    protected function stopped($flag = null)
     {
-        $sleep = (int) $this->getRequest()->params()->sleep;
-        
-        if ($sleep) {
-            usleep($sleep);
+        if (null !== $flag) {
+            $this->stopped = (bool) $flag;
         }
+
+        return $this->stopped;
     }
 }

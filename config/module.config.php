@@ -18,9 +18,9 @@ return array(
         ),
     ),
 
-    'controllers' => array(
-        'invokables' => array(
-            'SlmQueue\Controller\WorkerController' => 'SlmQueue\Controller\WorkerController'
-        ),
+    'slm_queue' => array(
+        'host'               => '0.0.0.0',
+        'port'               => '',
+        'connection_timeout' => ''
     ),
 );

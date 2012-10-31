@@ -2,27 +2,27 @@
 
 namespace SlmQueue\Controller\Plugin;
 
-use Zend\Json\Json,
-    Pheanstalk;
+use SlmQueue\Service\BeanstalkInterface;
 
 class Queue
 {
-    protected $pheanstalk;
+    protected $beanstalk;
 
-    public function __construct (Pheanstalk $pheanstalk)
+    public function __construct(BeanstalkInterface $beanstalk)
     {
-        $this->pheanstalk = $pheanstalk;
+        $this->beanstalk = $beanstalk;
     }
 
     /**
      * Add job to the beanstalk queue
      *
-     * @param string $name FQCN of the job
-     * @param array  $params
+     * @param Job    $job      Job to be executed
+     * @param int    $priority Priority for this job
+     * @param int    $delay    Delay for this given job
+     * @param int    $ttr      Time to run for this job
      */
-    public function add ($name, array $params = null, $priority = null, $delay = null, $ttr = null)
+    public function add(Job $job, $priority = null, $delay = null, $ttr = null)
     {
-        $data = Json::encode(compact('name', 'params'));
-        return $this->pheanstalk->put($data, $priority, $delay, $ttr);
+        return $this->beanstalk->put($job, $priority, $delay, $ttr);
     }
 }

@@ -15,8 +15,8 @@ class Module implements
             'Zend\Loader\ClassMapAutoloader' => array(
                 __DIR__ . '/autoload_classmap.php',
             ),
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+            Loader\AutoloaderFactory::STANDARD_AUTOLOADER => array(
+                Loader\StandardAutoloader::LOAD_NS => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
             ),
@@ -30,6 +30,44 @@ class Module implements
 
     public function getServiceConfig()
     {
-        return include __DIR__ . '/config/service.config.php';
+        return array(
+            'factories' => array(
+                'Pheanstalk' => 'SlmQueue\Service\PheanstalkFactory',
+
+                'SlmQueue\Service\PheanstalkBridge' => function($sm) {
+                    $pheanstalk = $sm->getServiceLocator()->get('Pheanstalk');
+                    $service    = new Service\PheanstalkBridge($pheanstalk);
+                    return $service;
+                },
+            ),
+        );
+    }
+
+    public function getControllerConfig()
+    {
+        return array(
+            'factories' => array(
+                'SlmQueue\Controller\WorkerController' => function($sm) {
+                    $beanstalk = $sm->getServiceLocator()->get('SlmQueue\Service\PheanstalkBridge');
+                    $options   = $sm->getServiceLocator()->get('SlmQueue\Options\ModuleOptions');
+
+                    $controller = new Controller\WorkerController($beanstalk, $options);
+                    return $controller;
+                },
+            ),
+        );
+    }
+
+    public function getControllerPluginConfig()
+    {
+        return array(
+            'factories' => array(
+                'queue' => function($sm) {
+                    $beanstalk = $sm->getServiceLocator()->get('SlmQueue\Service\PheanstalkBridge');
+                    $plugin    = new Controller\Plugin\Queue($beanstalk);
+                    return $plugin;
+                }
+            ),
+        );
     }
 }

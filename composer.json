@@ -16,12 +16,15 @@
     ],
     "require": {
         "php": ">=5.3.3.",
-        "zendframework/zendframework": "dev-master",
-        "pda/pheanstalk": "dev-master"
+        "zendframework/zendframework": "2.0.*",
+        "pda/pheanstalk": ">=1.1.0@stable"
     },
     "autoload": {
+        "psr-0": {
+            "SlmQueue": "src/"
+        },
         "classmap": [
-            "./"
+            "./Module.php"
         ]
     }
 }
