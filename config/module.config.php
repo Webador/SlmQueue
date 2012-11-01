@@ -18,9 +18,14 @@ return array(
         ),
     ),
 
-    'slm_queue' => array(
+    'pheanstalk' => array(
         'host'               => '0.0.0.0',
         'port'               => '',
-        'connection_timeout' => ''
+        'connection_timeout' => '',
+    ),
+
+    'slm_queue' => array(
+        'max_runs'   => 100000,
+        'max_memory' => 1024,
     ),
 );

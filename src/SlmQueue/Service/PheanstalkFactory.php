@@ -4,13 +4,14 @@ namespace SlmQueue\Service;
 
 use Pheanstalk;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PheanstalkFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config  = $serviceLocator->get('config');
-        $config  = $config['slm_queue'];
+        $config  = $config['pheanstalk'];
 
         $host    = $config['host'];
         $port    = $config['port'] ?: Pheanstalk::DEFAULT_PORT;
