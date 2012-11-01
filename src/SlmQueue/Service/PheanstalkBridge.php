@@ -2,13 +2,19 @@
 
 namespace SlmQueue\Service;
 
+use Pheanstalk;
+
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Job\JobManager;
 
 use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerInterface;
 
-use Zend\Log\LoggerAwareInterface;
+use Zend\Json\Json;
+
 use Zend\Log\Logger;
+use Zend\Log\LoggerAwareInterface;
+use Zend\Log\LoggerInterface;
 
 class PheanstalkBridge implements
     BeanstalkInterface,
@@ -18,6 +24,7 @@ class PheanstalkBridge implements
     protected $pheanstalk;
     protected $events;
     protected $logger;
+    protected $manager;
 
     public function __construct(Pheanstalk $pheanstalk)
     {
@@ -29,9 +36,32 @@ class PheanstalkBridge implements
         $this->events = $events;
     }
 
-    public function setLogger(Logger $logger)
+    public function getEventManager()
+    {
+        return $this->events;
+    }
+
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    public function setJobManager(JobManager $manager)
+    {
+        $this->manager = $manager;
+    }
+
+    public function getJobManager()
+    {
+        if (!$this->manager instanceof JobManager) {
+            $this->manager = new JobManager;
+        }
+        return $this->manager;
     }
 
     /**
@@ -44,6 +74,7 @@ class PheanstalkBridge implements
      */
     public function reserve()
     {
+        $this->log(Logger::DEBUG, 'Reserve job');
         $data = $this->pheanstalk->reserve();
         $job  = $this->load($data);
 
@@ -61,7 +92,7 @@ class PheanstalkBridge implements
     {
         try {
             $job();
-            $this->log(Logger::DEBUG, sprintf('Job #%s executed (%s)', $job->getId, get_class($job)));
+            $this->log(Logger::DEBUG, sprintf('Job #%s executed (%s)', $job->getId(), get_class($job)));
             $this->delete($job);
 
         } catch (ReleasableException $e) {
@@ -72,7 +103,7 @@ class PheanstalkBridge implements
                        sprintf('Caught ReleasableException for job #%s (%s): %s',
                                $job->getId(),
                                get_class($job),
-                               get_class($e),
+                               get_class($e)
                        ));
             $this->release($job, $priority, $delay);
 
@@ -83,7 +114,7 @@ class PheanstalkBridge implements
                        sprintf('Caught BuryableException for job #%s (%s): %s',
                                $job->getId(),
                                get_class($job),
-                               get_class($e),
+                               get_class($e)
                        ));
             $this->bury($job, $priority);
 
@@ -92,7 +123,7 @@ class PheanstalkBridge implements
                        sprintf('Caught unknown exception for job #%s (%s): %s',
                                $job->getId(),
                                get_class($job),
-                               get_class($e),
+                               get_class($e)
                        ));
             $this->bury($job, 0);
         }
@@ -120,7 +151,7 @@ class PheanstalkBridge implements
         $this->pheanstalk->delete($job);
     }
 
-    public function release(JobInterface $job, $priority = null, $delay = null, $usePut = false)
+    public function release(JobInterface $job, $priority = null, $delay = null)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s released (%s)', $job->getId(), get_class($job)));
         $this->trigger('release', array('job' => $job));
@@ -128,7 +159,7 @@ class PheanstalkBridge implements
         $this->pheanstalk->release($job, $priority, $delay);
     }
 
-    public function bury(JobInterface $job, $priority = null, $usePut = false)
+    public function bury(JobInterface $job, $priority = null)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s buried (%s)', $job->getId(), get_class($job)));
         $this->trigger('bury', array('job' => $job));
@@ -146,24 +177,28 @@ class PheanstalkBridge implements
 
     protected function load($data)
     {
+        $id      = $data->getId();
         $data    = Json::decode($data->getData());
         $name    = $data->name;
         $options = $data->options;
 
-        return $this->getJobManager()->get($name, $options);
+        $job = $this->getJobManager()->get($name, $options);
+        $job->setId($id);
+
+        return $job;
     }
 
     protected function trigger($name, array $options)
     {
-        if ($this->events instanceof EventManager) {
-            $this->events->trigger($name, $this, $options);
+        if ($this->getEventManager() instanceof EventManagerInterface) {
+            $this->getEventManager()->trigger($name, $this, $options);
         }
     }
 
     protected function log($priority, $message)
     {
-        if ($this->logger instanceof Logger) {
-            $this->logger->log($priority, $message);
+        if ($this->getLogger() instanceof LoggerInterface) {
+            $this->getLogger()->log($priority, $message);
         }
     }
 }
