@@ -2,6 +2,7 @@
 
 namespace SlmQueue;
 
+use Zend\Loader;
 use Zend\ModuleManager\Feature;
 
 class Module implements
@@ -34,8 +35,12 @@ class Module implements
             'factories' => array(
                 'Pheanstalk' => 'SlmQueue\Service\PheanstalkFactory',
 
+                'SlmQueue\Options\ModuleOptions'    => function($sm) {
+                    $config = $sm->get('config');
+                    return new Options\ModuleOptions($config['slm_queue']);
+                },
                 'SlmQueue\Service\PheanstalkBridge' => function($sm) {
-                    $pheanstalk = $sm->getServiceLocator()->get('Pheanstalk');
+                    $pheanstalk = $sm->get('Pheanstalk');
                     $service    = new Service\PheanstalkBridge($pheanstalk);
                     return $service;
                 },
