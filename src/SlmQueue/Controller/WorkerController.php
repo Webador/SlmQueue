@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Controller;
 
-use Zend\Mvc\Controller\ActionController;
+use Zend\Mvc\Controller\AbstractActionController;
 use SlmQueue\Service\BeanstalkInterface;
 use SlmQueue\Options\ModuleOptions;
 
@@ -10,7 +10,7 @@ use SlmQueue\Exception\ReleasableException;
 use SlmQueue\Exception\BuryableException;
 use SlmQueue\Exception\RuntimeException;
 
-class WorkerController extends ActionController
+class WorkerController extends AbstractActionController
 {
     /**
      * @var BeanstalkInterface
@@ -66,7 +66,7 @@ class WorkerController extends ActionController
             if ($i === $options->getMaxRuns()) {
                 break;
             }
-            if (memory_get_usage() * 1024 * 1024 > $options->getMaxMemory()) {
+            if (memory_get_usage() > $options->getMaxMemory() * 1024 * 1024) {
                 break;
             }
             if ($this->stopped()) {
@@ -84,7 +84,7 @@ class WorkerController extends ActionController
         pcntl_signal(SIGINT,  array($this, 'signal'));
     }
 
-    protected function signal($signo)
+    public function signal($signo)
     {
         switch($signo) {
             case SIGTERM:
