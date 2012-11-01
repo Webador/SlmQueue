@@ -2,9 +2,11 @@
 
 namespace SlmQueue\Controller\Plugin;
 
+use SlmQueue\Job\JobInterface;
 use SlmQueue\Service\BeanstalkInterface;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
-class Queue
+class Queue extends AbstractPlugin
 {
     protected $beanstalk;
 
@@ -16,12 +18,12 @@ class Queue
     /**
      * Add job to the beanstalk queue
      *
-     * @param Job    $job      Job to be executed
-     * @param int    $priority Priority for this job
-     * @param int    $delay    Delay for this given job
-     * @param int    $ttr      Time to run for this job
+     * @param JobInterface $job      Job to be executed
+     * @param int          $priority Priority for this job
+     * @param int          $delay    Delay for this given job
+     * @param int          $ttr      Time to run for this job
      */
-    public function add(Job $job, $priority = null, $delay = null, $ttr = null)
+    public function add(JobInterface $job, $priority = null, $delay = null, $ttr = null)
     {
         return $this->beanstalk->put($job, $priority, $delay, $ttr);
     }
