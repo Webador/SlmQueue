@@ -8,6 +8,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PheanstalkFactory implements FactoryInterface
 {
+    /**
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @return Pheanstalk
+     */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config  = $serviceLocator->get('config');

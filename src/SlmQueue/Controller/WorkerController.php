@@ -6,10 +6,6 @@ use Zend\Mvc\Controller\AbstractActionController;
 use SlmQueue\Service\BeanstalkInterface;
 use SlmQueue\Options\ModuleOptions;
 
-use SlmQueue\Exception\ReleasableException;
-use SlmQueue\Exception\BuryableException;
-use SlmQueue\Exception\RuntimeException;
-
 class WorkerController extends AbstractActionController
 {
     /**
@@ -31,6 +27,7 @@ class WorkerController extends AbstractActionController
      * Constructor
      *
      * @param BeanstalkInterface $beanstalk
+     * @param ModuleOptions      $options
      */
     public function __construct (BeanstalkInterface $beanstalk, ModuleOptions $options)
     {
@@ -38,11 +35,17 @@ class WorkerController extends AbstractActionController
         $this->options   = $options;
     }
 
+    /**
+     * @return BeanstalkInterface
+     */
     public function getBeanstalk()
     {
         return $this->beanstalk;
     }
 
+    /**
+     * @return ModuleOptions
+     */
     public function getOptions()
     {
         return $this->options;
@@ -51,7 +54,7 @@ class WorkerController extends AbstractActionController
     /**
      * Reserve jobs from the queue
      */
-    public function reserveAction ()
+    public function reserveAction()
     {
         $this->prepare();
 
@@ -77,6 +80,9 @@ class WorkerController extends AbstractActionController
         }
     }
 
+    /**
+     * Prepare the reserve action
+     */
     protected function prepare()
     {
         declare(ticks = 1);
@@ -84,6 +90,9 @@ class WorkerController extends AbstractActionController
         pcntl_signal(SIGINT,  array($this, 'signal'));
     }
 
+    /**
+     * @param $signo
+     */
     public function signal($signo)
     {
         switch($signo) {
@@ -94,6 +103,10 @@ class WorkerController extends AbstractActionController
         }
     }
 
+    /**
+     * @param  null $flag
+     * @return bool
+     */
     protected function stopped($flag = null)
     {
         if (null !== $flag) {

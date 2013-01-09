@@ -3,15 +3,14 @@
 namespace SlmQueue\Service;
 
 use Pheanstalk;
-
+use Pheanstalk_Job;
+use SlmQueue\Exception\BuryableException;
+use SlmQueue\Exception\ReleasableException;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobManager;
-
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
-
 use Zend\Json\Json;
-
 use Zend\Log\Logger;
 use Zend\Log\LoggerAwareInterface;
 use Zend\Log\LoggerInterface;
@@ -21,80 +20,117 @@ class PheanstalkBridge implements
     EventManagerAwareInterface,
     LoggerAwareInterface
 {
+    /**
+     * @var Pheanstalk
+     */
     protected $pheanstalk;
+
+    /**
+     * @var EventManagerInterface
+     */
     protected $events;
+
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+
+    /**
+     * @var JobManager
+     */
     protected $manager;
 
+    /**
+     * Constructor
+     *
+     * @param Pheanstalk $pheanstalk
+     */
     public function __construct(Pheanstalk $pheanstalk)
     {
         $this->pheanstalk = $pheanstalk;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setEventManager(EventManagerInterface $events)
     {
         $this->events = $events;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getEventManager()
     {
         return $this->events;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * Get the logger
+     *
+     * @return LoggerInterface
+     */
     public function getLogger()
     {
         return $this->logger;
     }
 
+    /**
+     * Set the job manager
+     *
+     * @param JobManager $manager
+     */
     public function setJobManager(JobManager $manager)
     {
         $this->manager = $manager;
     }
 
+    /**
+     * Get the job manager
+     *
+     * @return JobManager
+     */
     public function getJobManager()
     {
         if (!$this->manager instanceof JobManager) {
-            $this->manager = new JobManager;
+            $this->manager = new JobManager();
         }
         return $this->manager;
     }
 
     /**
-     * Reserve a job and return a Job instance
-     *
-     * The Pheanstalk service returns a data blob so convert that into
-     * a class which implements the SlmQueue\Job\JobInterface.
-     *
-     * @return JobInterface Job instance
+     * {@inheritDoc}
      */
     public function reserve()
     {
         $this->log(Logger::DEBUG, 'Reserve job');
         $data = $this->pheanstalk->reserve();
-        $job  = $this->load($data);
 
-        return $job;
+        if ($data instanceof Pheanstalk_Job) {
+            return $this->load($data);
+        }
+
+        return false;
     }
 
     /**
-     * Execute a give job
-     *
-     * @param  JobInterface $job Job to be executed
-     * @throws Exception Rethrow exception from job
-     * @return void
+     * {@inheritDoc}
      */
     public function execute(JobInterface $job)
     {
         try {
-            $job();
+            $job->__invoke();
             $this->log(Logger::DEBUG, sprintf('Job #%s executed (%s)', $job->getId(), get_class($job)));
             $this->delete($job);
-
         } catch (ReleasableException $e) {
             $priority = method_exists($e, 'getPriority') ? $e->getPriority() : Pheanstalk::DEFAULT_PRIORITY;
             $delay    = method_exists($e, 'getDelay')    ? $e->getDelay()    : Pheanstalk::DEFAULT_DELAY;
@@ -118,7 +154,7 @@ class PheanstalkBridge implements
                        ));
             $this->bury($job, $priority);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->log(Logger::ERR,
                        sprintf('Caught unknown exception for job #%s (%s): %s',
                                $job->getId(),
@@ -129,7 +165,10 @@ class PheanstalkBridge implements
         }
     }
 
-    public function put(JobInterface $job, $priority = null, $delay = null, $ttr = null)
+    /**
+     * {@inheritDoc}
+     */
+    public function put(JobInterface $job, $priority = 1024, $delay = 0, $ttr = 60)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s put (%s)', $job->getId(), get_class($job)));
         $this->trigger('put', array('job' => $job));
@@ -143,6 +182,9 @@ class PheanstalkBridge implements
         $job->setId($result);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(JobInterface $job)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s delete (%s)', $job->getId(), get_class($job)));
@@ -151,7 +193,10 @@ class PheanstalkBridge implements
         $this->pheanstalk->delete($job);
     }
 
-    public function release(JobInterface $job, $priority = null, $delay = null)
+    /**
+     * {@inheritDoc}
+     */
+    public function release(JobInterface $job, $priority = 1024, $delay = 0)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s released (%s)', $job->getId(), get_class($job)));
         $this->trigger('release', array('job' => $job));
@@ -159,7 +204,10 @@ class PheanstalkBridge implements
         $this->pheanstalk->release($job, $priority, $delay);
     }
 
-    public function bury(JobInterface $job, $priority = null)
+    /**
+     * {@inheritDoc}
+     */
+    public function bury(JobInterface $job, $priority = 1024)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s buried (%s)', $job->getId(), get_class($job)));
         $this->trigger('bury', array('job' => $job));
@@ -167,6 +215,9 @@ class PheanstalkBridge implements
         $this->pheanstalk->bury($job, $priority);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function kick(JobInterface $job)
     {
         $this->log(Logger::DEBUG, sprintf('Job #%s kicked (%s)', $job->getId(), get_class($job)));
@@ -175,19 +226,34 @@ class PheanstalkBridge implements
         $this->pheanstalk->kick($job);
     }
 
-    protected function load($data)
+    /**
+     * Convert a Pheanstalk_Job native object to an object implementing JobInterface. It can be used
+     * to handle dependencies in your JobInterface objects by adding them to the JobManager
+     *
+     * @param  Pheanstalk_Job $data
+     * @return JobInterface
+     */
+    protected function load(Pheanstalk_Job $data)
     {
         $id      = $data->getId();
         $data    = Json::decode($data->getData());
         $name    = $data->name;
         $options = $data->options;
 
-        $job = $this->getJobManager()->get($name, $options);
-        $job->setId($id);
+        /** @var $job JobInterface */
+        $job = $this->getJobManager()->get($name);
+        $job->setId($id)
+            ->setOptions($options);
 
         return $job;
     }
 
+    /**
+     * Trigger a new event
+     *
+     * @param       $name
+     * @param array $options
+     */
     protected function trigger($name, array $options)
     {
         if ($this->getEventManager() instanceof EventManagerInterface) {
@@ -195,6 +261,12 @@ class PheanstalkBridge implements
         }
     }
 
+    /**
+     * Log a new message
+     *
+     * @param int    $priority
+     * @param string $message
+     */
     protected function log($priority, $message)
     {
         if ($this->getLogger() instanceof LoggerInterface) {

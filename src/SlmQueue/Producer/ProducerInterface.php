@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Job;
+namespace SlmQueue\Producer;
 
 use SlmQueue\Service\BeanstalkInterface;
 

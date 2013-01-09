@@ -6,30 +6,54 @@ use Zend\Stdlib\AbstractOptions;
 
 class ModuleOptions extends AbstractOptions
 {
+    /**
+     * @var bool
+     */
     protected $__strictMode__ = false;
 
-    protected $maxRuns   = 100;
+    /**
+     * @var int
+     */
+    protected $maxRuns = 100;
+
+    /**
+     * @var int
+     */
     protected $maxMemory = 1024;
 
-    public function getMaxRuns()
-    {
-        return $this->maxRuns;
-    }
-
+    /**
+     * @param $maxRuns
+     * @return ModuleOptions
+     */
     public function setMaxRuns($maxRuns)
     {
         $this->maxRuns = $maxRuns;
         return $this;
     }
 
-    public function getMaxMemory()
+    /**
+     * @return int
+     */
+    public function getMaxRuns()
     {
-        return $this->maxMemory;
+        return $this->maxRuns;
     }
 
+    /**
+     * @param $maxMemory
+     * @return ModuleOptions
+     */
     public function setMaxMemory($maxMemory)
     {
         $this->maxMemory = $maxMemory;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxMemory()
+    {
+        return $this->maxMemory;
     }
 }
