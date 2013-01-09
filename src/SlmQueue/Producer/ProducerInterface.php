@@ -6,5 +6,9 @@ use SlmQueue\Service\BeanstalkInterface;
 
 interface ProducerInterface
 {
-    public function setBeanstalk (BeanstalkInterface $beanstalk);
+    /**
+     * @param  BeanstalkInterface $beanstalk
+     * @return ProducerInterface
+     */
+    public function setBeanstalk(BeanstalkInterface $beanstalk);
 }

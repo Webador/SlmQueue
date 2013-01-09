@@ -2,6 +2,7 @@
 
 namespace SlmQueue\Producer;
 
+use SlmQueue\Job\JobInterface;
 use SlmQueue\Service\BeanstalkInterface;
 
 abstract class AbstractProducer implements ProducerInterface
@@ -12,8 +13,7 @@ abstract class AbstractProducer implements ProducerInterface
     protected $beanstalk;
 
     /**
-     * @param  BeanstalkInterface $beanstalk
-     * @return AbstractProducer
+     * {@inheritDoc}
      */
     public function setBeanstalk(BeanstalkInterface $beanstalk)
     {
@@ -32,6 +32,7 @@ abstract class AbstractProducer implements ProducerInterface
      */
     public function add(JobInterface $job, $priority = null, $delay = null, $ttr = null)
     {
-        return $this->beanstalk->put($job, $priority, $delay, $ttr);
+        $this->beanstalk->put($job, $priority, $delay, $ttr);
+        return $this;
     }
 }
