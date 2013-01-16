@@ -3,6 +3,7 @@
 namespace SlmQueue\Service;
 
 use Pheanstalk;
+use Zend\ServiceManager\ServiceLocatorInterface;
 use Pheanstalk_Job;
 use SlmQueue\Exception\BuryableException;
 use SlmQueue\Exception\ReleasableException;
@@ -10,6 +11,7 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobManager;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\Log\LoggerAwareInterface;
@@ -18,7 +20,8 @@ use Zend\Log\LoggerInterface;
 class PheanstalkBridge implements
     BeanstalkInterface,
     EventManagerAwareInterface,
-    LoggerAwareInterface
+    LoggerAwareInterface,
+    ServiceLocatorAwareInterface
 {
     /**
      * @var Pheanstalk
@@ -39,6 +42,11 @@ class PheanstalkBridge implements
      * @var JobManager
      */
     protected $manager;
+
+    /**
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -105,6 +113,22 @@ class PheanstalkBridge implements
             $this->manager = new JobManager();
         }
         return $this->manager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 
     /**
