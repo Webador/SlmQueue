@@ -79,6 +79,11 @@ class Module implements
                     $service    = new Service\PheanstalkBridge($pheanstalk);
                     return $service;
                 },
+                'SlmQueue\Job\JobManager' => function($sm) {
+                    /** @var $options Options\ModuleOptions */
+                    $options = $sm->get('SlmQueue\Options\ModuleOptions');
+                    return new Job\JobManager($options->getJobManagerOptions());
+                },
             ),
         );
     }
