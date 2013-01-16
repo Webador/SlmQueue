@@ -22,7 +22,7 @@ class ModuleOptions extends AbstractOptions
     protected $maxMemory = 1024;
 
     /**
-     * @param $maxRuns
+     * @param  int $maxRuns
      * @return ModuleOptions
      */
     public function setMaxRuns($maxRuns)
@@ -40,7 +40,7 @@ class ModuleOptions extends AbstractOptions
     }
 
     /**
-     * @param $maxMemory
+     * @param  int $maxMemory
      * @return ModuleOptions
      */
     public function setMaxMemory($maxMemory)

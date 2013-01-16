@@ -1,4 +1,4 @@
-<?php
+git <?php
 
 namespace SlmQueue;
 
@@ -70,10 +70,11 @@ class Module implements
             'factories' => array(
                 'Pheanstalk' => 'SlmQueue\Service\PheanstalkFactory',
 
-                'SlmQueue\Options\ModuleOptions'    => function($sm) {
+                'SlmQueue\Options\ModuleOptions' => function($sm) {
                     $config = $sm->get('Config');
                     return new Options\ModuleOptions($config['slm_queue']);
                 },
+
                 'SlmQueue\Service\PheanstalkBridge' => function($sm) {
                     $pheanstalk = $sm->get('Pheanstalk');
                     $service    = new Service\PheanstalkBridge($pheanstalk);

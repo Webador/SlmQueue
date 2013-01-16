@@ -46,7 +46,7 @@ class PheanstalkFactory implements FactoryInterface
         }
 
         if (isset($config['use'])) {
-            $pheanstalk->use($config['use']);
+            $pheanstalk->useTube($config['use']);
         }
 
         return $pheanstalk;
