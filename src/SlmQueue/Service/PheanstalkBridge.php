@@ -7,18 +7,21 @@ use Pheanstalk_Job;
 use SlmQueue\Exception\BuryableException;
 use SlmQueue\Exception\ReleasableException;
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Job\JobManager;
+use SlmQueue\Job\JobPluginManager;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\Log\LoggerAwareInterface;
 use Zend\Log\LoggerInterface;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PheanstalkBridge implements
     BeanstalkInterface,
     EventManagerAwareInterface,
-    LoggerAwareInterface
+    LoggerAwareInterface,
+    ServiceLocatorAwareInterface
 {
     /**
      * @var Pheanstalk
@@ -36,9 +39,14 @@ class PheanstalkBridge implements
     protected $logger;
 
     /**
-     * @var JobManager
+     * @var JobPluginManager
      */
-    protected $manager;
+    protected $jobPluginManager;
+
+    /**
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -87,24 +95,41 @@ class PheanstalkBridge implements
     /**
      * Set the job manager
      *
-     * @param JobManager $manager
+     * @param JobPluginManager $jobPluginManager
      */
-    public function setJobManager(JobManager $manager)
+    public function setJobManager(JobPluginManager $jobPluginManager)
     {
-        $this->manager = $manager;
+        $this->jobPluginManager = $jobPluginManager;
     }
 
     /**
      * Get the job manager
      *
-     * @return JobManager
+     * @return JobPluginManager
      */
     public function getJobManager()
     {
-        if (!$this->manager instanceof JobManager) {
-            $this->manager = new JobManager();
+        if (!$this->jobPluginManager instanceof JobPluginManager) {
+            $this->jobPluginManager = new JobPluginManager();
         }
-        return $this->manager;
+
+        return $this->jobPluginManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 
     /**

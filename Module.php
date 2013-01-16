@@ -1,4 +1,4 @@
-git <?php
+<?php
 
 namespace SlmQueue;
 
@@ -79,6 +79,12 @@ class Module implements
                     $pheanstalk = $sm->get('Pheanstalk');
                     $service    = new Service\PheanstalkBridge($pheanstalk);
                     return $service;
+                },
+
+                'SlmQueue\Job\JobPluginManager' => function($sm) {
+                    /** @var $options Options\ModuleOptions */
+                    $options = $sm->get('SlmQueue\Options\ModuleOptions');
+                    return new Job\JobPluginManager($options->getJobManagerOptions());
                 },
             ),
         );

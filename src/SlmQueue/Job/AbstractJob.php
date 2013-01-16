@@ -34,14 +34,16 @@ abstract class AbstractJob implements JobInterface
      */
     public function setOptions($options)
     {
-        if ($options instanceof Traversable) {
-            $options = ArrayUtils::iteratorToArray($options);
-        } elseif ($options instanceof stdClass) {
-            $options = get_object_vars($options);
-        } elseif (!is_array($options)) {
-            throw new InvalidArgumentException(
-                'The options parameter must be an array or a Traversable'
-            );
+        if($options !== null) {
+            if ($options instanceof Traversable) {
+                $options = ArrayUtils::iteratorToArray($options);
+            } elseif ($options instanceof stdClass) {
+                $options = get_object_vars($options);
+            } elseif (!is_array($options)) {
+                throw new InvalidArgumentException(
+                    'The options parameter must be an array or a Traversable'
+                );
+            }
         }
 
         $this->options = $options;

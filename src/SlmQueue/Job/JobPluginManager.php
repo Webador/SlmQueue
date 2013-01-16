@@ -4,7 +4,7 @@ namespace SlmQueue\Job;
 
 use Zend\ServiceManager\AbstractPluginManager;
 
-class JobManager extends AbstractPluginManager
+class JobPluginManager extends AbstractPluginManager
 {
     /**
      * @var bool
