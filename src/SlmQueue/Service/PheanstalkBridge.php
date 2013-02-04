@@ -14,14 +14,11 @@ use Zend\Json\Json;
 use Zend\Log\Logger;
 use Zend\Log\LoggerAwareInterface;
 use Zend\Log\LoggerInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PheanstalkBridge implements
     BeanstalkInterface,
     EventManagerAwareInterface,
-    LoggerAwareInterface,
-    ServiceLocatorAwareInterface
+    LoggerAwareInterface
 {
     /**
      * @var Pheanstalk
@@ -42,11 +39,6 @@ class PheanstalkBridge implements
      * @var JobPluginManager
      */
     protected $jobPluginManager;
-
-    /**
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -114,22 +106,6 @@ class PheanstalkBridge implements
         }
 
         return $this->jobPluginManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
