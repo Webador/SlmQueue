@@ -78,6 +78,8 @@ class Module implements
                 'SlmQueue\Service\PheanstalkBridge' => function($sm) {
                     $pheanstalk = $sm->get('Pheanstalk');
                     $service    = new Service\PheanstalkBridge($pheanstalk);
+                    $service->setJobManager($sm->get('SlmQueue\Job\JobPluginManager'));
+                    
                     return $service;
                 },
 
