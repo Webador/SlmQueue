@@ -8,6 +8,10 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 class PheanstalkFactory implements FactoryInterface
 {
+    /**
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @return Pheanstalk
+     */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config  = $serviceLocator->get('config');
@@ -42,7 +46,7 @@ class PheanstalkFactory implements FactoryInterface
         }
 
         if (isset($config['use'])) {
-            $pheanstalk->use($config['use']);
+            $pheanstalk->useTube($config['use']);
         }
 
         return $pheanstalk;

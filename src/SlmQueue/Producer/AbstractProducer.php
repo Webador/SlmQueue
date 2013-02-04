@@ -1,12 +1,11 @@
 <?php
 
-namespace SlmQueue\Controller\Plugin;
+namespace SlmQueue\Producer;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Service\BeanstalkInterface;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
-class Queue extends AbstractPlugin
+abstract class AbstractProducer implements ProducerInterface
 {
     /**
      * @var BeanstalkInterface
@@ -14,11 +13,12 @@ class Queue extends AbstractPlugin
     protected $beanstalk;
 
     /**
-     * @param BeanstalkInterface $beanstalk
+     * {@inheritDoc}
      */
-    public function __construct(BeanstalkInterface $beanstalk)
+    public function setBeanstalk(BeanstalkInterface $beanstalk)
     {
         $this->beanstalk = $beanstalk;
+        return $this;
     }
 
     /**
@@ -28,9 +28,11 @@ class Queue extends AbstractPlugin
      * @param int          $priority Priority for this job
      * @param int          $delay    Delay for this given job
      * @param int          $ttr      Time to run for this job
+     * @return AbstractProducer
      */
     public function add(JobInterface $job, $priority = null, $delay = null, $ttr = null)
     {
-        return $this->beanstalk->put($job, $priority, $delay, $ttr);
+        $this->beanstalk->put($job, $priority, $delay, $ttr);
+        return $this;
     }
 }
