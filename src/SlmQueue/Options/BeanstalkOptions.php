@@ -10,7 +10,7 @@ use Zend\Stdlib\AbstractOptions;
 class BeanstalkOptions extends AbstractOptions
 {
     /**
-     * @var int
+     * @var string
      */
     protected $host;
 
@@ -33,17 +33,17 @@ class BeanstalkOptions extends AbstractOptions
     /**
      * Set the host
      *
-     * @param int $host
+     * @param string $host
      */
     public function setHost($host)
     {
-        $this->host = (int) $host;
+        $this->host = (string) $host;
     }
 
     /**
      * Get the host
      *
-     * @return int
+     * @return string
      */
     public function getHost()
     {

@@ -5,15 +5,10 @@ namespace SlmQueue\Options;
 use Zend\Stdlib\AbstractOptions;
 
 /**
- * ModuleOptions
+ * WorkerOptions
  */
-class ModuleOptions extends AbstractOptions
+class WorkerOptions extends AbstractOptions
 {
-    /**
-     * @var bool
-     */
-    protected $__strictMode__ = false;
-
     /**
      * @var int
      */
@@ -27,12 +22,11 @@ class ModuleOptions extends AbstractOptions
 
     /**
      * @param  int $maxRuns
-     * @return ModuleOptions
+     * @return void
      */
     public function setMaxRuns($maxRuns)
     {
         $this->maxRuns = (int) $maxRuns;
-        return $this;
     }
 
     /**
@@ -45,12 +39,11 @@ class ModuleOptions extends AbstractOptions
 
     /**
      * @param  int $maxMemory
-     * @return ModuleOptions
+     * @return void
      */
     public function setMaxMemory($maxMemory)
     {
         $this->maxMemory = (int) $maxMemory;
-        return $this;
     }
 
     /**

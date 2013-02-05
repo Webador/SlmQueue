@@ -2,6 +2,8 @@
 
 namespace SlmQueue\Queue\Sqs;
 
+use Aws\Sqs\SqsClient;
+use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 
@@ -15,13 +17,40 @@ class Queue extends AbstractQueue
      */
     protected $sqsClient;
 
+    /**
+     * @var string
+     */
+    protected $queueUrl;
+
+
+    /**
+     * Constructor
+     *
+     * @param SqsClient        $sqsClient
+     * @param JobPluginManager $jobPluginManager
+     * @param string           $name
+     * @param object|null      $options
+     */
+    public function __construct(
+        SqsClient $sqsClient,
+        JobPluginManager $jobPluginManager,
+        $name,
+        $options = null
+    ) {
+        $this->sqsClient = $sqsClient;
+        parent::__construct($jobPluginManager, $name, $options);
+
+        // Retrieve the queue from Amazon SQS and store the URL
+        //$queue = $this->sqsClient->createQueue(array())
+    }
 
     /**
      * {@inheritDoc}
      */
     public function push(JobInterface $job, array $options = array())
     {
-        // TODO: Implement push() method.
+        $this->sqsClient->sendMessage(array(
+        ));
     }
 
     /**

@@ -3,18 +3,19 @@
 namespace SlmQueue\Worker\Sqs;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Worker\WorkerInterface;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Worker\AbstractWorker;
 
 /**
- * Worker for Amazon SQS
+ * SqsWorker
  */
-class Worker implements WorkerInterface
+class Worker extends AbstractWorker
 {
     /**
      * {@inheritDoc}
      */
-    public function execute(JobInterface $job)
+    public function processJob(JobInterface $job, QueueInterface $queue)
     {
-        // TODO: Implement execute() method.
+        // TODO: Implement processJob() method.
     }
 }

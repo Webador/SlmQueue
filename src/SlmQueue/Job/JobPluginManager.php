@@ -16,7 +16,7 @@ class JobPluginManager extends AbstractPluginManager
 
     /**
      * @param  mixed $plugin
-     * @throws Exception\InvalidArgumentException
+     * @throws Exception\RuntimeException
      * @return void
      */
     public function validatePlugin($plugin)
@@ -25,7 +25,7 @@ class JobPluginManager extends AbstractPluginManager
             return; // we're okay
         }
 
-        throw new Exception\InvalidArgumentException(sprintf(
+        throw new Exception\RuntimeException(sprintf(
             'Plugin of type %s is invalid; must implement SlmQueue\Job\JobInterface',
             (is_object($plugin) ? get_class($plugin) : gettype($plugin))
         ));

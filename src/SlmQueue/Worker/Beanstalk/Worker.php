@@ -3,18 +3,24 @@
 namespace SlmQueue\Worker\Beanstalk;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Worker\WorkerInterface;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Worker\AbstractWorker;
 
 /**
- * Worker for Beanstalk
+ * BeanstalkWorker
  */
-class Worker implements WorkerInterface
+class Worker extends AbstractWorker
 {
     /**
      * {@inheritDoc}
      */
-    public function execute(JobInterface $job)
+    public function processJob(JobInterface $job, QueueInterface $queue)
     {
-        // TODO: Implement execute() method.
+        try {
+            $job->execute();
+            $queue->delete($job);
+        } catch(ReleasableException $exception) {
+
+        }
     }
 }

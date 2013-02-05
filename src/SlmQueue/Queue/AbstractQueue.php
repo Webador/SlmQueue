@@ -34,10 +34,7 @@ abstract class AbstractQueue implements QueueInterface
     {
         $this->jobPluginManager = $jobPluginManager;
         $this->name             = $name;
-
-        if ($this->options !== null) {
-            $this->options = $options;
-        }
+        $this->options          = $options;
     }
 
     /**

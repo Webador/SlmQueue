@@ -18,6 +18,7 @@
         "php": ">=5.3.3.",
         "pda/pheanstalk": ">=1.1.0@stable",
         "aws/aws-sdk-php": "dev-master",
+        "zendframework/zend-filter": "2.*",
         "zendframework/zend-mvc": "2.*",
         "zendframework/zend-servicemanager": "2.*",
         "zendframework/zend-stdlib": "2.*"

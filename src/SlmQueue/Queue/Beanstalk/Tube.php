@@ -22,6 +22,8 @@ class Tube extends AbstractQueue
 
 
     /**
+     * Constructor
+     *
      * @param Pheanstalk       $pheanstalk
      * @param JobPluginManager $jobPluginManager
      * @param string           $name
