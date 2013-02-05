@@ -22,7 +22,12 @@ class BeanstalkOptions extends AbstractOptions
     /**
      * @var int
      */
-    protected $connectionTimeout;
+    protected $timeout;
+
+    /**
+     * @var string
+     */
+    protected $defaultTube;
 
     /**
      * @var BeanstalkTubeOptions[]
@@ -73,11 +78,11 @@ class BeanstalkOptions extends AbstractOptions
     /**
      * Set the connection timeout
      *
-     * @param int $connectionTimeout
+     * @param int $timeout
      */
-    public function setConnectionTimeout($connectionTimeout)
+    public function setTimeout($timeout)
     {
-        $this->connectionTimeout = (int) $connectionTimeout;
+        $this->timeout = (int) $timeout;
     }
 
     /**
@@ -85,9 +90,29 @@ class BeanstalkOptions extends AbstractOptions
      *
      * @return int
      */
-    public function getConnectionTimeout()
+    public function getTimeout()
     {
-        return $this->connectionTimeout;
+        return $this->timeout;
+    }
+
+    /**
+     * Set the default tube
+     *
+     * @param string $defaultTube
+     */
+    public function setDefaultTube($defaultTube)
+    {
+        $this->defaultTube = $defaultTube;
+    }
+
+    /**
+     * Get the default tube
+     *
+     * @return string
+     */
+    public function getDefaultTube()
+    {
+        return $this->defaultTube;
     }
 
     /**

@@ -19,22 +19,15 @@ abstract class AbstractQueue implements QueueInterface
      */
     protected $name;
 
-    /**
-     * @var object
-     */
-    protected $options;
-
 
     /**
-     * @param JobPluginManager $jobPluginManager
      * @param string           $name
-     * @param object|null      $options
+     * @param JobPluginManager $jobPluginManager
      */
-    public function __construct(JobPluginManager $jobPluginManager, $name, $options = null)
+    public function __construct($name, JobPluginManager $jobPluginManager)
     {
-        $this->jobPluginManager = $jobPluginManager;
         $this->name             = $name;
-        $this->options          = $options;
+        $this->jobPluginManager = $jobPluginManager;
     }
 
     /**
@@ -51,13 +44,5 @@ abstract class AbstractQueue implements QueueInterface
     public function getName()
     {
         return $this->getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOptions()
-    {
-        return $this->options;
     }
 }

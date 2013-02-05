@@ -25,18 +25,13 @@ class Tube extends AbstractQueue
      * Constructor
      *
      * @param Pheanstalk       $pheanstalk
-     * @param JobPluginManager $jobPluginManager
      * @param string           $name
-     * @param object|null      $options
+     * @param JobPluginManager $jobPluginManager
      */
-    public function __construct(
-        Pheanstalk $pheanstalk,
-        JobPluginManager $jobPluginManager,
-        $name,
-        $options = null
-    ) {
+    public function __construct(Pheanstalk $pheanstalk, $name, JobPluginManager $jobPluginManager)
+    {
         $this->pheanstalk = $pheanstalk;
-        parent::__construct($jobPluginManager, $name, $options);
+        parent::__construct($name, $jobPluginManager);
     }
 
     /**

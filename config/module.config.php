@@ -3,9 +3,12 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory',
-            'SlmQueue\Worker\Beanstalk\Worker'  => 'SlmQueue\Factory\BeanstalkWorkerFactory',
-            'SlmQueue\Worker\Sqs\Worker'        => 'SlmQueue\Factory\SqsWorkerFactory'
+            'SlmQueue\Job\JobPluginManager'      => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager'  => 'SlmQueue\Factory\QueuePluginManagerFactory',
+            'SlmQueue\Service\PheanstalkService' => 'SlmQueue\Factory\PheanstalkFactory',
+            'SlmQueue\Service\SqsService'        => 'SlmQueue\Factory\SqsClientFactory',
+            'SlmQueue\Worker\Beanstalk\Worker'   => 'SlmQueue\Factory\BeanstalkWorkerFactory',
+            'SlmQueue\Worker\Sqs\Worker'         => 'SlmQueue\Factory\SqsWorkerFactory'
         )
     ),
 
@@ -50,12 +53,18 @@ return array(
          * Beanstalk configuration
          */
         'beanstalk' => array(
-            'default_tube' => 'default',
-
             'connection'   => array(
                 'host'    => '0.0.0.0',
                 'port'    => 11300,
                 'timeout' => 2
+            ),
+
+            'default_tube' => 'default',
+
+            'tubes' => array(
+                'default' => array(
+                    'watching' => true
+                )
             )
         ),
 
@@ -72,6 +81,12 @@ return array(
                 'secret' => '',
                 'region' => ''
             )*/
+
+            'queues' => array(
+                'newsletter' => array(
+
+                )
+            )
         ),
     ),
 );

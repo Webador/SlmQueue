@@ -14,13 +14,6 @@ use SlmQueue\Job\JobInterface;
 interface QueueInterface
 {
     /**
-     * Get the job plugin manager
-     *
-     * @return \SlmQueue\Job\JobPluginManager
-     */
-    public function getJobPluginManager();
-
-    /**
      * Get the name of the queue
      *
      * @return string
@@ -28,11 +21,11 @@ interface QueueInterface
     public function getName();
 
     /**
-     * Get the options of the queue
+     * Get the job plugin manager
      *
-     * @return object
+     * @return \SlmQueue\Job\JobPluginManager
      */
-    public function getOptions();
+    public function getJobPluginManager();
 
     /**
      * Push a new job into the queue

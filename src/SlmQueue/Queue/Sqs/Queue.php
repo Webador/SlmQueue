@@ -27,18 +27,13 @@ class Queue extends AbstractQueue
      * Constructor
      *
      * @param SqsClient        $sqsClient
-     * @param JobPluginManager $jobPluginManager
      * @param string           $name
-     * @param object|null      $options
+     * @param JobPluginManager $jobPluginManager
      */
-    public function __construct(
-        SqsClient $sqsClient,
-        JobPluginManager $jobPluginManager,
-        $name,
-        $options = null
-    ) {
+    public function __construct(SqsClient $sqsClient, JobPluginManager $jobPluginManager, $name)
+    {
         $this->sqsClient = $sqsClient;
-        parent::__construct($jobPluginManager, $name, $options);
+        parent::__construct($name, $jobPluginManager);
 
         // Retrieve the queue from Amazon SQS and store the URL
         //$queue = $this->sqsClient->createQueue(array())

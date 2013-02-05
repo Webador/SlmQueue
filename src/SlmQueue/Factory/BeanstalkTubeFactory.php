@@ -2,6 +2,7 @@
 
 namespace SlmQueue\Factory;
 
+use SlmQueue\Queue\Beanstalk\Tube;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -13,8 +14,11 @@ class BeanstalkTubeFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator, $name = '', $requestedName = '')
     {
-        // TODO: Implement createService() method.
+        $pheanstalk       = $serviceLocator->get('SlmQueue\Service\PheanstalkService');
+        $jobPluginManager = $serviceLocator->get('SlmQueue\Job\JobPluginManager');
+
+        $tube = new Tube($pheanstalk, $jobPluginManager, $requestedName);
     }
 }
