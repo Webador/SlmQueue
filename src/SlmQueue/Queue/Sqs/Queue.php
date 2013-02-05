@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Queue\Sqs;
 
-use SlmQueue\AbstractQueue;
+use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
 
 /**
@@ -10,6 +10,12 @@ use SlmQueue\Job\JobInterface;
  */
 class Queue extends AbstractQueue
 {
+    /**
+     * @var SqsClient
+     */
+    protected $sqsClient;
+
+
     /**
      * {@inheritDoc}
      */

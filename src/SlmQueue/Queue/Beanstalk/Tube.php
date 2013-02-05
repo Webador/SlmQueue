@@ -2,6 +2,9 @@
 
 namespace SlmQueue\Queue\Beanstalk;
 
+use Pheanstalk_Job;
+use Pheanstalk_Pheanstalk as Pheanstalk;
+use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Queue\Exception;
@@ -13,11 +16,39 @@ use SlmQueue\Queue\Exception;
 class Tube extends AbstractQueue
 {
     /**
+     * @var Pheanstalk
+     */
+    protected $pheanstalk;
+
+
+    /**
+     * @param Pheanstalk       $pheanstalk
+     * @param JobPluginManager $jobPluginManager
+     * @param string           $name
+     * @param object|null      $options
+     */
+    public function __construct(
+        Pheanstalk $pheanstalk,
+        JobPluginManager $jobPluginManager,
+        $name,
+        $options = null
+    ) {
+        $this->pheanstalk = $pheanstalk;
+        parent::__construct($jobPluginManager, $name, $options);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function push(JobInterface $job, array $options = array())
     {
-        // TODO: Implement push() method.
+        $this->pheanstalk->putInTube(
+            $this->getName(),
+            json_encode($job),
+            isset($options['priority']) ? $options['priority'] : Pheanstalk::DEFAULT_PRIORITY,
+            isset($options['delay']) ? $options['delay'] : Pheanstalk::DEFAULT_DELAY,
+            isset($options['ttr']) ? $options['ttr'] : Pheanstalk::DEFAULT_TTR
+        );
     }
 
     /**
@@ -34,7 +65,9 @@ class Tube extends AbstractQueue
      */
     public function pop()
     {
-        // TODO: Implement pop() method.
+        /** @var $job \Pheanstalk_Job */
+        $job = $this->pheanstalk->reserveFromTube($this->getName());
+        return $this->convertJob($job);
     }
 
     /**
@@ -42,7 +75,7 @@ class Tube extends AbstractQueue
      */
     public function delete(JobInterface $job)
     {
-        // TODO: Implement delete() method.
+        $this->pheanstalk->delete($job);
     }
 
     /**
@@ -58,21 +91,43 @@ class Tube extends AbstractQueue
      * Bury a job. When a job is buried, it won't be retrieved from the queue, unless the job is kicked
      *
      * @param  JobInterface $job
+     * @param  array        $options
      * @return void
      */
-    public function bury(JobInterface $job)
+    public function bury(JobInterface $job, array $options = array())
     {
-
+        $this->pheanstalk->bury(
+            $job,
+            isset($options['priority']) ? $options['priority'] : Pheanstalk::DEFAULT_PRIORITY
+        );
     }
 
     /**
-     * Kick a job. This allow to retrieve a buried job from the queue
+     * Kick a specified number of buried jobs, hence making them "ready" again
      *
-     * @param  JobInterface $job
-     * @return void
+     * @param  int $max The maximum jobs to kick
+     * @return int Number of jobs kicked
      */
-    public function kick(JobInterface $job)
+    public function kick($max)
     {
+        return $this->pheanstalk->kick($max);
+    }
 
+    /**
+     * Convert a Pheanstalk_Job to our JobInterface
+     *
+     * @param  Pheanstalk_Job $pheanstalkJob
+     * @return JobInterface
+     */
+    private function convertJob(Pheanstalk_Job $pheanstalkJob)
+    {
+        $data = json_decode($pheanstalkJob->getData(), true);
+
+        /** @var $job JobInterface */
+        $job  = $this->jobPluginManager->get($data['class']);
+        $job->setId($pheanstalkJob->getId())
+            ->setContent($data['content']);
+
+        return $job;
     }
 }

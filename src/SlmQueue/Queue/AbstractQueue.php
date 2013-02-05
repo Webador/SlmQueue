@@ -2,11 +2,18 @@
 
 namespace SlmQueue\Queue;
 
+use SlmQueue\Job\JobPluginManager;
+
 /**
  * AbstractQueue
  */
 abstract class AbstractQueue implements QueueInterface
 {
+    /**
+     * @var JobPluginManager
+     */
+    protected $jobPluginManager;
+
     /**
      * @var string
      */
@@ -19,16 +26,26 @@ abstract class AbstractQueue implements QueueInterface
 
 
     /**
-     * @param string      $name
-     * @param object|null $options
+     * @param JobPluginManager $jobPluginManager
+     * @param string           $name
+     * @param object|null      $options
      */
-    public function __construct($name, $options = null)
+    public function __construct(JobPluginManager $jobPluginManager, $name, $options = null)
     {
-        $this->name = $name;
+        $this->jobPluginManager = $jobPluginManager;
+        $this->name             = $name;
 
         if ($this->options !== null) {
             $this->options = $options;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getJobPluginManager()
+    {
+        return $this->jobPluginManager;
     }
 
     /**
