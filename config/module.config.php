@@ -19,18 +19,6 @@ return array(
     ),
 
     'slm_queue' => array(
-        'connection' => array(
-            'host'    => '0.0.0.0',
-            'port'    => 11300,
-            'timeout' => 2
-        ),
-
-        'tubes'      => array(
-            'ignore' => '',
-            'watch'  => '',
-            'use'    => ''
-        ),
-
         'max_runs'   => 100000,
         'max_memory' => 1024
     ),

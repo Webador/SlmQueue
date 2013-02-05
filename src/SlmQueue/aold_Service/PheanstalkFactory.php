@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Service;
 
-use Pheanstalk;
+use Pheanstalk_Pheanstalk;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -10,7 +10,7 @@ class PheanstalkFactory implements FactoryInterface
 {
     /**
      * @param  ServiceLocatorInterface $serviceLocator
-     * @return Pheanstalk
+     * @return Pheanstalk_Pheanstalk
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
