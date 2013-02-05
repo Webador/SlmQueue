@@ -2,68 +2,41 @@
 
 namespace SlmQueue\Controller;
 
+use SlmQueue\Worker\Sqs\Worker as SqsWorker;
 use Zend\Mvc\Controller\AbstractActionController;
-use SlmQueue\Service\BeanstalkInterface;
-use SlmQueue\Options\ModuleOptions;
 
+/**
+ * WorkerController
+ */
 class WorkerController extends AbstractActionController
 {
     /**
-     * @var BeanstalkInterface
-     */
-    protected $beanstalk;
-
-    /**
-     * @var ModuleOptions
-     */
-    protected $options;
-
-    /**
-     * @var bool
-     */
-    protected $stopped;
-
-    /**
-     * Constructor
+     * Process the jobs until the queues are empty OR that some criterias specified in config are met,
+     * like max runs or memory consumption
      *
-     * @param BeanstalkInterface $beanstalk
-     * @param ModuleOptions      $options
+     * @return string
      */
-    public function __construct (BeanstalkInterface $beanstalk, ModuleOptions $options)
+    public function processAction()
     {
-        $this->beanstalk = $beanstalk;
-        $this->options   = $options;
-    }
+        $queuingSystem = $this->params()->fromRoute('system', null);
+        $queueName     = $this->params()->fromRoute('queueName', '');
 
-    /**
-     * @return BeanstalkInterface
-     */
-    public function getBeanstalk()
-    {
-        return $this->beanstalk;
-    }
+        switch($queuingSystem) {
+            case 'sqs':
+                return $this->processSqsQueue($queueName);
+                break;
+            case 'beanstalk':
+                return $this->processBeanstalkQueue($queueName);
+                break;
+        }
 
-    /**
-     * @return ModuleOptions
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
+        return sprintf(
+            "\n\nNo worker found. %s queuing system given, but only sqs and beanstalk are supported currently\n",
+            $queuingSystem
+        );
 
-    /**
-     * Reserve jobs from the queue
-     */
-    public function reserveAction()
-    {
-        $this->prepare();
-
-        $beanstalk = $this->getBeanstalk();
-        $options   = $this->getOptions();
-
-        $i = 1;
+        // Now do the work!
         while (true) {
-            $job = $beanstalk->reserve();
             $beanstalk->execute($job);
 
             if ($i === $options->getMaxRuns()) {
@@ -78,41 +51,18 @@ class WorkerController extends AbstractActionController
 
             $i++;
         }
+
+        return "\n\nDone!\n";
     }
 
     /**
-     * Prepare the reserve action
+     * Process a SQS queue
+     *
+     * @param  string $queueName
+     * @return string
      */
-    protected function prepare()
+    protected function processSqsQueue($queueName = '')
     {
-        declare(ticks = 1);
-        pcntl_signal(SIGTERM, array($this, 'signal'));
-        pcntl_signal(SIGINT,  array($this, 'signal'));
-    }
-
-    /**
-     * @param $signo
-     */
-    public function signal($signo)
-    {
-        switch($signo) {
-            case SIGTERM:
-            case SIGINT:
-                $this->stopped(true);
-                break;
-        }
-    }
-
-    /**
-     * @param  null $flag
-     * @return bool
-     */
-    protected function stopped($flag = null)
-    {
-        if (null !== $flag) {
-            $this->stopped = (bool) $flag;
-        }
-
-        return $this->stopped;
+        $worker = $this->serviceLocator->get('SlmQueue\Worker\Sqs\Worker');
     }
 }
