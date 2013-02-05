@@ -2,80 +2,28 @@
 
 namespace SlmQueue\Job;
 
-use stdClass;
-use Traversable;
-use SlmQueue\Exception\InvalidArgumentException;
-use Zend\Stdlib\ArrayUtils;
+use Zend\Stdlib\Message;
 
-abstract class AbstractJob implements JobInterface
+/**
+ * This class is supposed to be extended. To create a job, just implements the missing "execute" method. If a queueing
+ * system needs more information, you can extend this class (but for both Beanstalk and SQS this is enough)
+ */
+abstract class AbstractJob extends Message implements JobInterface
 {
     /**
-     * @var mixed
+     * {@inheritDoc}
      */
-    protected $id;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * @param null $options
-     */
-    public function __construct($options = null)
+    function jsonSerialize()
     {
-        if ($options !== null) {
-            $this->setOptions($options);
-        }
+        return array(
+            'class'   => get_called_class(),
+            'id'      => $this->getMetadata('id'),
+            'content' => $this->getContent()
+        );
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setOptions($options)
-    {
-        if($options !== null) {
-            if ($options instanceof Traversable) {
-                $options = ArrayUtils::iteratorToArray($options);
-            } elseif ($options instanceof stdClass) {
-                $options = get_object_vars($options);
-            } elseif (!is_array($options)) {
-                throw new InvalidArgumentException(
-                    'The options parameter must be an array or a Traversable'
-                );
-            }
-        }
-
-        $this->options = $options;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    abstract public function __invoke();
+    abstract public function execute();
 }

@@ -2,42 +2,20 @@
 
 namespace SlmQueue\Job;
 
-interface JobInterface
+use JsonSerializable;
+
+/**
+ * A job is a task inserted into a queue.
+ *
+ * In order to handle dependencies, each job should be pulled from the JobPluginManager (which is injected
+ * into every queue).
+ */
+interface JobInterface extends JsonSerializable
 {
     /**
      * Execute the job
      *
      * @return void
      */
-    public function __invoke();
-
-    /**
-     * Set the options for the job
-     *
-     * @param  array|\Traversable $options
-     * @return JobInterface
-     */
-    public function setOptions ($options);
-
-    /**
-     * Get the options for the job
-     *
-     * @return array
-     */
-    public function getOptions();
-
-    /**
-     * Set the identifier of the job
-     *
-     * @param  $id
-     * @return JobInterface
-     */
-    public function setId($id);
-
-    /**
-     * Get the identifier of the job
-     *
-     * @return mixed
-     */
-    public function getId();
+    public function execute();
 }
