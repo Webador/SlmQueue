@@ -6,7 +6,10 @@ use SlmQueue\Job\JobInterface;
 
 /**
  * A queue contains a list of jobs. It can performs various tasks on jobs, like putting a new job,
- * removing it... SlmQueue provides out of the box two queues: one for Beanstalk and one for Amazon SQS
+ * removing it... SlmQueue provides out of the box two queues: one for Beanstalk and one for Amazon SQS.
+ *
+ * NOTE : if a given queueing system does not support some of the features (for instance, Beanstalk does not support
+ * nor batch push and batch delete), just throw a SlmQueue\Queue\Exception\UnsupportedOperationException
  */
 interface QueueInterface
 {
@@ -21,7 +24,7 @@ interface QueueInterface
      * Push a new job into the queue
      *
      * @param  JobInterface $job
-     * @param  array            $options
+     * @param  array        $options
      * @return void
      */
     public function push(JobInterface $job, array $options = array());

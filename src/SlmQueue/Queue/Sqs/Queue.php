@@ -21,6 +21,14 @@ class Queue extends AbstractQueue
     /**
      * {@inheritDoc}
      */
+    public function batchPush(array $jobs, array $options = array())
+    {
+        // TODO: Implement batchPush() method.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function pop()
     {
         // TODO: Implement pop() method.
@@ -32,5 +40,13 @@ class Queue extends AbstractQueue
     public function delete(JobInterface $job)
     {
         // TODO: Implement delete() method.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function batchDelete(array $jobs)
+    {
+        // TODO: Implement batchDelete() method.
     }
 }
