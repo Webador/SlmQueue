@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue;
+namespace SlmQueue\Queue;
 
 use SlmQueue\Job\JobInterface;
 
@@ -19,6 +19,13 @@ interface QueueInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * Get the options of the queue
+     *
+     * @return object
+     */
+    public function getOptions();
 
     /**
      * Push a new job into the queue

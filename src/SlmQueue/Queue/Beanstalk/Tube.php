@@ -2,8 +2,8 @@
 
 namespace SlmQueue\Queue\Beanstalk;
 
-use SlmQueue\AbstractQueue;
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Queue\AbstractQueue;
 use SlmQueue\Queue\Exception;
 
 /**

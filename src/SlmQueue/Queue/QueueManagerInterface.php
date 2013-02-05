@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue;
+namespace SlmQueue\Queue;
 
 /**
  * The queue manager is responsible to retrieve a single queue by its name. SlmQueue provides out of the box
@@ -12,7 +12,7 @@ interface QueueManagerInterface
      * Get the queue from the queue manager by its name
      *
      * @param  string $name
-     * @return QueueInterface
+     * @return QueueInterface|null
      */
     public function getQueue($name);
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue;
+namespace SlmQueue\Queue;
 
 /**
  * AbstractQueue
@@ -12,13 +12,23 @@ abstract class AbstractQueue implements QueueInterface
      */
     protected $name;
 
+    /**
+     * @var object
+     */
+    protected $options;
+
 
     /**
-     * @param string $name
+     * @param string      $name
+     * @param object|null $options
      */
-    public function __construct($name)
+    public function __construct($name, $options = null)
     {
         $this->name = $name;
+
+        if ($this->options !== null) {
+            $this->options = $options;
+        }
     }
 
     /**
@@ -27,5 +37,13 @@ abstract class AbstractQueue implements QueueInterface
     public function getName()
     {
         return $this->getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 }
