@@ -31,24 +31,22 @@ interface QueueInterface
      * Push a new job into the queue
      *
      * @param  JobInterface $job
-     * @param  array        $options
      * @return void
      */
-    public function push(JobInterface $job, array $options = array());
+    public function push(JobInterface $job);
 
     /**
      * Push a batch of new jobs into the queue
      *
      * @param  JobInterface[] $jobs
-     * @param  array          $options
-     * @return mixed
+     * @return void
      */
-    public function batchPush(array $jobs, array $options = array());
+    public function batchPush(array $jobs);
 
     /**
-     * Pop a job from the queue
+     * Pop a job (or multiple jobs) from the queue
      *
-     * @return JobInterface
+     * @return JobInterface|array
      */
     public function pop();
 

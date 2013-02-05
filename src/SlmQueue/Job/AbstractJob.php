@@ -2,16 +2,18 @@
 
 namespace SlmQueue\Job;
 
+use Zend\Stdlib\Message;
+
 /**
  * This class is supposed to be extended. To create a job, just implements the missing "execute" method. If a queueing
  * system needs more information, you can extend this class (but for both Beanstalk and SQS this is enough)
  */
-abstract class AbstractJob implements JobInterface
+abstract class AbstractJob extends Message implements JobInterface
 {
     /**
      * @var mixed
      */
-    protected $id;
+    protected $metadata;
 
     /**
      * @var mixed
@@ -24,7 +26,7 @@ abstract class AbstractJob implements JobInterface
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->setMetadata('id', $id);
         return $this;
     }
 
@@ -33,24 +35,15 @@ abstract class AbstractJob implements JobInterface
      */
     public function getId()
     {
-        return $this->id;
+        return $this->getMetadata('id');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setContent($content)
+    public function hasMetadata($key)
     {
-        $this->content = $content;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getContent()
-    {
-        return $this->content;
+        return isset($this->metadata[$key]);
     }
 
     /**

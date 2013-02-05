@@ -3,6 +3,7 @@
 namespace SlmQueue\Job;
 
 use JsonSerializable;
+use Zend\Stdlib\MessageInterface;
 
 /**
  * A job is a task inserted into a queue (it contains metadata and content)
@@ -10,10 +11,10 @@ use JsonSerializable;
  * In order to handle dependencies, each job should be pulled from the JobPluginManager (which is injected
  * into every queue).
  */
-interface JobInterface extends JsonSerializable
+interface JobInterface extends MessageInterface, JsonSerializable
 {
     /**
-     * Set the identifier of the job
+     * Set the identifier of the job (it proxies to its metadata)
      *
      * @param  mixed $id
      * @return JobInterface
@@ -21,26 +22,19 @@ interface JobInterface extends JsonSerializable
     public function setId($id);
 
     /**
-     * Get the identifier of the job
+     * Get the identifier of the job (it proxies to its metadata)
      *
      * @return mixed
      */
     public function getId();
 
     /**
-     * Set the content of the job
+     * Does the job has this metadata?
      *
-     * @param  mixed $content
-     * @return JobInterface
+     * @param  string $key
+     * @return bool
      */
-    public function setContent($content);
-
-    /**
-     * Get the content of the job
-     *
-     * @return mixed
-     */
-    public function getContent();
+    public function hasMetadata($key);
 
     /**
      * Execute the job

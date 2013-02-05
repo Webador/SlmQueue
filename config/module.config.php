@@ -64,6 +64,10 @@ return array(
             'tubes' => array(
                 'default' => array(
                     'watching' => true
+                ),
+
+                'email' => array(
+                    'watching' => true
                 )
             )
         ),
@@ -84,7 +88,6 @@ return array(
 
             'queues' => array(
                 'newsletter' => array(
-
                 )
             )
         ),

@@ -36,24 +36,57 @@ class Queue extends AbstractQueue
         parent::__construct($name, $jobPluginManager);
 
         // Retrieve the queue from Amazon SQS and store the URL
-        //$queue = $this->sqsClient->createQueue(array())
+        $queue          = $this->sqsClient->createQueue(array('QueueName' => $name));
+        $this->queueUrl = $queue['QueueUrl'];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function push(JobInterface $job, array $options = array())
+    public function push(JobInterface $job)
     {
-        $this->sqsClient->sendMessage(array(
-        ));
+        $parameters = array(
+            'QueueUrl'     => $this->queueUrl,
+            'MessageBody'  => json_encode($job),
+            'DelaySeconds' => ($job->hasMetadata('delay') ? $job->getMetadata('delay') : null)
+        );
+
+        $result = $this->sqsClient->sendMessage(array_filter($parameters));
+
+        $job->setId($result['MessageId']);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function batchPush(array $jobs, array $options = array())
+    public function batchPush(array $jobs)
     {
-        // TODO: Implement batchPush() method.
+        $messages = array();
+        foreach ($jobs as $job) {
+            // Set a unique identifier for the job in the batch, so that we can set the identifier accordingly
+            $job->setMetadata('batchId', uniqid());
+
+            $message = array(
+                'Id'           => $job->getMetadata('batchId'),
+                'MessageBody'  => json_encode($job),
+                'DelaySeconds' => ($job->hasMetadata('delay') ? $job->getMetadata('delay') : null)
+            );
+
+            $messages[] = array_filter($message);
+        }
+
+        $parameters = array(
+            'QueueUrl' => $this->queueUrl,
+            'Entries'  => array(
+                $messages
+            )
+        );
+
+        $result = $this->sqsClient->sendMessageBatch($parameters)['Successful']['items'];
+        foreach ($jobs as $job) {
+            $batchId    = $job->getMetadata('batchId');
+            //$resultItem = array_search()
+        }
     }
 
     /**
@@ -61,7 +94,16 @@ class Queue extends AbstractQueue
      */
     public function pop()
     {
-        // TODO: Implement pop() method.
+        $result = $this->sqsClient->receiveMessage(array(
+            'QueueUrl' => $this->queueUrl
+        ));
+
+        $messages = $result['Messages']['items'];
+
+        $jobs = array();
+        foreach ($messages as $message) {
+            $jobs[] = $this->convertJob($message);
+        }
     }
 
     /**
@@ -69,7 +111,14 @@ class Queue extends AbstractQueue
      */
     public function delete(JobInterface $job)
     {
-        // TODO: Implement delete() method.
+        $parameters = array(
+            'QueueUrl'      => $this->queueUrl,
+            'ReceiptHandle' => $job->getMetadata('receiptHandle')
+        );
+
+        $result = $this->sqsClient->sendMessage($parameters);
+
+        $job->setId($result['MessageId']);
     }
 
     /**
@@ -77,6 +126,43 @@ class Queue extends AbstractQueue
      */
     public function batchDelete(array $jobs)
     {
-        // TODO: Implement batchDelete() method.
+        $messages = array();
+        foreach ($jobs as $job) {
+            // Set a unique identifier for the job in the batch, so that we can set the identifier accordingly
+            $job->setMetadata('batchId', uniqid());
+
+            $messages[] = array(
+                'Id'            => $job->getMetadata('batchId'),
+                'ReceiptHandle' => $job->getMetadata('receiptHandle')
+            );
+        }
+
+        $parameters = array(
+            'QueueUrl' => $this->queueUrl,
+            'Entries'  => array(
+                $messages
+            )
+        );
+
+        $this->sqsClient->deleteMessageBatch($parameters);
+    }
+
+    /**
+     * Convert an Amazon SQS result to our JobInterface
+     *
+     * @param  array $message
+     * @return JobInterface
+     */
+    private function convertJob(array $message)
+    {
+        $data = json_decode($message['Body']);
+
+        /** @var $job JobInterface */
+        $job = $this->jobPluginManager->get($data['class']);
+        $job->setId($message['MessageId'])
+            ->setMetadata('receiptHandle', $message['ReceiptHandle'])
+            ->setContent($data['content']);
+
+        return $job;
     }
 }

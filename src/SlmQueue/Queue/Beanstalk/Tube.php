@@ -37,15 +37,17 @@ class Tube extends AbstractQueue
     /**
      * {@inheritDoc}
      */
-    public function push(JobInterface $job, array $options = array())
+    public function push(JobInterface $job)
     {
-        $this->pheanstalk->putInTube(
+        $id = $this->pheanstalk->putInTube(
             $this->getName(),
             json_encode($job),
-            isset($options['priority']) ? $options['priority'] : Pheanstalk::DEFAULT_PRIORITY,
-            isset($options['delay']) ? $options['delay'] : Pheanstalk::DEFAULT_DELAY,
-            isset($options['ttr']) ? $options['ttr'] : Pheanstalk::DEFAULT_TTR
+            $job->hasMetadata('priority') ? $job->getMetadata('priority') : Pheanstalk::DEFAULT_PRIORITY,
+            $job->hasMetadata('delay') ? $job->getMetadata('delay') : Pheanstalk::DEFAULT_DELAY,
+            $job->hasMetadata('ttr') ? $job->getMetadata('ttr') : Pheanstalk::DEFAULT_TTR
         );
+
+        $job->setId($id);
     }
 
     /**
@@ -88,14 +90,13 @@ class Tube extends AbstractQueue
      * Bury a job. When a job is buried, it won't be retrieved from the queue, unless the job is kicked
      *
      * @param  JobInterface $job
-     * @param  array        $options
      * @return void
      */
-    public function bury(JobInterface $job, array $options = array())
+    public function bury(JobInterface $job)
     {
         $this->pheanstalk->bury(
             $job,
-            isset($options['priority']) ? $options['priority'] : Pheanstalk::DEFAULT_PRIORITY
+            $job->hasMetadata('priority') ? $job->getMetadata('priority') : Pheanstalk::DEFAULT_PRIORITY
         );
     }
 
@@ -121,7 +122,7 @@ class Tube extends AbstractQueue
         $data = json_decode($pheanstalkJob->getData(), true);
 
         /** @var $job JobInterface */
-        $job  = $this->jobPluginManager->get($data['class']);
+        $job = $this->jobPluginManager->get($data['class']);
         $job->setId($pheanstalkJob->getId())
             ->setContent($data['content']);
 
