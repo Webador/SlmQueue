@@ -3,40 +3,35 @@
 namespace SlmQueueTest\Job;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Job\JobPluginManager;
+use SlmQueueTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
 
 class JobPluginManagerTest extends TestCase
 {
     /**
-     * @var JobPluginManager
+     * @var ServiceManager
      */
-    protected $jobPluginManager;
+    protected $serviceManager;
 
     public function setUp()
     {
         parent::setUp();
-        $this->jobPluginManager = new JobPluginManager();
+        $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
     public function testCanRetrievePluginManagerWithServiceManager()
     {
-        $serviceManager = new ServiceManager(
-            new ServiceManagerConfig(array(
-                'factories' => array(
-                    'JobPluginManager' => 'SlmQueue\Factory\JobPluginManagerFactory',
-                ),
-            ))
-        );
-        $serviceManager->setService('Config', include __DIR__ . '/../../testing.config.php');
-
-        $jobPluginManager = $serviceManager->get('JobPluginManager');
+        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
         $this->assertInstanceOf('SlmQueue\Job\JobPluginManager', $jobPluginManager);
     }
 
     public function testAskingTwiceForTheSameJobReturnsDifferentInstances()
     {
-        // TODO
+        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
+
+        $firstInstance  = $jobPluginManager->get('SlmQueueTest\Asset\SimpleJob');
+        $secondInstance = $jobPluginManager->get('SlmQueueTest\Asset\SimpleJob');
+
+        $this->assertNotSame($firstInstance, $secondInstance);
     }
 }

@@ -22,6 +22,9 @@ class QueuePluginManagerFactory implements FactoryInterface
             throw new Exception\RuntimeException('No queues were found in SlmQueue config');
         }
 
-        return new QueuePluginManager(new Config($config));
+        $queuePluginManager = new QueuePluginManager(new Config($config));
+        $queuePluginManager->setServiceLocator($serviceLocator);
+
+        return $queuePluginManager;
     }
 }

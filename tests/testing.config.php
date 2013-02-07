@@ -17,6 +17,13 @@
  * <http://www.doctrine-project.org>.
  */
 return array(
+    'service_manager' => array(
+        'factories' => array(
+            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
+        )
+    ),
+
     'slm_queue' => array(
         /**
          * Worker config
@@ -34,6 +41,15 @@ return array(
         /**
          * Queues config
          */
-        'queues' => array()
+        'queues' => array(
+            'factories' => array(
+                'basic-queue' => function($locator) {
+                    $parentLocator    = $locator->getServiceLocator();
+                    $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
+
+                    return new \SlmQueueTest\Asset\SimpleQueue('basic-queue', $jobPluginManager);
+                }
+            )
+        )
     ),
 );

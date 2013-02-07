@@ -3,40 +3,35 @@
 namespace SlmQueueTest\Queue;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Queue\QueuePluginManager;
+use SlmQueueTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
 
 class QueuePluginManagerTest extends TestCase
 {
     /**
-     * @var QueuePluginManager
+     * @var ServiceManager
      */
-    protected $queuePluginManager;
+    protected $serviceManager;
 
     public function setUp()
     {
         parent::setUp();
-        $this->queuePluginManager = new QueuePluginManager();
+        $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
     public function testCanRetrievePluginManagerWithServiceManager()
     {
-        $serviceManager = new ServiceManager(
-            new ServiceManagerConfig(array(
-                'factories' => array(
-                    'QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory',
-                ),
-            ))
-        );
-        $serviceManager->setService('Config', include __DIR__ . '/../../testing.config.php');
-
-        $queuePluginManager = $serviceManager->get('QueuePluginManager');
+        $queuePluginManager = $this->serviceManager->get('SlmQueue\Queue\QueuePluginManager');
         $this->assertInstanceOf('SlmQueue\Queue\QueuePluginManager', $queuePluginManager);
     }
 
     public function testAskingTwiceTheSameQueueReturnsTheSameInstance()
     {
-        // TODO
+        $queuePluginManager = $this->serviceManager->get('SlmQueue\Queue\QueuePluginManager');
+
+        $firstInstance  = $queuePluginManager->get('basic-queue');
+        $secondInstance = $queuePluginManager->get('basic-queue');
+
+        $this->assertSame($firstInstance, $secondInstance);
     }
 }

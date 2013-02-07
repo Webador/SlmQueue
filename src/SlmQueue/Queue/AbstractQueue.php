@@ -47,9 +47,9 @@ abstract class AbstractQueue implements QueueInterface
     }
 
     /**
-     * Create a job from the serialized data. The metadata (id...) is then injected to the job. Note that this
-     * follow the way a \SlmQueue\Job\AbstractJob is serialized. If you do fancy stuff, you may need to override
-     * the queue too so that the job is created the right way
+     * Create a job from the serialized data extracted from the queue. The metadata (id...) is then injected to the
+     * job. Note that this follow the way a \SlmQueue\Job\AbstractJob is serialized. If you do fancy stuff, you may
+     * need to override the queue too so that the job is created the right way
      *
      * @param  string $jsonData
      * @param  array  $metadata
@@ -57,12 +57,12 @@ abstract class AbstractQueue implements QueueInterface
      */
     protected function createJob($jsonData, array $metadata = array())
     {
-        $data = json_decode($jsonData, true);
+        $data = json_decode($jsonData);
 
         /** @var $job \SlmQueue\Job\JobInterface */
-        $job = $this->jobPluginManager->create($data['class']);
+        $job = $this->jobPluginManager->create($data->class);
         $job->setMetadata($metadata)
-            ->setContent($data['content']);
+            ->setContent($data->content);
 
         return $job;
     }
