@@ -3,8 +3,8 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueue\Job\JobPluginManager'      => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Queue\QueuePluginManager'  => 'SlmQueue\Factory\QueuePluginManagerFactory'
+            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
         )
     ),
 
