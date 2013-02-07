@@ -6,7 +6,7 @@ use SlmQueue\Job\JobInterface;
 
 /**
  * A queue contains a list of jobs. It can performs various tasks on jobs, like putting a new job,
- * removing it... SlmQueue provides out of the box two queues: one for Beanstalk and one for Amazon SQS.
+ * removing it...
  *
  * NOTE : if a given queueing system does not support some of the features (for instance, Beanstalk does not support
  * nor batch push and batch delete), just throw a SlmQueue\Queue\Exception\UnsupportedOperationException

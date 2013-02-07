@@ -6,7 +6,7 @@ use JsonSerializable;
 use Zend\Stdlib\MessageInterface;
 
 /**
- * A job is a task inserted into a queue (it contains metadata and content)
+ * A job is a task inserted into a queue, and it contains metadata and content.
  *
  * In order to handle dependencies, each job should be pulled from the JobPluginManager (which is injected
  * into every queue).

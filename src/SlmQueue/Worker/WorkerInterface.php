@@ -12,7 +12,7 @@ use SlmQueue\Queue\QueueInterface;
 interface WorkerInterface
 {
     /**
-     * Process jobs in the queue
+     * Process jobs in the queue identified by its name
      *
      * @param  string $queueName
      * @return void

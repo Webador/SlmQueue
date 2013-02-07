@@ -11,17 +11,6 @@ use Zend\Stdlib\Message;
 abstract class AbstractJob extends Message implements JobInterface
 {
     /**
-     * @var mixed
-     */
-    protected $metadata;
-
-    /**
-     * @var mixed
-     */
-    protected $content;
-
-
-    /**
      * {@inheritDoc}
      */
     public function setId($id)
@@ -47,7 +36,10 @@ abstract class AbstractJob extends Message implements JobInterface
     }
 
     /**
-     * {@inheritDoc}
+     * The 'class' attribute that is saved allow to easily handle dependencies by pulling the job from
+     * the JobPluginManager whenever it is popped from the queue
+     *
+     * @return array|mixed
      */
     function jsonSerialize()
     {

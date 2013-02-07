@@ -40,7 +40,7 @@ abstract class AbstractWorker implements WorkerInterface
      */
     public function processQueue($queueName)
     {
-        /** @var $queue \SlmQueue\Queue\QueueInterface */
+        /** @var $queue QueueInterface */
         $queue = $this->queuePluginManager->get($queueName);
         $count = 0;
 
