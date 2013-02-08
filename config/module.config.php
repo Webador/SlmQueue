@@ -1,37 +1,20 @@
 <?php
 
 return array(
-    'console'   => array(
-        'router' => array(
-            'routes' => array(
-                'slmqueue-worker' => array(
-                    'type'    => 'simple',
-                    'options' => array(
-                        'route'    => 'queue --start',
-                        'defaults' => array(
-                            'controller' => 'SlmQueue\Controller\WorkerController',
-                            'action'     => 'reserve'
-                        ),
-                    ),
-                ),
-            ),
-        ),
+    'service_manager' => array(
+        'factories' => array(
+            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
+        )
     ),
 
     'slm_queue' => array(
-        'connection' => array(
-            'host'    => '0.0.0.0',
-            'port'    => 11300,
-            'timeout' => 2
+        /**
+         * Parameters for the worker
+         */
+        'worker' => array(
+            'max_runs'   => 100000,
+            'max_memory' => 1024
         ),
-
-        'tubes'      => array(
-            'ignore' => '',
-            'watch'  => '',
-            'use'    => ''
-        ),
-
-        'max_runs'   => 100000,
-        'max_memory' => 1024
     ),
 );

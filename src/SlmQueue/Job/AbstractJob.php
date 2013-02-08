@@ -2,67 +2,20 @@
 
 namespace SlmQueue\Job;
 
-use stdClass;
-use Traversable;
-use SlmQueue\Exception\InvalidArgumentException;
-use Zend\Stdlib\ArrayUtils;
+use Zend\Stdlib\Message;
 
-abstract class AbstractJob implements JobInterface
+/**
+ * This class is supposed to be extended. To create a job, just implements the missing "execute" method. If a queueing
+ * system needs more information, you can extend this class (but for both Beanstalk and SQS this is enough)
+ */
+abstract class AbstractJob extends Message implements JobInterface
 {
-    /**
-     * @var mixed
-     */
-    protected $id;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * @param null $options
-     */
-    public function __construct($options = null)
-    {
-        if ($options !== null) {
-            $this->setOptions($options);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setOptions($options)
-    {
-        if($options !== null) {
-            if ($options instanceof Traversable) {
-                $options = ArrayUtils::iteratorToArray($options);
-            } elseif ($options instanceof stdClass) {
-                $options = get_object_vars($options);
-            } elseif (!is_array($options)) {
-                throw new InvalidArgumentException(
-                    'The options parameter must be an array or a Traversable'
-                );
-            }
-        }
-
-        $this->options = $options;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
     /**
      * {@inheritDoc}
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->setMetadata('id', $id);
         return $this;
     }
 
@@ -71,11 +24,35 @@ abstract class AbstractJob implements JobInterface
      */
     public function getId()
     {
-        return $this->id;
+        return $this->getMetadata('id');
     }
 
     /**
      * {@inheritDoc}
      */
-    abstract public function __invoke();
+    public function hasMetadata($key)
+    {
+        return isset($this->metadata[$key]);
+    }
+
+    /**
+     * The 'class' attribute that is saved allow to easily handle dependencies by pulling the job from
+     * the JobPluginManager whenever it is popped from the queue
+     *
+     * @return string
+     */
+    function jsonSerialize()
+    {
+        $data = array(
+            'class'   => get_called_class(),
+            'content' => $this->getContent()
+        );
+
+        return json_encode($data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    abstract public function execute();
 }

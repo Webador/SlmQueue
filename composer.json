@@ -1,10 +1,11 @@
 {
     "name": "juriansluiman/slm-queue",
-    "description": "Queue management with Beanstalkd for jobs in Zend Framework 2",
+    "description": "Zend Framework 2 module that integrates with various queue management systems",
     "type": "library",
     "keywords": [
         "zf2",
-        "beanstalk"
+        "queue",
+        "job"
     ],
     "homepage": "https://github.com/juriansluiman/SlmQueue",
     "authors": [
@@ -12,14 +13,21 @@
             "name": "Jurian Sluiman",
             "email": "jurian@juriansluiman.nl",
             "homepage": "http://juriansluiman.nl"
+        },
+        {
+            "name": "Michaël Gallego",
+            "email": "mic.gallego@gmail.com",
+            "homepage": "http://www.michaelgallego.fr"
         }
     ],
     "require": {
-        "php": ">=5.3.3.",
-        "pda/pheanstalk": ">=1.1.0@stable",
-        "zendframework/zend-mvc": "2.*",
+        "php": ">=5.3.3",
         "zendframework/zend-servicemanager": "2.*",
         "zendframework/zend-stdlib": "2.*"
+    },
+    "suggest": {
+        "juriansluiman/slm-queue-sqs": "If you are using Amazon SQS",
+        "juriansluiman/slm-queue-beanstalkd": "If you are using Beanstalk"
     },
     "autoload": {
         "psr-0": {
