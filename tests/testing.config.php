@@ -17,27 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 return array(
-    'service_manager' => array(
-        'factories' => array(
-            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
-        )
-    ),
-
     'slm_queue' => array(
-        /**
-         * Worker config
-         */
-        'worker' => array(
-            'max_runs'   => 100000,
-            'max_memory' => 1024
-        ),
-
-        /**
-         * Jobs config
-         */
-        'jobs' => array(),
-
         /**
          * Queues config
          */
