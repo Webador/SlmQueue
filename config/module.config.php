@@ -17,5 +17,15 @@ return array(
             'max_runs'   => 100000,
             'max_memory' => 1024
         ),
+
+        /**
+         * Jobs
+         */
+        'jobs' => array(),
+
+        /**
+         * Queues
+         */
+        'queues' => array()
     ),
 );
