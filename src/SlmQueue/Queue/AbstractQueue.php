@@ -57,12 +57,12 @@ abstract class AbstractQueue implements QueueInterface
      */
     protected function createJob($jsonData, array $metadata = array())
     {
-        $data = json_decode($jsonData);
+        $data = json_decode($jsonData, true);
 
         /** @var $job \SlmQueue\Job\JobInterface */
-        $job = $this->jobPluginManager->create($data->class);
+        $job = $this->jobPluginManager->create($data['class']);
         $job->setMetadata($metadata)
-            ->setContent($data->content);
+            ->setContent($data['content']);
 
         return $job;
     }
