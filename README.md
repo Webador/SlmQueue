@@ -1,8 +1,8 @@
 SlmQueue
 ========
-Version 1.0.0 Created by Jurian Sluiman
+Version 0.2.0 Created by Jurian Sluiman
 
-> Please note that this is a complete rewrite of SlmQueue. The previous version was tagged as version 0.5.0, so if you still
+> Please note that this is a complete rewrite of SlmQueue. The previous version was tagged as version 0.1.0, so if you still
 > want to use it, please update your composer.json file.
 
 
