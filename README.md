@@ -39,7 +39,7 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 ```json
 "require": {
 	"juriansluiman/slm-queue": "1.*"
-},
+}
 ```
 
 Then, enable the module by adding `SlmQueue` in your `application.config.php` file. You may also want to configure
