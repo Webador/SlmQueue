@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * This is the config file for SlmQueue. Just drop this file into your config/autoload folder (don't
+ * forget to remove the .dist extension from the file), and configure it as you want
+ */
+
+return array(
+    'slm_queue' => array(
+        /**
+         * Parameters for the worker. It defines some criterias that can be reached before the
+         * worker stops to process any other jobs
+         */
+        'worker' => array(
+            /**
+             * Specify how many jobs can be processed by a worker until it stops (default to 100 000)
+             */
+            // 'max_runs'   => 100000,
+
+            /**
+             * Specifiy the max memory (in KB) that can be used by the worker before it stops (default to 1 024 KB)
+             */
+            // 'max_memory' => 1024
+        ),
+
+        /**
+         * Allow to configure dependencies for jobs that are pulled from any queue. This works like any other
+         * PluginManager in Zend Framework 2. For instance, if you want to inject something into every job using
+         * a factory, just adds an element into the "factories" array, with the key being the FQCN of the job,
+         * and the value the factory:
+         *
+         * 'jobs' => array(
+         *     'factories' => array(
+         *         'Application\Job\UserJob' => 'Application\Factory\UserJobFactory'
+         *     )
+         * )
+         *
+         * Therefore, the job will be created through the factory (the identifier and content of the job will be
+         * automatically set after creation). Note that this plugin manager is configured as such it automatically
+         * add any unknown classes to the invokables list. This means you should only add factories and/or abstract
+         * factories here.
+         */
+        'jobs' => array()
+
+        /**
+         * Allow to add queues. You need to have at least one queue. This works like any other PluginManager in
+         * Zend Framework 2. For instance, if you have a queue whose name is "email", you can add it as an
+         * invokable this way:
+         *
+         * 'queues' => array(
+         *     'invokables' => array(
+         *         'email' => 'Application\Queue\MyQueue'
+         *     )
+         * )
+         *
+         * Please note that you can find built-in factories for several queue systems (Beanstalk, Amazon Sqs...)
+         * in SlmQueueSqs and SlmQueueBeanstalk
+         */
+        'queues' => array()
+    ),
+);
