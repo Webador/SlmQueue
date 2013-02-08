@@ -36,7 +36,9 @@ return array(
          * )
          *
          * Therefore, the job will be created through the factory (the identifier and content of the job will be
-         * automatically set after creation)
+         * automatically set after creation). Note that this plugin manager is configured as such it automatically
+         * add any unknown classes to the invokables list. This means you should only add factories and/or abstract
+         * factories here.
          */
         'jobs' => array()
 

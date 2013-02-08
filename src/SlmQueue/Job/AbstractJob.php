@@ -39,14 +39,16 @@ abstract class AbstractJob extends Message implements JobInterface
      * The 'class' attribute that is saved allow to easily handle dependencies by pulling the job from
      * the JobPluginManager whenever it is popped from the queue
      *
-     * @return array|mixed
+     * @return string
      */
     function jsonSerialize()
     {
-        return array(
+        $data = array(
             'class'   => get_called_class(),
             'content' => $this->getContent()
         );
+
+        return json_encode($data);
     }
 
     /**

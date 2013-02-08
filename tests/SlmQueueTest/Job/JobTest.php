@@ -20,14 +20,14 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo"}', json_encode($job));
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo"}', $job->jsonSerialize());
     }
 
     public function testCorrectlyUnserializeJob()
     {
         $job = new SimpleJob();
         $job->setContent('Foo');
-        $job = json_decode(json_encode($job), true);
+        $job = json_decode($job->jsonSerialize(), true);
 
         $this->assertEquals('SlmQueueTest\Asset\SimpleJob', $job['class']);
         $this->assertEquals('Foo', $job['content']);

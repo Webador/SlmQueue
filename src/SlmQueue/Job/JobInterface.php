@@ -2,7 +2,6 @@
 
 namespace SlmQueue\Job;
 
-use JsonSerializable;
 use Zend\Stdlib\MessageInterface;
 
 /**
@@ -11,7 +10,7 @@ use Zend\Stdlib\MessageInterface;
  * In order to handle dependencies, each job should be pulled from the JobPluginManager (which is injected
  * into every queue).
  */
-interface JobInterface extends MessageInterface, JsonSerializable
+interface JobInterface extends MessageInterface
 {
     /**
      * Set the identifier of the job (it proxies to its metadata)
@@ -35,6 +34,14 @@ interface JobInterface extends MessageInterface, JsonSerializable
      * @return bool
      */
     public function hasMetadata($key);
+
+    /**
+     * Encode the data to Json in order to save it (we cannot use JsonSerializable because we need to support
+     * PHP 5.3)
+     *
+     * @return string
+     */
+    public function jsonSerialize();
 
     /**
      * Execute the job

@@ -10,7 +10,7 @@ class SimpleQueue extends AbstractQueue
     /**
      * @var array
      */
-    protected $queue;
+    protected $jobs;
 
 
     /**
@@ -18,17 +18,7 @@ class SimpleQueue extends AbstractQueue
      */
     public function push(JobInterface $job)
     {
-        $this->queue[] = json_encode($job);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function batchPush(array $jobs)
-    {
-        foreach ($jobs as $job) {
-            $this->queue[] = json_encode($job);
-        }
+        $this->jobs[] = $job->jsonSerialize();
     }
 
     /**
@@ -36,7 +26,7 @@ class SimpleQueue extends AbstractQueue
      */
     public function pop()
     {
-        return $this->createJob(array_pop($this->queue), array());
+        return $this->createJob(array_pop($this->jobs), array());
     }
 
     /**
@@ -44,12 +34,10 @@ class SimpleQueue extends AbstractQueue
      */
     public function delete(JobInterface $job)
     {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function batchDelete(array $jobs)
-    {
+        foreach ($this->jobs as $key => $value) {
+            if ($value->getId() === $job->getId()) {
+                unset($this->jobs[$key]);
+            }
+        }
     }
 }
