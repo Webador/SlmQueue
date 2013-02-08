@@ -15,7 +15,7 @@ interface WorkerInterface
      * Process jobs in the queue identified by its name
      *
      * @param  string $queueName
-     * @return void
+     * @return int How many jobs were processed
      */
     public function processQueue($queueName);
 

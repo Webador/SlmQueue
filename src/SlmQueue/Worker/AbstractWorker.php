@@ -49,21 +49,22 @@ abstract class AbstractWorker implements WorkerInterface
 
             // The queue may return null if there is no more job, or even false if a timeout was set
             if (!$job instanceof JobInterface) {
-                return;
+                break;
             }
 
             $this->processJob($job, $queue);
+            $count++;
 
             if ($count === $this->options->getMaxRuns()) {
-                return;
+                break;
             }
 
             if (memory_get_usage() > $this->options->getMaxMemory() * 1024 * 1024) {
-                return;
+                break;
             }
-
-            $count++;
         }
+
+        return $count;
     }
 
     /**
