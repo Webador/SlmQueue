@@ -41,7 +41,7 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 
 ```json
 "require": {
-	"juriansluiman/slm-queue": "1.*"
+	"juriansluiman/slm-queue": ">=0.2"
 }
 ```
 
