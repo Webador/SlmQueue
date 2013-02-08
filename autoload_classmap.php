@@ -5,6 +5,7 @@ return array(
     'SlmQueue\Factory\Exception\RuntimeException'            => __DIR__ . '/src/SlmQueue/Factory/Exception/RuntimeException.php',
     'SlmQueue\Factory\JobPluginManagerFactory'               => __DIR__ . '/src/SlmQueue/Factory/JobPluginManagerFactory.php',
     'SlmQueue\Factory\QueuePluginManagerFactory'             => __DIR__ . '/src/SlmQueue/Factory/QueuePluginManagerFactory.php',
+    'SlmQueue\Factory\WorkerOptionsFactory'                  => __DIR__ . '/src/SlmQueue/Factory/WorkerOptionsFactory.php',
     'SlmQueue\Job\AbstractJob'                               => __DIR__ . '/src/SlmQueue/Job/AbstractJob.php',
     'SlmQueue\Job\Exception\RuntimeException'                => __DIR__ . '/src/SlmQueue/Job/Exception/RuntimeException.php',
     'SlmQueue\Job\JobInterface'                              => __DIR__ . '/src/SlmQueue/Job/JobInterface.php',
