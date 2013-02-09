@@ -38,14 +38,14 @@ abstract class AbstractWorker implements WorkerInterface
     /**
      * {@inheritDoc}
      */
-    public function processQueue($queueName)
+    public function processQueue($queueName, array $options = array())
     {
         /** @var $queue QueueInterface */
         $queue = $this->queuePluginManager->get($queueName);
         $count = 0;
 
         while (true) {
-            $job = $queue->pop();
+            $job = $queue->pop($options);
 
             // The queue may return null if there is no more job, or even false if a timeout was set
             if (!$job instanceof JobInterface) {
