@@ -15,7 +15,7 @@ return array(
          */
         'worker' => array(
             'max_runs'   => 100000,
-            'max_memory' => 1024
+            'max_memory' => 1048576
         ),
 
         /**
