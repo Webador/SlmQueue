@@ -11,6 +11,18 @@ use Zend\Stdlib\Message;
 abstract class AbstractJob extends Message implements JobInterface
 {
     /**
+     * Constructor
+     *
+     * @param mixed $content
+     * @param array $metadata
+     */
+    public function __construct($content = null, array $metadata = array())
+    {
+        $this->content  = $content;
+        $this->metadata = $metadata;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function setId($id)
@@ -25,14 +37,6 @@ abstract class AbstractJob extends Message implements JobInterface
     public function getId()
     {
         return $this->getMetadata('id');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasMetadata($key)
-    {
-        return isset($this->metadata[$key]);
     }
 
     /**

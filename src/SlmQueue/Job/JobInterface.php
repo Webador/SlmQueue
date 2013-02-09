@@ -28,14 +28,6 @@ interface JobInterface extends MessageInterface
     public function getId();
 
     /**
-     * Does the job has this metadata?
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function hasMetadata($key);
-
-    /**
      * Encode the data to Json in order to save it (we cannot use JsonSerializable because we need to support
      * PHP 5.3)
      *
