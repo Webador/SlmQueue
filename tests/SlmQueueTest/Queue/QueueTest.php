@@ -12,7 +12,7 @@ class QueueTest extends TestCase
     {
         $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
         $jobPluginManager->expects($this->once())
-                         ->method('create')
+                         ->method('get')
                          ->with('SlmQueueTest\Asset\SimpleJob')
                          ->will($this->returnValue(new SimpleJob()));
 

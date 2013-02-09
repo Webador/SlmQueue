@@ -26,7 +26,8 @@ class SimpleQueue extends AbstractQueue
      */
     public function pop(array $options = array())
     {
-        return $this->createJob(array_pop($this->jobs), array());
+        $job = json_decode(array_pop($this->jobs), true);
+        return $this->createJob($job['class'], $job['content']);
     }
 
     /**
