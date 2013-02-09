@@ -45,22 +45,28 @@ abstract class AbstractWorker implements WorkerInterface
         $count = 0;
 
         while (true) {
-            $job = $queue->pop($options);
+            // Pop operations may return a list of jobs or a single job
+            $jobs = $queue->pop($options);
 
-            // The queue may return null if there is no more job, or even false if a timeout was set
-            if (!$job instanceof JobInterface) {
-                break;
+            if (!is_array($jobs)) {
+                $jobs = array($jobs);
             }
 
-            $this->processJob($job, $queue);
-            $count++;
+            foreach ($jobs as $job) {
+                // The queue may return null, for instance if a timeout was set
+                if (!$job instanceof JobInterface) {
+                    return $count;
+                }
 
-            if ($count === $this->options->getMaxRuns()) {
-                break;
-            }
+                $this->processJob($job, $queue);
+                $count++;
 
-            if (memory_get_usage() > $this->options->getMaxMemory() * 1024 * 1024) {
-                break;
+                // Those are various criterias to stop the queue processing
+                if ($count === $this->options->getMaxRuns()
+                    || (memory_get_usage() > $this->options->getMaxMemory() * 1024 * 1024)
+                ) {
+                    return $count;
+                }
             }
         }
 
