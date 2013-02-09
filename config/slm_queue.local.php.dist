@@ -18,7 +18,7 @@ return array(
             // 'max_runs'   => 100000,
 
             /**
-             * Specifiy the max memory (in KB) that can be used by the worker before it stops (default to 1 024 KB)
+             * Specifiy the max memory (in bytes) that can be used by the worker before it stops (default to 1 KB)
              */
             // 'max_memory' => 1024
         ),

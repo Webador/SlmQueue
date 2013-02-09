@@ -62,9 +62,7 @@ abstract class AbstractWorker implements WorkerInterface
                 $count++;
 
                 // Those are various criterias to stop the queue processing
-                if ($count === $this->options->getMaxRuns()
-                    || (memory_get_usage() > $this->options->getMaxMemory() * 1024 * 1024)
-                ) {
+                if ($count === $this->options->getMaxRuns() || memory_get_usage() > $this->options->getMaxMemory()) {
                     return $count;
                 }
             }

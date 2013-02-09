@@ -21,6 +21,8 @@ class WorkerOptions extends AbstractOptions
 
 
     /**
+     * Set how many jobs can be processed before the worker stops
+     *
      * @param  int $maxRuns
      * @return void
      */
@@ -30,6 +32,8 @@ class WorkerOptions extends AbstractOptions
     }
 
     /**
+     * Get how many jobs can be processed before the worker stops
+     *
      * @return int
      */
     public function getMaxRuns()
@@ -38,6 +42,8 @@ class WorkerOptions extends AbstractOptions
     }
 
     /**
+     * Set the max memory the worker can use (in bytes)
+     *
      * @param  int $maxMemory
      * @return void
      */
@@ -47,6 +53,8 @@ class WorkerOptions extends AbstractOptions
     }
 
     /**
+     * Get the max memory the worker can use (in bytes)
+     *
      * @return int
      */
     public function getMaxMemory()
