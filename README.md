@@ -1,7 +1,7 @@
 SlmQueue
 ========
 
-[![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
+Master [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
 
 Version 0.2.1 Created by Jurian Sluiman and Michaël Gallego
 
