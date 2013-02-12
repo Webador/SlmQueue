@@ -26,6 +26,6 @@ class WorkerOptionsTest extends TestCase
 
         $this->assertInstanceOf('SlmQueue\Options\WorkerOptions', $workerOptions);
         $this->assertEquals(100000, $workerOptions->getMaxRuns());
-        $this->assertEquals(1024, $workerOptions->getMaxMemory());
+        $this->assertEquals(104857600, $workerOptions->getMaxMemory());
     }
 }
