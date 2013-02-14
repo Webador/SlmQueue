@@ -16,17 +16,13 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-var_dump('ok');
-if  (
-    !($loader = @include __DIR__ . '/../vendor/autoload.php')
-    && !($loader = @include __DIR__ . '/../../../autoload.php')
-) {
-    throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
-}
+
+$loader = include __DIR__ . '/../../../autoload.php';
+
 var_dump('ok');
 /* @var $loader \Composer\Autoload\ClassLoader */
 $loader->add('SlmQueueTest\\', __DIR__);
-var_dump('ok');
+
 if (!$config = @include __DIR__ . '/TestConfiguration.php') {
     $config = require __DIR__ . '/TestConfiguration.php.dist';
 }
