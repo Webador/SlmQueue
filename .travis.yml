@@ -8,9 +8,6 @@ before_script:
   - composer self-update
   - composer install --dev --prefer-source
 
-script:
-  - phpunit -v --debug
-
 notifications:
   irc: "irc.freenode.org#zftalk.modules"
   email: false
