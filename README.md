@@ -3,7 +3,7 @@ SlmQueue
 
 Master [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
 
-Version 0.2.1 Created by Jurian Sluiman and Michaël Gallego
+Version 0.2.2 Created by Jurian Sluiman and Michaël Gallego
 
 > Please note that this is a complete rewrite of SlmQueue. The previous version was tagged as version 0.1.0, so if you still
 > want to use it, please update your composer.json file.

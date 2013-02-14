@@ -1,3 +1,7 @@
+# 0.2.2
+
+- Fix compatibilities problems with PHP 5.3
+
 # 0.2.1
 
 - Fix the default memory limit of the worker (from 1KB, which was obviously wrong, to 100MB)
