@@ -31,7 +31,8 @@
     },
     "autoload": {
         "psr-0": {
-            "SlmQueue": "src/"
+            "SlmQueue\\": "src/",
+            "SlmQueueTest\\": "tests/"
         },
         "classmap": [
             "./Module.php"
