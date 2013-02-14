@@ -23,12 +23,12 @@ if  (
 ) {
     throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
 }
-
+var_dump('ok');
 /* @var $loader \Composer\Autoload\ClassLoader */
 $loader->add('SlmQueueTest\\', __DIR__);
-
+var_dump('ok');
 if (!$config = @include __DIR__ . '/TestConfiguration.php') {
     $config = require __DIR__ . '/TestConfiguration.php.dist';
 }
-var_dump('ok');
+
 \SlmQueueTest\Util\ServiceManagerFactory::setConfig($config);
