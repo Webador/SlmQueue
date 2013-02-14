@@ -16,7 +16,7 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-
+var_dump('ok');
 if  (
     !($loader = @include __DIR__ . '/../vendor/autoload.php')
     && !($loader = @include __DIR__ . '/../../../autoload.php')
