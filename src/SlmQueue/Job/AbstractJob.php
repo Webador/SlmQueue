@@ -54,9 +54,4 @@ abstract class AbstractJob extends Message implements JobInterface
 
         return json_encode($data);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    abstract public function execute();
 }
