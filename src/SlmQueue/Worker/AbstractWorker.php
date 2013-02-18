@@ -70,9 +70,4 @@ abstract class AbstractWorker implements WorkerInterface
 
         return $count;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    abstract public function processJob(JobInterface $job, QueueInterface $queue);
 }
