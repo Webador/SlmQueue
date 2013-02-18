@@ -1,3 +1,7 @@
+# 0.2.3
+
+- Fix compatibilities problems with PHP 5.3
+
 # 0.2.2
 
 - Fix compatibilities problems with PHP 5.3
