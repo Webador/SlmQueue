@@ -18,6 +18,11 @@ abstract class AbstractWorker implements WorkerInterface
     protected $queuePluginManager;
 
     /**
+     * @var bool
+     */
+    protected $stopped = false;
+
+    /**
      * @var WorkerOptions
      */
     protected $options;
@@ -33,6 +38,11 @@ abstract class AbstractWorker implements WorkerInterface
     {
         $this->queuePluginManager = $queuePluginManager;
         $this->options            = $options;
+
+        // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly
+        declare(ticks = 1);
+        pcntl_signal(SIGTERM, array($this, 'handleSignal'));
+        pcntl_signal(SIGINT,  array($this, 'handleSignal'));
     }
 
     /**
@@ -62,12 +72,41 @@ abstract class AbstractWorker implements WorkerInterface
                 $count++;
 
                 // Those are various criterias to stop the queue processing
-                if ($count === $this->options->getMaxRuns() || memory_get_usage() > $this->options->getMaxMemory()) {
+                if (
+                    $count === $this->options->getMaxRuns()
+                    || memory_get_usage() > $this->options->getMaxMemory()
+                    || $this->isStopped()
+                ) {
                     return $count;
                 }
             }
         }
 
         return $count;
+    }
+
+    /**
+     * Check if the script has been stopped from a signal
+     *
+     * @return bool
+     */
+    public function isStopped()
+    {
+        return $this->stopped;
+    }
+
+    /**
+     * Handle the signal
+     *
+     * @param int $signo
+     */
+    protected function handleSignal($signo)
+    {
+        switch($signo) {
+            case SIGTERM:
+            case SIGINT:
+                $this->stopped = true;
+                break;
+        }
     }
 }
