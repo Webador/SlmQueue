@@ -28,7 +28,7 @@
     "require-dev": {
         "zendframework/zend-config": "2.*",
         "zendframework/zend-mvc": "2.*",
-    }
+    },
     "suggest": {
         "juriansluiman/slm-queue-sqs": "If you are using Amazon SQS",
         "juriansluiman/slm-queue-beanstalkd": "If you are using Beanstalk"
