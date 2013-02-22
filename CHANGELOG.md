@@ -1,3 +1,7 @@
+# 0.2.4
+
+- Add support for signals to stop worker properly
+
 # 0.2.3
 
 - Fix compatibilities problems with PHP 5.3
