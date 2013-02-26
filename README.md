@@ -22,6 +22,7 @@ contains interfaces and abstract classes. Here are the current supported systems
 
 * Beanstalk: use [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd)
 * Amazon SQS: use [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
+* Doctrine ORM: use [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 A job queue helps to offload long or memory-intensive processes from the HTTP requests users sent to the Zend Framework 2
 application. There are many use cases for asynchronous jobs and the most common will be:
