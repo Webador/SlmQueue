@@ -26,6 +26,7 @@
         "zendframework/zend-stdlib": "2.*"
     },
     "require-dev": {
+        "zendframework/zend-servicemanager": "2.*",
         "zendframework/zend-config": "2.*"
     },
     "suggest": {
