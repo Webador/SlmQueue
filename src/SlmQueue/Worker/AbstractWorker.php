@@ -100,7 +100,7 @@ abstract class AbstractWorker implements WorkerInterface
      *
      * @param int $signo
      */
-    protected function handleSignal($signo)
+    public function handleSignal($signo)
     {
         switch($signo) {
             case SIGTERM:
