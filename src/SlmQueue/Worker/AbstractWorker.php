@@ -39,10 +39,13 @@ abstract class AbstractWorker implements WorkerInterface
         $this->queuePluginManager = $queuePluginManager;
         $this->options            = $options;
 
-        // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly
-        declare(ticks = 1);
-        pcntl_signal(SIGTERM, array($this, 'handleSignal'));
-        pcntl_signal(SIGINT,  array($this, 'handleSignal'));
+        // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly. Note that
+        // because pcntl_signal may not be available on Windows, we needed to check for the existence of the function
+        if (function_exists('pcntl_signal')) {
+            declare(ticks = 1);
+            pcntl_signal(SIGTERM, array($this, 'handleSignal'));
+            pcntl_signal(SIGINT,  array($this, 'handleSignal'));
+        }
     }
 
     /**

@@ -1,3 +1,8 @@
+# 0.2.5
+
+- Change the visibility of the handleSignal function in the worker as it caused a problem
+- Fix a bug that may occur on Windows machines
+
 # 0.2.4
 
 - Add support for signals to stop worker properly
