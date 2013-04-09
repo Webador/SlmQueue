@@ -114,7 +114,7 @@ public function encodeAction()
     $queueManager = $this->serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
     $queue        = $queueManager->get('encodingQueue');
 
-    $queue->push($queue);
+    $queue->push($job);
 }
 ```
 
