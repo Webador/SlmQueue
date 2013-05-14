@@ -1,5 +1,5 @@
 {
-    "name": "juriansluiman/slm-queue",
+    "name": "slm/queue",
     "description": "Zend Framework 2 module that integrates with various queue management systems",
     "type": "library",
     "keywords": [
@@ -30,9 +30,9 @@
         "zendframework/zend-config": "2.*"
     },
     "suggest": {
-        "juriansluiman/slm-queue-sqs": "If you are using Amazon SQS",
-        "juriansluiman/slm-queue-beanstalkd": "If you are using Beanstalk",
-        "juriansluiman/slm-queue-doctrine": "If you are using Doctrine ORM"
+        "slm/queue-sqs": "If you are using Amazon SQS",
+        "slm/queue-beanstalkd": "If you are using Beanstalk",
+        "slm/queue-doctrine": "If you are using Doctrine ORM"
     },
     "autoload": {
         "psr-0": {
