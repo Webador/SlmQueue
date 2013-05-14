@@ -68,7 +68,7 @@ abstract class AbstractWorker implements WorkerInterface
             foreach ($jobs as $job) {
                 // The queue may return null, for instance if a timeout was set
                 if (!$job instanceof JobInterface) {
-                    return $count;
+                    continue;
                 }
 
                 $this->processJob($job, $queue);
