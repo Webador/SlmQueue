@@ -88,10 +88,10 @@ abstract class AbstractWorker implements WorkerInterface
     }
 
     /**
-     * Should the worker be stopped based the follwoing criteria
+     * Should the worker be stopped based the following criteria
      * - did worker do maximums runs
      * - are we exceeding maximum memory usage
-     * - did we recieve an interrupt signal
+     * - did we receive an interrupt signal
      *
      * @param $count
      * @return bool
