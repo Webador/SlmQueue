@@ -26,11 +26,7 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function __construct($name, JobPluginManager $jobPluginManager)
     {
-        $this->name = $name;
-
-        if ($jobPluginManager instanceof QueueAwareInterface) {
-            $jobPluginManager->setQueue($this);
-        }
+        $this->name             = $name;
         $this->jobPluginManager = $jobPluginManager;
     }
 
