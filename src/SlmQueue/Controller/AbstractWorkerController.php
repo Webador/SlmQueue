@@ -3,7 +3,7 @@
 namespace SlmQueue\Controller;
 
 use SlmQueue\Controller\Exception\WorkerProcessException;
-use SlmQueue\Exception\SlmQueueExceptionInterface;
+use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Worker\WorkerInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 
@@ -13,41 +13,32 @@ use Zend\Mvc\Controller\AbstractActionController;
 abstract class AbstractWorkerController extends AbstractActionController
 {
     /**
-     * Get instance of worker
-     *
-     * @return WorkerInterface
+     * @var WorkerInterface
      */
-    abstract protected function getWorker();
+    protected $worker;
 
     /**
-     * Get options for worker
-     *
-     * @return array
+     * @param WorkerInterface $worker
      */
-    abstract protected function getOptions();
-
-    /**
-     * Get name of queue
-     *
-     * @return string
-     */
-    abstract protected function getQueueName();
+    public function __construct(WorkerInterface $worker)
+    {
+        $this->worker = $worker;
+    }
 
     /**
      * Process a queue
      *
      * @return string
-     * @throws WorkerProcessingException
+     * @throws WorkerProcessException
      */
     public function processAction()
     {
-        $worker  = $this->getWorker();
-        $options = $this->getOptions();
-        $queue   = $this->getQueueName();
+        $options = $this->params()->fromRoute();
+        $queue   = $options['queue'];
 
         try {
-            $result = $worker->processQueue($queue, $options);
-        } catch (SlmQueueExceptionInterface $e) {
+            $result = $this->worker->processQueue($queue, $options);
+        } catch (ExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
                 $e->getCode(), $e
