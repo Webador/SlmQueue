@@ -47,7 +47,7 @@ abstract class AbstractWorkerController extends AbstractActionController
         $queue   = $this->getQueueName();
 
         try {
-            $result = $worker->process($queue, $options);
+            $result = $worker->processQueue($queue, $options);
         } catch (SlmQueueExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
