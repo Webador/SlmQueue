@@ -3,11 +3,11 @@
 namespace SlmQueue\Queue\Exception;
 
 use Exception;
-use SlmQueue\Exception\ExceptionInterface as SlmQueueExceptionInterface;
+use SlmQueue\Exception\ExceptionInterface;
 
 /**
  * UnsupportedOperationException
  */
-class UnsupportedOperationException extends Exception implements SlmQueueExceptionInterface
+class UnsupportedOperationException extends Exception implements ExceptionInterface
 {
 }

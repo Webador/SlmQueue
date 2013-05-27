@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Controller\Exception;
 
-use SlmQueue\Exception\ExceptionInterface as SlmQueueExceptionInterface;
+use SlmQueue\Exception\ExceptionInterface;
 use RuntimeException;
 
-class WorkerProcessException extends RuntimeException implements SlmQueueExceptionInterface
+class WorkerProcessException extends RuntimeException implements ExceptionInterface
 {
 }
