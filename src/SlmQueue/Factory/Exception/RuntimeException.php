@@ -3,7 +3,7 @@
 namespace SlmQueue\Factory\Exception;
 
 use RuntimeException as BaseRuntimeException;
-use SlmQueue\Exception\SlmQueueExceptionInterface;
+use SlmQueue\Exception\ExceptionInterface as SlmQueueExceptionInterface;
 
 /**
  * RuntimeException
