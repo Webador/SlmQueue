@@ -2,16 +2,16 @@
 
 namespace SlmQueue\Controller;
 
+use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\SlmQueueExceptionInterface;
 use SlmQueue\Worker\WorkerInterface;
-use SlmQueue\Worker\Exception\WorkerProcessException;
 
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * AbstractController
  */
-abstract class AbstractWorkerController extends AbstractActionController
+abstract class AbstractController extends AbstractActionController
 {
     /**
      * Get instance of worker

@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Worker\Exception;
+namespace SlmQueue\Controller\Exception;
 
 use SlmQueue\Exception\SlmQueueExceptionInterface;
 use RuntimeException;
