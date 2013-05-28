@@ -21,7 +21,7 @@ return array(
         /**
          * Queues config
          */
-        'queues' => array(
+        'queue_manager' => array(
             'factories' => array(
                 'basic-queue' => function($locator) {
                     $parentLocator    = $locator->getServiceLocator();
