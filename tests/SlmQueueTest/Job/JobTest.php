@@ -28,7 +28,7 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('foo', 'Bar');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","metadata":{"foo":"Bar"}}', $job->jsonSerialize());
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":null,"metadata":{"foo":"Bar"}}', $job->jsonSerialize());
     }
 
     public function testCorrectlySerializeJobContentAndMetadata()
