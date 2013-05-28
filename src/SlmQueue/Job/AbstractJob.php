@@ -11,16 +11,9 @@ use Zend\Stdlib\Message;
 abstract class AbstractJob extends Message implements JobInterface
 {
     /**
-     * Constructor
-     *
-     * @param mixed $content
-     * @param array $metadata
+     * @var string|array|null
      */
-    public function __construct($content = null, array $metadata = array())
-    {
-        $this->content  = $content;
-        $this->metadata = $metadata;
-    }
+    protected $content = null;
 
     /**
      * {@inheritDoc}

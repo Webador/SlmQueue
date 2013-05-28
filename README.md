@@ -3,10 +3,7 @@ SlmQueue
 
 Master [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
 
-Version 0.2.5 Created by Jurian Sluiman and Michaël Gallego
-
-> Please note that this is a complete rewrite of SlmQueue. The previous version was tagged as version 0.1.0, so if you still
-> want to use it, please update your composer.json file.
+Version 0.3.0-dev Created by Jurian Sluiman and Michaël Gallego
 
 
 Requirements
@@ -42,7 +39,7 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 
 ```json
 "require": {
-	"juriansluiman/slm-queue": ">=0.2"
+	"juriansluiman/slm-queue": ">=0.3"
 }
 ```
 
@@ -51,7 +48,8 @@ the module: just copy the `slm_queue.local.php.dist` (you can find this file in 
 your `config/autoload` folder, and override what you want.
 
 > SlmQueue is pretty useless by itself, as it is mainly interfaces and abstract classes. To make it really powerful,
-you'll likely add [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd) and/or [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs).
+you'll likely add [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd), [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
+or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 
 Documentation
@@ -137,10 +135,9 @@ class EncodingJob extends AbstractJob
 {
     protected $encoder;
 
-    public function __construct(Encoder $encoder, $content = null, array $metadata = array())
+    public function __construct(Encoder $encoder)
     {
         $this->encoder = $encoder;
-        parent::__construct($content, $metadata);
     }
 
     /**
@@ -162,7 +159,7 @@ Then, adds the following lines in your module.config.php file:
 ```php
 return array(
     'slm_queue' => array(
-        'jobs' => array(
+        'job_manager' => array(
             'factories' => array(
                 'Application\Job\EncodingJob' => function($locator) {
                     $encoder = new Encoder();
@@ -178,6 +175,59 @@ return array(
 > list, because the JobPluginManager is configured in a way that it automatically adds any unknown classes to the
 > `invokables` list.
 
+#### Having access to the queue that execute the job
+
+When inside the `execute` method of your job, you may need to have access to the queue from which the job was
+extracted (for example to create another job as a result). You can do so by implementing the `QueueAwareInterface`
+interface in your job:
+
+```php
+namespace Application\Job;
+
+use SlmQueue\Job\AbstractJob;
+use SlmQueue\Queue\QueueAwareInterface;
+
+class EncodingJob extends AbstractJob implements QueueAwareInterface
+{
+    protected $queue;
+
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
+    public function setQueue(QueueInterface $queue)
+    {
+        $this->queue = $queue;
+    }
+
+    public function execute()
+    {
+        // You can use the queue here!
+    }
+}
+```
+
+If you want to avoid the boilerplate code, you can use the ProvidesQueue trait (only for PHP >=5.4):
+
+```php
+namespace Application\Job;
+
+use SlmQueue\Job\AbstractJob;
+use SlmQueue\Queue\ProvidesQueue;
+use SlmQueue\Queue\QueueAwareInterface;
+
+class EncodingJob extends AbstractJob implements QueueAwareInterface
+{
+    use ProvidesQueue;
+
+    public function execute()
+    {
+        // You can use the queue here!
+    }
+}
+```
+
 
 ### Adding queues
 
@@ -190,8 +240,9 @@ a QueueInterface that guarantees that each queue must at least implement the fol
 * pop(JobInterface $job, array $options = array()): pop a new job to the queue
 * delete(JobInterface $job): delete a job from the queue
 
-In order to have concrete queues, you must either install `SlmQueueBeanstalkd` or `SlmQueueSqs` modules. For more
-information, please refer to the [SlmQueueBeanstalkd documentation](https://github.com/juriansluiman/SlmQueueBeanstalkd) or to the [SlmQueueSqs documentation](https://github.com/juriansluiman/SlmQueueSqs).
+In order to have concrete queues, you must either install `SlmQueueBeanstalkd`, `SlmQueueSqs` or `SlmQueueDoctrine` modules. For more
+information, please refer to the [SlmQueueBeanstalkd documentation](https://github.com/juriansluiman/SlmQueueBeanstalkd), to the [SlmQueueSqs documentation](https://github.com/juriansluiman/SlmQueueSqs)
+or to the [SlmQueueDoctrine documentation](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 In both cases, adding a new queue is as simple as adding a new line in your `module.config.php` file:
 
@@ -211,5 +262,5 @@ return array(
 
 ### Executing jobs
 
-Once again, executing jobs is dependant on the queue system used. Therefore, please refer to either SlmQueueBeanstalkd
-or SlmQueueSqs documentation.
+Once again, executing jobs is dependant on the queue system used. Therefore, please refer to either SlmQueueBeanstalkd,
+SlmQueueSqs or SlmQueueDoctrine documentation.

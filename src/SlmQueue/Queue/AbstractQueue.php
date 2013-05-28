@@ -19,7 +19,6 @@ abstract class AbstractQueue implements QueueInterface
      */
     protected $name;
 
-
     /**
      * @param string           $name
      * @param JobPluginManager $jobPluginManager
