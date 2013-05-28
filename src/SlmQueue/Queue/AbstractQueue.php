@@ -54,7 +54,7 @@ abstract class AbstractQueue implements QueueInterface
      * @param  array  $metadata
      * @return \SlmQueue\Job\JobInterface
      */
-    protected function createJob($className, $content = null, array $metadata = array())
+    public function createJob($className, $content = null, array $metadata = array())
     {
         /** @var $job \SlmQueue\Job\JobInterface */
         $job = $this->jobPluginManager->get($className);
