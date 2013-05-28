@@ -48,8 +48,9 @@ abstract class AbstractJob extends Message implements JobInterface
     public function jsonSerialize()
     {
         $data = array(
-            'class'   => get_called_class(),
-            'content' => $this->getContent()
+            'class'    => get_called_class(),
+            'content'  => $this->getContent(),
+            'metadata' => $this->getMetadata(),
         );
 
         return json_encode($data);

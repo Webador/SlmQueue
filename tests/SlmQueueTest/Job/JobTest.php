@@ -15,12 +15,29 @@ class JobTest extends TestCase
         $this->assertEquals(3, $job->getMetadata('id'));
     }
 
-    public function testCorrectlySerializeJob()
+    public function testCorrectlySerializeJobContent()
     {
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo"}', $job->jsonSerialize());
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo","metadata":[]}', $job->jsonSerialize());
+    }
+
+    public function testCorrectlySerializeJobMetadata()
+    {
+        $job = new SimpleJob();
+        $job->setMetadata('foo', 'Bar');
+
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":null,"metadata":{"foo":"Bar"}}', $job->jsonSerialize());
+    }
+
+    public function testCorrectlySerializeJobContentAndMetadata()
+    {
+        $job = new SimpleJob();
+        $job->setContent('Foo');
+        $job->setMetadata('foo', 'Bar');
+
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo","metadata":{"foo":"Bar"}}', $job->jsonSerialize());
     }
 
     public function testCorrectlyUnserializeJob()
