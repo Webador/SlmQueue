@@ -20,7 +20,7 @@ class JobPluginManagerFactory implements FactoryInterface
         // We do not need to check if jobs is an empty array because every the JobPluginManager automatically
         // adds invokables if the job name is not known, which will be sufficient most of the time
         $config = $serviceLocator->get('Config');
-        $config = $config['slm_queue']['jobs'];
+        $config = $config['slm_queue']['job_manager'];
 
         $jobPluginManager = new JobPluginManager(new Config($config));
         $jobPluginManager->setServiceLocator($serviceLocator);

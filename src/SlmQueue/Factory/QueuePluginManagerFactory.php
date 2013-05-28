@@ -18,7 +18,7 @@ class QueuePluginManagerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        $config = $config['slm_queue']['queues'];
+        $config = $config['slm_queue']['queue_manager'];
 
         if (empty($config)) {
             throw new Exception\RuntimeException('No queues were found in SlmQueue config');

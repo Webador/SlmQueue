@@ -19,13 +19,13 @@ return array(
         ),
 
         /**
-         * Jobs
+         * Job manager configuration
          */
-        'jobs' => array(),
+        'job_manager' => array(),
 
         /**
-         * Queues
+         * Queue manager configuration
          */
-        'queues' => array()
+        'queue_manager' => array()
     ),
 );
