@@ -33,6 +33,11 @@
         "juriansluiman/slm-queue-beanstalkd": "If you are using Beanstalk",
         "juriansluiman/slm-queue-doctrine": "If you are using Doctrine ORM"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3.x-dev"
+        }
+    },
     "autoload": {
         "psr-0": {
             "SlmQueue": "src/"
