@@ -80,18 +80,37 @@ abstract class AbstractWorker implements WorkerInterface
                 $this->processJob($job, $queue);
                 $count++;
 
-                // Those are various criterias to stop the queue processing
-                if (
-                    $count === $this->options->getMaxRuns()
-                    || memory_get_usage() > $this->options->getMaxMemory()
-                    || $this->isStopped()
-                ) {
-                    return $count;
+                if ($this->shouldStop($count)) {
+                    break 2;
                 }
+            }
+
+            if ($this->shouldStop($count)) {
+                break;
             }
         }
 
         return $count;
+    }
+
+    /**
+     * Should the worker be stopped based the following criteria
+     * - did worker do maximums runs
+     * - are we exceeding maximum memory usage
+     * - did we receive an interrupt signal
+     *
+     * @param $count
+     * @return bool
+     */
+    public function shouldStop($count)
+    {
+        if ($count === $this->options->getMaxRuns()
+            || memory_get_usage() > $this->options->getMaxMemory()
+            || $this->isStopped()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
