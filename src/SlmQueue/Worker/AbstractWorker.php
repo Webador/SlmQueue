@@ -6,6 +6,7 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Queue\QueueAwareInterface;
 
 /**
  * AbstractWorker
@@ -69,6 +70,11 @@ abstract class AbstractWorker implements WorkerInterface
                 // The queue may return null, for instance if a timeout was set
                 if (!$job instanceof JobInterface) {
                     continue;
+                }
+
+                // The job might want to get the queue injected
+                if ($job instanceof QueueAwareInterface) {
+                    $job->setQueue($queue);
                 }
 
                 $this->processJob($job, $queue);
