@@ -46,7 +46,7 @@ abstract class AbstractWorkerController extends AbstractActionController
         }
 
         return sprintf(
-            "Finished worker for queue %s with %s jobs",
+            "Finished worker for queue '%s' with %s jobs\n",
             $queue,
             $result
         );
