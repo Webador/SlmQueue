@@ -29,7 +29,7 @@ return array(
          * a factory, just adds an element into the "factories" array, with the key being the FQCN of the job,
          * and the value the factory:
          *
-         * 'jobs' => array(
+         * 'job_manager' => array(
          *     'factories' => array(
          *         'Application\Job\UserJob' => 'Application\Factory\UserJobFactory'
          *     )
@@ -40,14 +40,14 @@ return array(
          * add any unknown classes to the invokables list. This means you should only add factories and/or abstract
          * factories here.
          */
-        'jobs' => array(),
+        'job_manager' => array(),
 
         /**
          * Allow to add queues. You need to have at least one queue. This works like any other PluginManager in
          * Zend Framework 2. For instance, if you have a queue whose name is "email", you can add it as an
          * invokable this way:
          *
-         * 'queues' => array(
+         * 'queue_manager' => array(
          *     'invokables' => array(
          *         'email' => 'Application\Queue\MyQueue'
          *     )
@@ -56,6 +56,6 @@ return array(
          * Please note that you can find built-in factories for several queue systems (Beanstalk, Amazon Sqs...)
          * in SlmQueueSqs and SlmQueueBeanstalk
          */
-        'queues' => array()
+        'queue_manager' => array()
     ),
 );

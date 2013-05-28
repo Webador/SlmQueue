@@ -6,7 +6,7 @@ return array(
             'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
             'SlmQueue\Options\WorkerOptions'    => 'SlmQueue\Factory\WorkerOptionsFactory',
             'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
-        )
+        ),
     ),
 
     'slm_queue' => array(
@@ -19,13 +19,18 @@ return array(
         ),
 
         /**
-         * Jobs
+         * Job manager configuration
          */
-        'jobs' => array(),
+        'job_manager' => array(),
 
         /**
-         * Queues
+         * Queue manager configuration
          */
-        'queues' => array()
+        'queue_manager' => array(),
+
+        /**
+         * Queue configuration options
+         */
+        'queues' => array(),
     ),
 );
