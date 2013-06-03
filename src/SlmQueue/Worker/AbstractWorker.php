@@ -115,9 +115,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     }
 
     /**
-     * Set the event manager
-     *
-     * @param EventManagerInterface $eventManager
+     * {@inheritDoc}
      */
     public function setEventManager(EventManagerInterface $eventManager)
     {
@@ -130,9 +128,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     }
 
     /**
-     * Get the event manager
-     *
-     * @return EventManagerInterface
+     * {@inheritDoc}
      */
     public function getEventManager()
     {
