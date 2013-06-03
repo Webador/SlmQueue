@@ -7,16 +7,31 @@ use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\QueueAwareInterface;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerInterface;
 
 /**
  * AbstractWorker
  */
-abstract class AbstractWorker implements WorkerInterface
+abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
+    /**
+     * Event constants
+     */
+    const EVENT_PROCESS_QUEUE_PRE  = 'processQueue.pre';
+    const EVENT_PROCESS_QUEUE_POST = 'processQueue.post';
+    const EVENT_PROCESS_JOB_PRE    = 'processJob.pre';
+    const EVENT_PROCESS_JOB_POST   = 'processJob.post';
+
     /**
      * @var QueuePluginManager
      */
     protected $queuePluginManager;
+
+    /**
+     * @var EventManagerInterface
+     */
+    protected $eventManager;
 
     /**
      * @var bool
@@ -58,6 +73,8 @@ abstract class AbstractWorker implements WorkerInterface
         $queue = $this->queuePluginManager->get($queueName);
         $count = 0;
 
+        $this->eventManager->trigger(self::EVENT_PROCESS_QUEUE_PRE, $this, array('queue' => $queue));
+
         while (true) {
             // Check for external stop condition
             if ($this->isStopped()) {
@@ -76,8 +93,12 @@ abstract class AbstractWorker implements WorkerInterface
                 $job->setQueue($queue);
             }
 
+            $this->eventManager->trigger(self::EVENT_PROCESS_JOB_PRE, $this, array('queue' => $queue, 'job' => $job));
+
             $this->processJob($job, $queue);
             $count++;
+
+            $this->eventManager->trigger(self::EVENT_PROCESS_JOB_POST, $this, array('queue' => $queue, 'job' => $job));
 
             // Check for internal stop condition
             if (
@@ -88,7 +109,34 @@ abstract class AbstractWorker implements WorkerInterface
             }
         }
 
+        $this->eventManager->trigger(self::EVENT_PROCESS_QUEUE_POST, $this, array('queue' => $queue));
+
         return $count;
+    }
+
+    /**
+     * Set the event manager
+     *
+     * @param EventManagerInterface $eventManager
+     */
+    public function setEventManager(EventManagerInterface $eventManager)
+    {
+        $eventManager->setIdentifiers(array(
+            get_called_class(),
+            'SlmQueue\Worker\WorkerInterface'
+        ));
+
+        $this->eventManager = $eventManager;
+    }
+
+    /**
+     * Get the event manager
+     *
+     * @return EventManagerInterface
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
     }
 
     /**
