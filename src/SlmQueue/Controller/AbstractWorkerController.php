@@ -33,7 +33,7 @@ abstract class AbstractWorkerController extends AbstractActionController
      */
     public function processAction()
     {
-        $options = $this->params()->fromRoute();
+        $options = $this->normalizeOptions($this->params()->fromRoute());
         $queue   = $options['queue'];
 
         try {
@@ -50,5 +50,16 @@ abstract class AbstractWorkerController extends AbstractActionController
             $queue,
             $result
         );
+    }
+
+    /**
+     * This method is used to normalize options, if the name used in options is different
+     *
+     * @param  array $options
+     * @return array
+     */
+    protected function normalizeOptions(array $options = array())
+    {
+        return $options;
     }
 }
