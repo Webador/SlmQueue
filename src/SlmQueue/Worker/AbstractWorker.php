@@ -177,7 +177,8 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
                 // Check for internal stop condition
                 if (
-                    $count === $this->options->getMaxRuns()
+                    $this->isStopped()
+                    || $count === $this->options->getMaxRuns()
                     || memory_get_usage() > $this->options->getMaxMemory()
                 ) {
                     // If there are still messages, they could not be handled because a termination criteria
