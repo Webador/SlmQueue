@@ -22,6 +22,16 @@ interface WorkerInterface
     public function processQueue($queueName, array $options = array());
 
     /**
+     * Process jobs in the queue identified by its name. Contrary to process queue, this method only works
+     * for queue that implements BatchableQueueInterface, and can retrieve multiple jobs at once
+     *
+     * @param  string $queueName
+     * @param  array $options
+     * @return int How many jobs were processed
+     */
+    public function processBatchableQueue($queueName, array $options = array());
+
+    /**
      * Process a job that comes from the given queue
      *
      * @param  JobInterface   $job
