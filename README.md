@@ -2,8 +2,8 @@ SlmQueue
 ========
 
 [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
-[![Latest Stable Version](https://poser.pugx.org/juriansluiman/slm-queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
-[![Latest Unstable Version](https://poser.pugx.org/juriansluiman/slm-queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
+[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
+[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
 
 Created by Jurian Sluiman and Michaël Gallego
 
@@ -40,7 +40,7 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 
 ```json
 "require": {
-	"juriansluiman/slm-queue": ">=0.3"
+	"slm/queue": ">=0.3"
 }
 ```
 
