@@ -187,6 +187,7 @@ namespace Application\Job;
 
 use SlmQueue\Job\AbstractJob;
 use SlmQueue\Queue\QueueAwareInterface;
+use SlmQueue\Queue\QueueInterface;
 
 class EncodingJob extends AbstractJob implements QueueAwareInterface
 {
