@@ -6,6 +6,7 @@ your `composer.json` file!
 to call parent constructor.
 - BC: keys for configuring queues was previously "queues", it is now "queue_manager". The key "queues" is still used
 but it's now for specifying options for a specific queue.
+- BC: remove Version class
 - Job metadata is now serialized
 - You can make your jobs implement the interface 'SlmQueue\Queue\QueueAwareInterface'. Therefore, you will have
 access to the queue in the `execute` method of the job.
