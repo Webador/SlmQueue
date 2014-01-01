@@ -7,20 +7,29 @@
 
 return array(
     'slm_queue' => array(
-        /**
-         * Parameters for the worker. It defines some criterias that can be reached before the
-         * worker stops to process any other jobs
-         */
-        'worker' => array(
+        'options' => array(
             /**
-             * Specify how many jobs can be processed by a worker until it stops (default to 100 000)
+             * Parameters for the worker. It defines some criterias that can be reached before the
+             * worker stops to process any other jobs
              */
-            // 'max_runs'   => 100000,
+             'worker' => array(
+                 /**
+                  * Specify how many jobs can be processed by a worker until it stops (default to 100 000)
+                  */
+                 // 'max_runs'   => 100000,
 
-            /**
-             * Specifiy the max memory (in bytes) that can be used by the worker before it stops (default to 100 MB)
-             */
-            // 'max_memory' => 100 * 1024 * 1024
+                 /**
+                  * Specifiy the max memory (in bytes) that can be used by the worker before it stops (default to 100 MB)
+                  */
+                 // 'max_memory' => 100 * 1024 * 1024
+             ),
+
+             /**
+              * Allow to configure a specific queue.
+              *
+              * Available options depends on the queue factory
+              */
+             'queues' => array()
         ),
 
         /**
