@@ -67,9 +67,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         $eventManager = $this->getEventManager();
         $count        = 0;
 
-        $workerEvent = new WorkerEvent();
-        $workerEvent->setQueue($queue);
-
+        $workerEvent = new WorkerEvent($queue);
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
 
         while (true) {
