@@ -35,7 +35,7 @@ class ModuleOptions extends AbstractOptions
      *
      * @var array
      */
-    protected $queuesOptions;
+    protected $queuesOptions = array();
 
     /**
      * @param array $workerOptions
