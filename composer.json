@@ -26,7 +26,8 @@
         "zendframework/zend-stdlib": "2.*"
     },
     "require-dev": {
-        "zendframework/zendframework": "2.*"
+        "zendframework/zendframework": "2.*",
+        "phpunit/phpunit": "~3.7"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
