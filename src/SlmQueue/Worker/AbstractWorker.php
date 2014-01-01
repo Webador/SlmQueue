@@ -17,14 +17,6 @@ use Zend\EventManager\EventManagerInterface;
 abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
     /**
-     * Event constants
-     */
-    const EVENT_PROCESS_QUEUE_PRE  = 'processQueue.pre';
-    const EVENT_PROCESS_QUEUE_POST = 'processQueue.post';
-    const EVENT_PROCESS_JOB_PRE    = 'processJob.pre';
-    const EVENT_PROCESS_JOB_POST   = 'processJob.post';
-
-    /**
      * @var QueuePluginManager
      */
     protected $queuePluginManager;
