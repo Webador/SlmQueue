@@ -19,7 +19,6 @@ class WorkerOptions extends AbstractOptions
      */
     protected $maxMemory;
 
-
     /**
      * Set how many jobs can be processed before the worker stops
      *

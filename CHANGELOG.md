@@ -1,5 +1,6 @@
 # 0.3.0
 
+- BC: raised dependency to ZF 2.2
 - BC: composer package has been changed from "juriansluiman/slm-queue" to "slm/queue". Remember to update
 your `composer.json` file!
 - BC: AbstractJob constructor is now gone. It simplifies injecting dependencies as you do not need to remember

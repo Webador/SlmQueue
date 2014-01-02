@@ -9,7 +9,7 @@ Created by Jurian Sluiman and Michaël Gallego
 
 Requirements
 ------------
-* [Zend Framework 2](https://github.com/zendframework/zf2)
+* [Zend Framework >= 2.2](https://github.com/zendframework/zf2)
 
 
 Introduction

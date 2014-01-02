@@ -30,6 +30,14 @@ class WorkerEvent extends Event
     protected $job;
 
     /**
+     * @param QueueInterface $queue
+     */
+    public function __construct(QueueInterface $queue)
+    {
+        $this->queue = $queue;
+    }
+
+    /**
      * @param  JobInterface $job
      * @return void
      */
@@ -44,15 +52,6 @@ class WorkerEvent extends Event
     public function getJob()
     {
         return $this->job;
-    }
-
-    /**
-     * @param  QueueInterface $queue
-     * @return void
-     */
-    public function setQueue(QueueInterface $queue)
-    {
-        $this->queue = $queue;
     }
 
     /**
