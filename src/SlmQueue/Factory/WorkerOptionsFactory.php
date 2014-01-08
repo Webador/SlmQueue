@@ -14,6 +14,6 @@ class WorkerOptionsFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        return new WorkerOptions($config['slm_queue']);
+        return new WorkerOptions($config['slm_queue']['worker']);
     }
 }
