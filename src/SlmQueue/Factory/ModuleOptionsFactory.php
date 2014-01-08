@@ -14,6 +14,6 @@ class ModuleOptionsFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        return new ModuleOptions($config['slm_queue']['options']);
+        return new ModuleOptions($config['slm_queue']);
     }
 }

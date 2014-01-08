@@ -26,6 +26,13 @@ use Zend\Stdlib\AbstractOptions;
 class ModuleOptions extends AbstractOptions
 {
     /**
+     * Disable strict mode
+     *
+     * @var bool
+     */
+    protected $__strictMode__ = false;
+
+    /**
      * @var WorkerOptions
      */
     protected $workerOptions;
