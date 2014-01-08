@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Queue;
 
-trait ProvidesQueue
+trait QueueAwareTrait
 {
     /**
      * @var QueueInterface
