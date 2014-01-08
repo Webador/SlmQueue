@@ -40,12 +40,12 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 
 ```json
 "require": {
-	"slm/queue": ">=0.3"
+	"slm/queue": "0.3.*"
 }
 ```
 
 Then, enable the module by adding `SlmQueue` in your `application.config.php` file. You may also want to configure
-the module: just copy the `slm_queue.local.php.dist` (you can find this file in the `config` folder of SlmQueue) into
+the module: just copy the `slm_queue.global.php.dist` (you can find this file in the `config` folder of SlmQueue) into
 your `config/autoload` folder, and override what you want.
 
 > SlmQueue is pretty useless by itself, as it is mainly interfaces and abstract classes. To make it really powerful,
@@ -210,18 +210,18 @@ class EncodingJob extends AbstractJob implements QueueAwareInterface
 }
 ```
 
-If you want to avoid the boilerplate code, you can use the ProvidesQueue trait (only for PHP >=5.4):
+If you want to avoid the boilerplate code, you can use the QueueAwareTrait trait (only for PHP >=5.4):
 
 ```php
 namespace Application\Job;
 
 use SlmQueue\Job\AbstractJob;
-use SlmQueue\Queue\ProvidesQueue;
+use SlmQueue\Queue\QueueAwareTrait;
 use SlmQueue\Queue\QueueAwareInterface;
 
 class EncodingJob extends AbstractJob implements QueueAwareInterface
 {
-    use ProvidesQueue;
+    use QueueAwareTrait;
 
     public function execute()
     {
@@ -251,10 +251,10 @@ In both cases, adding a new queue is as simple as adding a new line in your `mod
 ```php
 return array(
     'slm_queue' => array(
-        'queues' => array(
+        'queue_manager' => array(
             'factories' => array(
-                'encodingQueue' => 'SlmQueueBeanstalkd\Factory\TubeFactory' // This is the factory provided by
-                                                                            // SlmQueueBeanstalkd module
+                'encodingQueue' => 'SlmQueueSqs\Factory\SqsQueueFactory' // This is the factory provided by
+                                                                         // SlmQueueSqs module
             )
         )
     )
