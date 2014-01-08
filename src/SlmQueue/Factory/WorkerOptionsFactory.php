@@ -2,11 +2,11 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Options\ModuleOptions;
+use SlmQueue\Options\WorkerOptions;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ModuleOptionsFactory implements FactoryInterface
+class WorkerOptionsFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -14,6 +14,6 @@ class ModuleOptionsFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        return new ModuleOptions($config['slm_queue']);
+        return new WorkerOptions($config['slm_queue']);
     }
 }

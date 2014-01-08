@@ -4,7 +4,7 @@ return array(
     'service_manager' => array(
         'factories' => array(
             'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Options\ModuleOptions'    => 'SlmQueue\Factory\ModuleOptionsFactory',
+            'SlmQueue\Options\WorkerOptions'    => 'SlmQueue\Factory\WorkerOptionsFactory',
             'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
         ),
     ),
@@ -19,7 +19,7 @@ return array(
         ),
 
         /**
-         * Queue configuration options
+         * Queue configuration
          */
         'queues' => array(),
 
