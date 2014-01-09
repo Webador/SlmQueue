@@ -121,7 +121,6 @@ Here, we simply specify the data of the job, then we get the queue manager (more
 that will store those jobs (in most queuing systems you can create as much queues as you want), and then we push
 it so that it can pe popped later.
 
-
 ### Handling dependencies for jobs
 
 Often, your job will have dependencies. For instance, the EncodingJob may need an Encoder object to help encode
@@ -172,7 +171,7 @@ return array(
 );
 ```
 
-> Note: if you don't have any dependencies for your jobs, you DO NOT need to add all your jobs to the invokables`
+> Note: if you don't have any dependencies for your jobs, you DO NOT need to add all your jobs to the `invokables`
 > list, because the JobPluginManager is configured in a way that it automatically adds any unknown classes to the
 > `invokables` list.
 
@@ -210,18 +209,18 @@ class EncodingJob extends AbstractJob implements QueueAwareInterface
 }
 ```
 
-If you want to avoid the boilerplate code, you can use the ProvidesQueue trait (only for PHP >=5.4):
+If you want to avoid the boilerplate code, you can use the QueueAwareTrait trait (only for PHP >=5.4):
 
 ```php
 namespace Application\Job;
 
 use SlmQueue\Job\AbstractJob;
-use SlmQueue\Queue\ProvidesQueue;
+use SlmQueue\Queue\QueueAwareTrait;
 use SlmQueue\Queue\QueueAwareInterface;
 
 class EncodingJob extends AbstractJob implements QueueAwareInterface
 {
-    use ProvidesQueue;
+    use QueueAwareTrait;
 
     public function execute()
     {
@@ -229,7 +228,6 @@ class EncodingJob extends AbstractJob implements QueueAwareInterface
     }
 }
 ```
-
 
 ### Adding queues
 
@@ -251,16 +249,15 @@ In both cases, adding a new queue is as simple as adding a new line in your `mod
 ```php
 return array(
     'slm_queue' => array(
-        'queues' => array(
+        'queue_manager' => array(
             'factories' => array(
-                'encodingQueue' => 'SlmQueueBeanstalkd\Factory\TubeFactory' // This is the factory provided by
-                                                                            // SlmQueueBeanstalkd module
+                'encodingQueue' => 'SlmQueueSqs\Factory\SqsQueueFactory' // This is the factory provided by
+                                                                         // SlmQueueSqs module
             )
         )
     )
 );
 ```
-
 
 ### Executing jobs
 

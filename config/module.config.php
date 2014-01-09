@@ -11,12 +11,17 @@ return array(
 
     'slm_queue' => array(
         /**
-         * Parameters for the worker
+         * Worker options
          */
         'worker' => array(
             'max_runs'   => 100000,
             'max_memory' => 100 * 1024 * 1024
         ),
+
+        /**
+         * Queue configuration
+         */
+        'queues' => array(),
 
         /**
          * Job manager configuration
@@ -27,10 +32,5 @@ return array(
          * Queue manager configuration
          */
         'queue_manager' => array(),
-
-        /**
-         * Queue configuration options
-         */
-        'queues' => array(),
-    ),
+    )
 );

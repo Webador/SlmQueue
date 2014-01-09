@@ -3,29 +3,19 @@
 namespace SlmQueueTest\Options;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueueTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
+use SlmQueue\Options\WorkerOptions;
 
 class WorkerOptionsTest extends TestCase
 {
-    /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
-
-    public function setUp()
+    public function testGettersAndSetters()
     {
-        parent::setUp();
-        $this->serviceManager = ServiceManagerFactory::getServiceManager();
-    }
-
-    public function testCreateWorkerOptions()
-    {
-        /** @var $workerOptions \SlmQueue\Options\WorkerOptions */
-        $workerOptions = $this->serviceManager->get('SlmQueue\Options\WorkerOptions');
+        $workerOptions = new WorkerOptions(array(
+            'max_runs'   => 10,
+            'max_memory' => 1000
+        ));
 
         $this->assertInstanceOf('SlmQueue\Options\WorkerOptions', $workerOptions);
-        $this->assertEquals(100000, $workerOptions->getMaxRuns());
-        $this->assertEquals(104857600, $workerOptions->getMaxMemory());
+        $this->assertEquals(10, $workerOptions->getMaxRuns());
+        $this->assertEquals(1000, $workerOptions->getMaxMemory());
     }
 }
