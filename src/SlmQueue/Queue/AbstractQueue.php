@@ -57,7 +57,7 @@ abstract class AbstractQueue implements QueueInterface
     {
         /** @var $job \SlmQueue\Job\JobInterface */
         $job = $this->jobPluginManager->get($className);
-        $job->setContent($content)
+        $job->setContent(unserialize($content))
             ->setMetadata($metadata);
 
         return $job;

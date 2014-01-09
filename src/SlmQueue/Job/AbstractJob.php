@@ -42,7 +42,7 @@ abstract class AbstractJob extends Message implements JobInterface
     {
         $data = array(
             'class'    => get_called_class(),
-            'content'  => $this->getContent(),
+            'content'  => serialize($this->getContent()),
             'metadata' => $this->getMetadata(),
         );
 
