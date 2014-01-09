@@ -36,7 +36,6 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
      */
     protected $options;
 
-
     /**
      * Constructor
      *
