@@ -20,7 +20,7 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo","metadata":[]}', $job->jsonSerialize());
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}', $job->jsonSerialize());
     }
 
     public function testCorrectlySerializeJobMetadata()
@@ -28,7 +28,7 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('foo', 'Bar');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":null,"metadata":{"foo":"Bar"}}', $job->jsonSerialize());
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"foo":"Bar"}}', $job->jsonSerialize());
     }
 
     public function testCorrectlySerializeJobContentAndMetadata()
@@ -37,7 +37,7 @@ class JobTest extends TestCase
         $job->setContent('Foo');
         $job->setMetadata('foo', 'Bar');
 
-        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"Foo","metadata":{"foo":"Bar"}}', $job->jsonSerialize());
+        $this->assertEquals('{"class":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"foo":"Bar"}}', $job->jsonSerialize());
     }
 
     public function testCorrectlyUnserializeJob()
@@ -47,7 +47,7 @@ class JobTest extends TestCase
         $job = json_decode($job->jsonSerialize(), true);
 
         $this->assertEquals('SlmQueueTest\Asset\SimpleJob', $job['class']);
-        $this->assertEquals('Foo', $job['content']);
+        $this->assertEquals('Foo', unserialize($job['content']));
     }
 
     public function testJobCanBeExecuted()

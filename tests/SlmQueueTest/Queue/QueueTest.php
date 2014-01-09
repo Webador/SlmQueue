@@ -2,6 +2,7 @@
 
 namespace SlmQueueTest\Job;
 
+use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
@@ -61,7 +62,7 @@ class QueueTest extends TestCase
                          ->will($this->returnValue($job));
 
         $queue  = new SimpleQueue('queue', $jobPluginManager);
-        $result = $queue->createJob('SimpleJob', 'Foo');
+        $result = $queue->createJob('SimpleJob', serialize('Foo'));
     }
 
     public function testCanCreateJobWithMetadata()
