@@ -263,3 +263,150 @@ return array(
 
 Once again, executing jobs is dependant on the queue system used. Therefore, please refer to either SlmQueueBeanstalkd,
 SlmQueueSqs or SlmQueueDoctrine documentation.
+
+### Events
+
+#### WorkerEvent
+
+Via events it becomes trivial to perform some actions before (or after) a queue or job will be processed. To make this possible the worker implements the EventManagerAwareInterface and its EventManager triggers four kind of events; 
+
+* processQueue.pre just before a Queue will be processed
+* processQueue.post just after a Queue has been processed
+* processJob.pre just before a Job will be processed
+* processJob.post just after a Job has been processed
+
+A listener will recieve a WorkerEvent which contains a reference to the queue. The processJob.pre and processJob.post events will also contain the job that is the queue is processing.
+
+````
+function(WorkerEvent $e) {
+	$queue = $e->getQueue();
+	$job   = $e->getJob();
+});
+````
+
+##### Example SharedEventManager
+
+Create a working directory before a queue is processed and remove it when the queue has finished processing its jobs.
+
+````
+    public function onBootstrap(MvcEvent $e)
+    {
+        /** @var $sm \Zend\ServiceManager\ServiceManager */
+        $sm = $e->getApplication()->getServiceManager();
+
+	    $sharedEventManager = $e->getApplication()->getEventManager()->getSharedManager();
+	    
+        $sharedEventManager->attach('SlmQueue\Worker\AbstractWorker', WorkerEvent::EVENT_PROCESS_QUEUE_PRE, function(WorkerEvent $e) {
+        	$queueName = $e->getQueue()->getName();
+			// mkdir ./data/queues/queueNamename
+        });
+
+        $sharedEventManager->attach('SlmQueue\Worker\AbstractWorker', WorkerEvent::EVENT_PROCESS_QUEUE_POST, function(WorkerEvent $e) {
+        	$queueName = $e->getQueue()->getName();
+			// rm -Rf ./data/queues/$queueName
+        });
+    }
+````
+
+##### More complex example with an AggregateListener
+
+The MvcTranslator will be configured to whatever the default locale is the first time it is used. That means that without some additional work the first job that the the worker processes will dictate the used locale. Rendering emails in multiple languages is problematic this way.
+
+Jobs that need to be localized should implement LocaleAwareJobInterface and whenever the job is created the developer should set the locale the Job is created in.
+
+````
+interface LocaleAwareJobInterface
+{
+    /**
+     * @param string $locale
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+}
+````
+
+We create an aggregate listener that configures the Translator before a job is executed and reverts the configuration to whatever it was when the job is finished;
+
+````
+class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
+
+    /**
+     * @var Stores original locale while processing a Job
+     */
+    protected $locale;
+
+    /**
+     * @var Instance of Translator to manipulate
+     */
+    protected $translator;
+
+    /**
+     * @param Translator $translator to manipulate
+     */
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function attach(EventManagerInterface $events)
+    {
+        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this, 'onPreJobProcessing'));
+        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onPostJobProcessing'));
+    }
+
+    protected function onPreJobProcessing(WorkerEvent $e) {
+        /** @var \SlmQueue\Job\JobInterface */
+        $job = $e->getJob();
+
+        if (!$job implements LocaleAwareJobInterface) {
+            return;
+        }
+
+        $this->locale = $this->translator->getLocale();
+        $this->translator->setLocale($job->getLocale());
+    }
+
+    protected function onPostJobProcessing(WorkerEvent $e) {
+        $job = $e->getJob();
+
+        if (!$job implements LocaleAwareJobInterface) {
+            return;
+        }
+
+        $this->translator->setLocale($this->locale);
+    }
+}
+````
+Finally we consume this as follows;
+
+````
+    public function onBootstrap(MvcEvent $e)
+    {
+        $sm = $e->getApplication()->getServiceManager();
+
+        /** @var $sm \Zend\Mvc\I18n\Translator */
+        $translator = $sm->get('MvcTranslator');
+
+        /** @var $worker \SlmQueueDoctrine\Worker\DoctrineWorker */
+        $worker = $sm->get('SlmQueueDoctrine\Worker\DoctrineWorker');
+
+		$aggregateListener = new BootstrapTranslatorJobListener($translator);
+
+        $worker->getEventManager()->attachAggregate(aggregateListener);
+    }
+````
+
+
