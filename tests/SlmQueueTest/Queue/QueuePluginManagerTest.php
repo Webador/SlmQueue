@@ -3,6 +3,7 @@
 namespace SlmQueueTest\Queue;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
@@ -33,5 +34,14 @@ class QueuePluginManagerTest extends TestCase
         $secondInstance = $queuePluginManager->get('basic-queue');
 
         $this->assertSame($firstInstance, $secondInstance);
+    }
+
+    public function testPluginValidation()
+    {
+        $manager = new QueuePluginManager();
+        $queue   = new \stdClass();
+
+        $this->setExpectedException('SlmQueue\Queue\Exception\RuntimeException');
+        $manager->validatePlugin($queue);
     }
 }
