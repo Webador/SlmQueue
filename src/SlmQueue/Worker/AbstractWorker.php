@@ -149,6 +149,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
      * Handle the signal
      *
      * @param int $signo
+     * @codeCoverageIgnore
      */
     public function handleSignal($signo)
     {
