@@ -1,6 +1,7 @@
 {
     "name": "slm/queue",
     "description": "Zend Framework 2 module that integrates with various queue management systems",
+    "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
         "zf2",
