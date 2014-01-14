@@ -4,30 +4,34 @@ namespace SlmQueueTest\Queue;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Job\JobPluginManager;
-use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
 
 class QueueAwareTraitTest extends TestCase
 {
-    /**
-     * @var QueueAwareTraitJob $traitObject
+    /*
+     * @covers SlmQueue\Queue\QueueAwareTrait::getQueue
      */
-    private $job;
-
-    public function setUp()
+    public function testDefaultGetter()
     {
-        $this->job = new QueueAwareTraitJob();
+        /** @var $job \SlmQueue\Queue\QueueAwareTrait */
+        $mock = $this->getMockForTrait('SlmQueue\Queue\QueueAwareTrait');
+
+        $this->assertNull($mock->getQueue());
     }
 
-    public function testDefaultGetter() {
-        $this->assertNull($this->job->getQueue());
-    }
-
-    public function testSetter() {
+    /*
+     * @covers SlmQueue\Queue\QueueAwareTrait::setQueue
+     */
+    public function testSetter()
+    {
+        /** @var $job \SlmQueue\Queue\QueueAwareTrait */
+        $job   = $this->getMockForTrait('SlmQueue\Queue\QueueAwareTrait');
         $queue = new SimpleQueue('name', new JobPluginManager());
-        $this->job->setQueue($queue);
 
-        $this->assertNotNull($this->job->getQueue());
-        $this->assertEquals($queue, $this->job->getQueue());
+        $job->setQueue($queue);
+
+        $this->assertNotNull($job->getQueue());
+        $this->assertEquals($queue, $job->getQueue());
     }
+
 }
