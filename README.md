@@ -40,7 +40,7 @@ SlmQueue works with Composer. To install it, just add the following line into yo
 
 ```json
 "require": {
-	"slm/queue": "0.3.*"
+    "slm/queue": "0.3.*"
 }
 ```
 
@@ -268,45 +268,45 @@ SlmQueueSqs or SlmQueueDoctrine documentation.
 
 #### WorkerEvent
 
-Via events it becomes trivial to perform some actions before (or after) a queue or job will be processed. To make this possible the worker implements the EventManagerAwareInterface and its EventManager triggers four kind of events; 
+Via events it becomes trivial to perform some actions before (or after) a queue or job is processed. To make this possible the worker implements the EventManagerAwareInterface and its EventManager triggers four kind of events; 
 
-* processQueue.pre just before a Queue will be processed
-* processQueue.post just after a Queue has been processed
-* processJob.pre just before a Job will be processed
-* processJob.post just after a Job has been processed
+* `WorkerEvent::EVENT_PROCESS_QUEUE_PRE` just before a Queue will be processed
+* `WorkerEvent::EVENT_PROCESS_QUEUE_POST` just after a Queue has been processed
+* `WorkerEvent::EVENT_PROCESS_JOB_PRE` just before a Job will be processed
+* `WorkerEvent::EVENT_PROCESS_JOB_POST` just after a Job has been processed
 
 A listener will recieve a WorkerEvent which contains a reference to the queue. The processJob.pre and processJob.post events will also contain the job that is the queue is processing.
 
-````
+```php
 function(WorkerEvent $e) {
-	$queue = $e->getQueue();
-	$job   = $e->getJob();
+    $queue = $e->getQueue();
+    $job   = $e->getJob();
 });
-````
+```
 
 ##### Example SharedEventManager
 
 Create a working directory before a queue is processed and remove it when the queue has finished processing its jobs.
 
-````
+```php
     public function onBootstrap(MvcEvent $e)
     {
         /** @var $sm \Zend\ServiceManager\ServiceManager */
         $sm = $e->getApplication()->getServiceManager();
 
-	    $sharedEventManager = $e->getApplication()->getEventManager()->getSharedManager();
-	    
+        $sharedEventManager = $e->getApplication()->getEventManager()->getSharedManager();
+    
         $sharedEventManager->attach('SlmQueue\Worker\AbstractWorker', WorkerEvent::EVENT_PROCESS_QUEUE_PRE, function(WorkerEvent $e) {
-        	$queueName = $e->getQueue()->getName();
-			// mkdir ./data/queues/queueNamename
+            $queueName = $e->getQueue()->getName();
+            // mkdir ./data/queues/queueNamename
         });
 
         $sharedEventManager->attach('SlmQueue\Worker\AbstractWorker', WorkerEvent::EVENT_PROCESS_QUEUE_POST, function(WorkerEvent $e) {
-        	$queueName = $e->getQueue()->getName();
-			// rm -Rf ./data/queues/$queueName
+            $queueName = $e->getQueue()->getName();
+            // rm -Rf ./data/queues/$queueName
         });
     }
-````
+```
 
 ##### More complex example with an AggregateListener
 
@@ -314,7 +314,7 @@ The MvcTranslator will be configured to whatever the default locale is the first
 
 Jobs that need to be localized should implement LocaleAwareJobInterface and whenever the job is created the developer should set the locale the Job is created in.
 
-````
+```php
 interface LocaleAwareJobInterface
 {
     /**
@@ -333,11 +333,11 @@ interface LocaleAwareJobInterface
         return $this->locale;
     }
 }
-````
+```
 
 We create an aggregate listener that configures the Translator before a job is executed and reverts the configuration to whatever it was when the job is finished;
 
-````
+```php
 class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
 
     /**
@@ -389,10 +389,10 @@ class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
         $this->translator->setLocale($this->locale);
     }
 }
-````
+```
 Finally we consume this as follows;
 
-````
+```php
     public function onBootstrap(MvcEvent $e)
     {
         $sm = $e->getApplication()->getServiceManager();
@@ -403,10 +403,10 @@ Finally we consume this as follows;
         /** @var $worker \SlmQueueDoctrine\Worker\DoctrineWorker */
         $worker = $sm->get('SlmQueueDoctrine\Worker\DoctrineWorker');
 
-		$aggregateListener = new BootstrapTranslatorJobListener($translator);
+        $aggregateListener = new BootstrapTranslatorJobListener($translator);
 
         $worker->getEventManager()->attachAggregate(aggregateListener);
     }
-````
+```
 
 
