@@ -27,8 +27,6 @@ class AbstractControllerTest extends TestCase
 
     public function setUp()
     {
-        parent::setUp();
-
         $this->queue = new QueuePluginManager(new Config(array('factories' => array('knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'))));
         $this->controller = new SimpleController(new SimpleWorker($this->queue, new WorkerOptions()));
     }
