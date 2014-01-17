@@ -67,20 +67,6 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue('foo');
     }
 
-    public function testWorkerInjectsQueueForAwareInterface()
-    {
-        $job = $this->getMock('SlmQueueTest\Asset\QueueAwareJob', array('setQueue'));
-        $job->expects($this->once())
-            ->method('setQueue')
-            ->with($this->queue);
-
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($job));
-
-        $this->worker->processQueue('foo');
-    }
-
     public function testCorrectIdentifiersAreSetToEventManager()
     {
         $eventManager = $this->worker->getEventManager();
