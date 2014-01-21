@@ -20,8 +20,6 @@
             "homepage": "http://www.michaelgallego.fr"
         }
     ],
-    "minimum-stability" : "dev",
-    "prefer-stable" : true,
     "require": {
         "php": ">=5.3.3",
         "zendframework/zend-servicemanager": "~2.2",
@@ -29,7 +27,7 @@
     },
     "require-dev": {
         "zendframework/zendframework": "~2.2",
-        "phpunit/phpunit": "~3.8-dev"
+        "phpunit/phpunit": "~3.7"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
