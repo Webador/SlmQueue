@@ -79,6 +79,10 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
             // The queue may return null, for instance if a timeout was set
             if (!$job instanceof JobInterface) {
+                // Check for internal stop condition
+                if (memory_get_usage() > $this->options->getMaxMemory()) {
+                    break;
+                }
                 continue;
             }
 
