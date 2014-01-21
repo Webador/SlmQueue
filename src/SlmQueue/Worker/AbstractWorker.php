@@ -82,11 +82,6 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
                 continue;
             }
 
-            // The job might want to get the queue injected
-            if ($job instanceof QueueAwareInterface) {
-                $job->setQueue($queue);
-            }
-
             $workerEvent->setJob($job);
 
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);

@@ -4,6 +4,7 @@ namespace SlmQueueTest\Job;
 
 use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
+use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
 
@@ -85,5 +86,22 @@ class QueueTest extends TestCase
 
         $queue  = new SimpleQueue('queue', $jobPluginManager);
         $result = $queue->createJob('SimpleJob', null, array('foo' => 'Bar'));
+    }
+
+    public function testCreateQueueAwareJob()
+    {
+        $job = new QueueAwareJob();
+
+        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager->expects($this->once())
+                         ->method('get')
+                         ->with('SlmQueueTest\Asset\QueueAwareJob')
+                         ->will($this->returnValue($job));
+
+        $queue = new SimpleQueue('queue', $jobPluginManager);
+
+        $result = $queue->createJob('SlmQueueTest\Asset\QueueAwareJob');
+
+        $this->assertSame($queue, $result->getQueue());
     }
 }

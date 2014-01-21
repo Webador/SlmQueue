@@ -61,6 +61,10 @@ abstract class AbstractQueue implements QueueInterface
         $job->setContent(unserialize($content));
         $job->setMetadata($metadata);
 
+        if ($job instanceof QueueAwareInterface) {
+            $job->setQueue($this);
+        }
+
         return $job;
     }
 }
