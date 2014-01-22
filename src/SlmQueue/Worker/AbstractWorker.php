@@ -80,7 +80,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             // The queue may return null, for instance if a timeout was set
             if (!$job instanceof JobInterface) {
                 // Check for internal stop condition
-                if (memory_get_usage() > $this->options->getMaxMemory()) {
+                if ($this->isMaxMemoryExceeded()) {
                     break;
                 }
                 continue;
@@ -101,10 +101,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
 
             // Check for internal stop condition
-            if (
-                $count === $this->options->getMaxRuns()
-                || memory_get_usage() > $this->options->getMaxMemory()
-            ) {
+            if ($this->isMaxRunsReached($count) || $this->isMaxMemoryExceeded()) {
                 break;
             }
         }
@@ -147,6 +144,27 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     public function isStopped()
     {
         return $this->stopped;
+    }
+
+    /**
+     * Did worker exceed the threshold for memory usage?
+     *
+     * @return bool
+     */
+    public function isMaxMemoryExceeded()
+    {
+        return memory_get_usage() > $this->options->getMaxMemory();
+    }
+
+    /**
+     * Is the worker about to exceed the threshold for the number of jobs allowed to run?
+     *
+     * @param $count current count of executed jobs
+     * @return bool
+     */
+    public function isMaxRunsReached($count)
+    {
+        return $count >= $this->options->getMaxRuns();
     }
 
     /**
