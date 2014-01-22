@@ -4,9 +4,27 @@ namespace SlmQueueTest\Options;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Options\WorkerOptions;
+use SlmQueueTest\Util\ServiceManagerFactory;
 
 class WorkerOptionsTest extends TestCase
 {
+    /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->serviceManager = ServiceManagerFactory::getServiceManager();
+    }
+
+    public function testCanRetrieveWorkerOptionsWithServiceManager()
+    {
+        $workerOptions = $this->serviceManager->get('SlmQueue\Options\WorkerOptions');
+        $this->assertInstanceOf('SlmQueue\Options\WorkerOptions', $workerOptions);
+    }
+
     public function testGettersAndSetters()
     {
         $workerOptions = new WorkerOptions(array(
