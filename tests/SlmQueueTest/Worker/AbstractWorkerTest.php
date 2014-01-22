@@ -67,6 +67,29 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue('foo');
     }
 
+    public function testWorkerMaxMemory()
+    {
+        $this->options->setMaxMemory(1);
+
+        $this->queue->expects($this->exactly(1))
+            ->method('pop');
+
+        $this->assertTrue($this->worker->processQueue('foo') === 0);
+    }
+    public function testWorkerInjectsQueueForAwareInterface()
+    {
+        $job = $this->getMock('SlmQueueTest\Asset\QueueAwareJob', array('setQueue'));
+        $job->expects($this->once())
+            ->method('setQueue')
+            ->with($this->queue);
+
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($job));
+
+        $this->worker->processQueue('foo');
+    }
+
     public function testCorrectIdentifiersAreSetToEventManager()
     {
         $eventManager = $this->worker->getEventManager();
@@ -106,5 +129,20 @@ class AbstractWorkerTest extends TestCase
                      ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_POST));
 
         $this->worker->processQueue('foo');
+    }
+
+    public function testMethod_hasMemoryExceeded() {
+        $this->options->setMaxMemory(10000000000);
+        $this->assertFalse($this->worker->isMaxMemoryExceeded());
+
+        $this->options->setMaxMemory(1);
+        $this->assertTrue($this->worker->isMaxMemoryExceeded());
+    }
+
+    public function testMethod_willExceedMaxRuns() {
+        $this->options->setMaxRuns(10);
+        $this->assertFalse($this->worker->isMaxRunsReached(9));
+        $this->assertTrue($this->worker->isMaxRunsReached(10));
+        $this->assertTrue($this->worker->isMaxRunsReached(11));
     }
 }
