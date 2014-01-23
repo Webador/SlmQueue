@@ -4,6 +4,8 @@ namespace SlmQueueTest\Controller\Plugin;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Controller\Plugin\Queue as QueuePlugin;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
@@ -27,29 +29,24 @@ class QueueTest extends TestCase
 
     public function testPluginPushesJobIntoQueue()
     {
-        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $queuePluginManager = new QueuePluginManager;
+        $jobPluginManager   = new JobPluginManager;
 
+        $name  = 'DefaultQueue';
+        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', array('push'), array($name, $jobPluginManager));
         $job   = new SimpleJob;
-        $queue = new SimpleQueue('DefaultQueue', $jobPluginManager);
 
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SimpleJob')
-                         ->will($this->returnValue($job));
-
-        $queuePluginManager->expects($this->once())
-                           ->method('get')
-                           ->with('DefaultQueue')
-                           ->will($this->returnValue($queue));
-
-        $queuePluginManager->expects($this->once())
-                           ->method('push')
-                           ->with($job);
+        $queue->expects($this->once())
+              ->method('push')
+              ->with($job)
+              ->will($this->returnValue($job));
+        $queuePluginManager->setService($name, $queue);
+        $jobPluginManager->setService('SimpleJob', $job);
 
         $plugin = new QueuePlugin($queuePluginManager, $jobPluginManager);
-        $plugin->__invoke('DefaultQueue');
+        $plugin->__invoke($name);
 
         $result = $plugin->push('SimpleJob');
+        $this->assertSame($job, $result);
     }
 }
