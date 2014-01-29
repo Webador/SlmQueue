@@ -3,27 +3,32 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Listener\ListenerPluginManager;
+use SlmQueue\Listener\ListenerInterface;
+use SlmQueue\Listener\Strategy\AbstractStrategy;
 use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
-use SlmQueue\Queue\QueueAwareInterface;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ResponseCollection;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker
  */
 abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
+    
+    /**
+     * @var ListenerPluginManager
+     */
+    protected $listenerPluginManager;
+
     /**
      * @var EventManagerInterface
      */
     protected $eventManager;
-
-    /**
-     * @var bool
-     */
-    protected $stopped = false;
 
     /**
      * @var WorkerOptions
@@ -35,17 +40,10 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
      *
      * @param WorkerOptions $options
      */
-    public function __construct(WorkerOptions $options)
+    public function __construct(ListenerPluginManager $listenerPluginManager, WorkerOptions $options)
     {
-        $this->options = $options;
-
-        // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly. Note that
-        // because pcntl_signal may not be available on Windows, we needed to check for the existence of the function
-        if (function_exists('pcntl_signal')) {
-            declare(ticks = 1);
-            pcntl_signal(SIGTERM, array($this, 'handleSignal'));
-            pcntl_signal(SIGINT, array($this, 'handleSignal'));
-        }
+        $this->listenerPluginManager = $listenerPluginManager;
+        $this->options               = $options;
     }
 
     /**
@@ -54,48 +52,88 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     public function processQueue(QueueInterface $queue, array $options = array())
     {
         $eventManager = $this->getEventManager();
-        $count        = 0;
+        $this->configureStrategies();
 
         $workerEvent = new WorkerEvent($queue);
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
 
-        while (true) {
-            // Check for external stop condition
-            if ($this->isStopped()) {
-                break;
-            }
+        /** @var ResponseCollection $results */
+        $results  = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
+        $messages = array();
 
+        while (!$results->stopped()) {
             $job = $queue->pop($options);
 
             // The queue may return null, for instance if a timeout was set
             if (!$job instanceof JobInterface) {
-                // Check for internal stop condition
-                if ($this->isMaxMemoryExceeded()) {
-                    break;
-                }
+                $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent);
+
                 continue;
             }
 
             $workerEvent->setJob($job);
             $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
+            $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
             $result = $this->processJob($job, $queue);
-            $count++;
 
             $workerEvent->setResult($result);
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
-
-            // Check for internal stop condition
-            if ($this->isMaxRunsReached($count) || $this->isMaxMemoryExceeded()) {
-                break;
-            }
+            $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
-        return $count;
+        foreach($results as $key=>$message) {
+            $messages[] = $message;
+        }
+
+        return $messages;
+    }
+
+    protected function configureStrategies(array $strategies = array())
+    {
+        $strategies_required = array(
+            array('name'=>'SlmQueue\Strategy\InterruptStrategy'),
+            array('name'=>'SlmQueue\Strategy\MaxMemoryStrategy', 'options' => $this->options->toArray()),
+            array('name'=>'SlmQueue\Strategy\MaxRunsStrategy', 'options' => $this->options->toArray())
+        );
+
+        $strategies = ArrayUtils::merge($strategies, $strategies_required);
+try {
+    $this->addStrategies($strategies);
+
+} catch (\Exception $e) {
+    print_r($e->getMessage());
+}
+    }
+
+    protected function addStrategies(array $strategies)
+    {
+        foreach ($strategies as $strategy) {
+            if (is_string($strategy)) {
+                $listener = $this->listenerPluginManager->get($strategy);
+                $this->addStrategy($listener);
+            } elseif (is_array($strategy)) {
+                $name     = $strategy['name'];
+                $listener = $this->listenerPluginManager->get($name);
+                if (array_key_exists('options', $strategy) && method_exists($listener, 'setOptions')) {
+                    $listener->setOptions($strategy['options']);
+                }
+
+                $priority = 1;
+                if (array_key_exists('priority', $strategy)) {
+                    $priority = $strategy['priority'];
+                }
+
+                $this->addStrategy($listener, $priority);
+            }
+        }
+    }
+
+
+    public function addStrategy(AbstractStrategy $strategy, $priority = 1)
+    {
+        $this->getEventManager()->attachAggregate($strategy, $priority);
     }
 
     /**
@@ -123,49 +161,4 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         return $this->eventManager;
     }
 
-    /**
-     * Check if the script has been stopped from a signal
-     *
-     * @return bool
-     */
-    public function isStopped()
-    {
-        return $this->stopped;
-    }
-
-    /**
-     * Did worker exceed the threshold for memory usage?
-     *
-     * @return bool
-     */
-    public function isMaxMemoryExceeded()
-    {
-        return memory_get_usage() > $this->options->getMaxMemory();
-    }
-
-    /**
-     * Is the worker about to exceed the threshold for the number of jobs allowed to run?
-     *
-     * @param $count current count of executed jobs
-     * @return bool
-     */
-    public function isMaxRunsReached($count)
-    {
-        return $count >= $this->options->getMaxRuns();
-    }
-
-    /**
-     * Handle the signal
-     *
-     * @param int $signo
-     */
-    public function handleSignal($signo)
-    {
-        switch($signo) {
-            case SIGTERM:
-            case SIGINT:
-                $this->stopped = true;
-                break;
-        }
-    }
 }
