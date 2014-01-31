@@ -57,6 +57,72 @@ Requirements
 ------------
 * [Zend Framework >= 2.2](https://github.com/zendframework/zf2)
 
+Code samples
+------------
+Below are a few snippets which show the power of SlmQueue in your application. The full documentation is available in
+[docs/](/docs) directory.
+
+A sample job to send an email with php's `mail()` might look like this:
+
+```php
+namespace MyModule\Job;
+
+use SlmQueue\Job\AbstractJob;
+
+class Email extends AbstractJob
+{
+    public function execute()
+    {
+        $payload = $this->getContent();
+
+        $to      = $payload['to'];
+        $subject = $payload['subject'];
+        $message = $payload['message'];
+
+        mail($to, $subject, $message);
+    }
+}
+```
+
+If you want to inject this job into a queue, you can do this for instance in your controller:
+
+```php
+namespace MyModule\Controller;
+
+use MyModule\Job\Email as EmailJob;
+use SlmQueue\Queue\QueueInterface;
+use Zend\Mvc\Controller\AbstractActionController;
+
+class MyController extends AbstractActionController
+{
+    protected $queue;
+
+    public function __construct(QueueInterface $queue)
+    {
+        $this->queue = $queue;
+    }
+
+    public function fooAction()
+    {
+        // Do some work
+
+        $job = new EmailJob;
+        $job->setContent(array(
+            'to'      => 'john@doe.com',
+            'subject' => 'Just hi',
+            'message' => 'Hi, I want to say hi!'
+        ));
+
+        $this->queue->push($job);
+    }
+}
+```
+
+Now the above code lets you insert jobs in a queue, but then you need to spin up a worker which can process these jobs.
+Giving an example with beanstalkd and a queue which you called "default", you can start a worker with this command:
+
+    php public/index.php queue beanstalkd default
+
 Documentation
 -------------
 
