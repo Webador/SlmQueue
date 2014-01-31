@@ -14,8 +14,10 @@ class WorkerFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        $workerOptions = $serviceLocator->get('SlmQueue\Options\WorkerOptions');
+        $workerOptions         = $serviceLocator->get('SlmQueue\Options\WorkerOptions');
+        $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\ListenerPluginManager');
+        
 
-        return new $requestedName($workerOptions);
+        return new $requestedName($listenerPluginManager, $workerOptions);
     }
 }
