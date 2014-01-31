@@ -123,6 +123,23 @@ Giving an example with beanstalkd and a queue which you called "default", you ca
 
     php public/index.php queue beanstalkd default
 
+Contributing
+------------
+
+SlmQueue is developed by various fanatic Zend Framework 2 users. The code is written to be as generic as possible for
+Zend Framework 2 applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
+
+Any bugs can be reported as an [issue](https://github.com/juriansluiman/SlmQueue/issues) at GitHub. If you want to
+contribute, please be aware of the following guidelines:
+
+ 1. Fork the project to your own repository
+ 2. Use branches to work on your own part
+ 3. Create a Pull Request at the canonical SlmQueue repository
+ 4. Make sure to cover changes with the right amount of unit tests
+ 5. If you add a new feature, please work on some documentation as well
+
+For long-term contributors, push access to this repository is granted.
+
 Documentation
 -------------
 
