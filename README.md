@@ -7,11 +7,6 @@ SlmQueue
 
 Created by Jurian Sluiman and Michaël Gallego
 
-Requirements
-------------
-* [Zend Framework >= 2.2](https://github.com/zendframework/zf2)
-
-
 Introduction
 ------------
 
@@ -52,6 +47,9 @@ your `config/autoload` folder, and override what you want.
 you'll likely add [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd), [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
 or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
+Requirements
+------------
+* [Zend Framework >= 2.2](https://github.com/zendframework/zf2)
 
 Documentation
 -------------
@@ -268,7 +266,7 @@ SlmQueueSqs or SlmQueueDoctrine documentation.
 
 #### WorkerEvent
 
-Via events it becomes trivial to perform some actions before (or after) a queue or job is processed. To make this possible the worker implements the EventManagerAwareInterface and its EventManager triggers four kind of events; 
+Via events it becomes trivial to perform some actions before (or after) a queue or job is processed. To make this possible the worker implements the EventManagerAwareInterface and its EventManager triggers four kind of events;
 
 * `WorkerEvent::EVENT_PROCESS_QUEUE_PRE` just before a Queue will be processed
 * `WorkerEvent::EVENT_PROCESS_QUEUE_POST` just after a Queue has been processed
@@ -295,7 +293,7 @@ Create a working directory before a queue is processed and remove it when the qu
         $sm = $e->getApplication()->getServiceManager();
 
         $sharedEventManager = $e->getApplication()->getEventManager()->getSharedManager();
-    
+
         $sharedEventManager->attach('SlmQueue\Worker\AbstractWorker', WorkerEvent::EVENT_PROCESS_QUEUE_PRE, function(WorkerEvent $e) {
             $queueName = $e->getQueue()->getName();
             // mkdir ./data/queues/queueNamename
