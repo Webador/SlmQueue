@@ -10,42 +10,47 @@ Created by Jurian Sluiman and Michaël Gallego
 Introduction
 ------------
 
-SlmQueue is a job queue abstraction layer for Zend Framework 2 applications. It supports various job queue systems and makes your
-application independent from the underlying system you use. The currently supported systems have each their own adapter-module and
-are the following:
+SlmQueue is a job queue abstraction layer for Zend Framework 2 applications. It supports various job queue systems and
+makes your application independent from the underlying system you use. The currently supported systems have each their
+own adapter-module and are the following:
 
 * Beanstalk: use [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd)
 * Amazon SQS: use [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
 * Doctrine ORM: use [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
-A job queue helps to offload long or memory-intensive processes from the HTTP requests users sent to the Zend Framework 2
-application. There are many use cases for asynchronous jobs and the most common will be:
+A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Zend
+Framework 2 application. This will make your response times shorter and your visitors happier. There are many use cases
+for asynchronous jobs and a few examples are:
 
 1. Send an email
 2. Create a PDF file
-3. Connect to a third party server
+3. Connect to a third party server over HTTP
 
 In all cases you want to serve the response as soon as possible to your visitor, without letting them wait for this
-long process. With SlmQueue you are able to do this, with some other neat features.
-
+long process. SlmQueue enables you to implement a job queue system very easily within your existing application.
 
 Installation
 ------------
 
-SlmQueue works with Composer. To install it, just add the following line into your `composer.json` file:
+SlmQueue works with [Composer](http://getcomposer.org). Make sure you have the composer.phar downloaded and you have a
+`composer.json` file at the root of your project. To install it, add the following line into your `composer.json` file:
 
 ```json
 "require": {
-    "slm/queue": "0.3.*"
+    "slm/queue": "~0.3"
 }
 ```
 
-Then, enable the module by adding `SlmQueue` in your `application.config.php` file. You may also want to configure
-the module: just copy the `slm_queue.global.php.dist` (you can find this file in the `config` folder of SlmQueue) into
-your `config/autoload` folder, and override what you want.
+After installation of the package, you need to complete the following steps to use SlmQueue:
 
-> SlmQueue is pretty useless by itself, as it is mainly interfaces and abstract classes. To make it really powerful,
-you'll likely add [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd), [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
+ 1. Enable the module by adding `SlmQueue` in your `application.config.php` file.
+ 2. Copy the `slm_queue.global.php.dist` (you can find this file in the `config` folder of SlmQueue) into
+your `config/autoload` folder and apply any setting you want.
+
+NB. SlmQueue is a skeleton and therefore useless by itself. Enable an adapter to give you the implementation details
+you need to push jobs into the queue. Choose one of the available adapters
+[SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd),
+[SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
 or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 Requirements
