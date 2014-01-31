@@ -10,8 +10,9 @@ Created by Jurian Sluiman and Michaël Gallego
 Introduction
 ------------
 
-SlmQueue is a Zend Framework 2 module that integrates with various queuing systems. SlmQueue is only a base module that
-contains interfaces and abstract classes. Here are the current supported systems:
+SlmQueue is a job queue abstraction layer for Zend Framework 2 applications. It supports various job queue systems and makes your
+application independent from the underlying system you use. The currently supported systems have each their own adapter-module and
+are the following:
 
 * Beanstalk: use [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd)
 * Amazon SQS: use [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
