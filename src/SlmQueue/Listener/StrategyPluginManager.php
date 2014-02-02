@@ -6,9 +6,9 @@ use SlmQueue\Listener\Strategy\AbstractStrategy;
 use Zend\ServiceManager\AbstractPluginManager;
 
 /**
- * ListenerPluginManager
+ * StrategyPluginManager
  */
-class ListenerPluginManager extends AbstractPluginManager
+class StrategyPluginManager extends AbstractPluginManager
 {
     /**
      * @var bool

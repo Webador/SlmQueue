@@ -2,15 +2,15 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Listener\ListenerPluginManager;
+use SlmQueue\Listener\StrategyPluginManager;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * ListenerPluginManagerFactory
+ * StrategyPluginManagerFactory
  */
-class ListenerPluginManagerFactory implements FactoryInterface
+class StrategyPluginManagerFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -20,9 +20,9 @@ class ListenerPluginManagerFactory implements FactoryInterface
         // We do not need to check if jobs is an empty array because every the JobPluginManager automatically
         // adds invokables if the job name is not known, which will be sufficient most of the time
         $config = $serviceLocator->get('Config');
-        $config = $config['slm_queue']['listener_manager'];
+        $config = $config['slm_queue']['strategy_manager'];
 
-        $listenerPluginManager = new ListenerPluginManager(new Config($config));
+        $listenerPluginManager = new StrategyPluginManager(new Config($config));
         $listenerPluginManager->setServiceLocator($serviceLocator);
 
         return $listenerPluginManager;
