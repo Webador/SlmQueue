@@ -1,6 +1,8 @@
 <?php
 namespace SlmQueue\Factory;
 
+use SlmQueue\Listener\WorkerInitializerListenerAggregate;
+use SlmQueue\Worker\AbstractWorker;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -10,14 +12,27 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class WorkerFactory implements FactoryInterface
 {
     /**
-     * {@inheritDoc}
+     * Create service
+     *
+     * @param ServiceLocatorInterface $serviceLocator
+     * @param null $canonicalName
+     * @param null $requestedName
+     * @return AbstractWorker
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        $workerOptions         = $serviceLocator->get('SlmQueue\Options\WorkerOptions');
-        $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\ListenerPluginManager');
+        $config                = $serviceLocator->get('Config');
+        $strategies            = $config['slm_queue']['strategies'];
+
+        $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');
         $queuePluginManager    = $serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
 
-        return new $requestedName($queuePluginManager, $listenerPluginManager, $workerOptions);
+        /** @var AbstractWorker $worker */
+        $worker                = new $requestedName($queuePluginManager);
+        $attachQueueListener   = new WorkerInitializerListenerAggregate($worker, $listenerPluginManager, $strategies);
+
+        $worker->getEventManager()->attachAggregate($attachQueueListener);
+
+        return $worker;
     }
 }

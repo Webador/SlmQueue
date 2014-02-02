@@ -5,8 +5,8 @@ namespace SlmQueue\Listener\Strategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
-class InterruptStrategy extends AbstractStrategy {
-
+class InterruptStrategy extends AbstractStrategy
+{
     /**
      * @var bool
      */
@@ -28,8 +28,8 @@ class InterruptStrategy extends AbstractStrategy {
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'));
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
@@ -37,7 +37,7 @@ class InterruptStrategy extends AbstractStrategy {
         if ($this->interrupted) {
             $event->stopPropagation(true);
 
-            return 'interrupted by an external signal';
+            return 'interrupt by an external signal';
         }
     }
 

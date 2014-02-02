@@ -45,7 +45,7 @@ abstract class AbstractWorkerController extends AbstractActionController
             );
         }
 
-        $messages = implode("\n", array_map(function($m) {
+        $messages = implode("\n", array_map(function ($m) {
             return str_repeat(' ', 4) . $m;
         }, $messages));
 
