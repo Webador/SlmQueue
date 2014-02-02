@@ -5,21 +5,32 @@ namespace SlmQueue\Listener\Strategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
-class MaxRunsStrategy extends AbstractStrategy {
-
-    protected $run_count = 0;
+class MaxRunsStrategy extends AbstractStrategy
+{
+    /**
+     * @var int
+     */
+    protected $runCount = 0;
 
     /**
      * @var int
      */
-    protected $max_runs = 0;
+    protected $maxRuns = 0;
 
     /**
-     * @param int $max_runs
+     * @param int $maxRuns
      */
-    public function setMaxRuns($max_runs)
+    public function setMaxRuns($maxRuns)
     {
-        $this->max_runs = $max_runs;
+        $this->maxRuns = $maxRuns;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxRuns()
+    {
+        return $this->maxRuns;
     }
 
     /**
@@ -27,14 +38,14 @@ class MaxRunsStrategy extends AbstractStrategy {
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
     {
-        $this->run_count++;
+        $this->runCount++;
 
-        if ($this->max_runs && $this->run_count >= $this->max_runs) {
+        if ($this->maxRuns && $this->runCount >= $this->maxRuns) {
             $event->stopPropagation(true);
 
             return 'reached its maximum allowed runs';

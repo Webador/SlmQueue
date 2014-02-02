@@ -5,19 +5,27 @@ namespace SlmQueue\Listener\Strategy;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
-class MaxMemoryStrategy extends AbstractStrategy {
-
+class MaxMemoryStrategy extends AbstractStrategy
+{
     /**
      * @var int
      */
-    protected $max_memory;
+    protected $maxMemory;
 
     /**
-     * @param int $max_memory
+     * @param int $maxMemory
      */
-    public function setMaxMemory($max_memory)
+    public function setMaxMemory($maxMemory)
     {
-        $this->max_memory = $max_memory;
+        $this->maxMemory = (int) $maxMemory;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxMemory()
+    {
+        return $this->maxMemory;
     }
 
     /**
@@ -25,13 +33,13 @@ class MaxMemoryStrategy extends AbstractStrategy {
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'));
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
     {
-        if ($this->max_memory && memory_get_usage() > $this->max_memory) {
+        if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
             $event->stopPropagation(true);
 
             return 'reached maximum allowed memory usage';

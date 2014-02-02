@@ -3,10 +3,7 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Listener\ListenerPluginManager;
-use SlmQueue\Listener\ListenerInterface;
 use SlmQueue\Listener\Strategy\AbstractStrategy;
-use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use Zend\EventManager\EventManager;
@@ -26,31 +23,18 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     protected $queuePluginManager;
 
     /**
-     * @var ListenerPluginManager
-     */
-    protected $listenerPluginManager;
-
-    /**
      * @var EventManagerInterface
      */
     protected $eventManager;
 
     /**
-     * @var WorkerOptions
-     */
-    protected $options;
-
-    /**
      * Constructor
      *
      * @param QueuePluginManager $queuePluginManager
-     * @param WorkerOptions      $options
      */
-    public function __construct(QueuePluginManager $queuePluginManager, ListenerPluginManager $listenerPluginManager, WorkerOptions $options)
+    public function __construct(QueuePluginManager $queuePluginManager)
     {
         $this->queuePluginManager    = $queuePluginManager;
-        $this->listenerPluginManager = $listenerPluginManager;
-        $this->options               = $options;
     }
 
     /**
@@ -61,9 +45,9 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         /** @var $queue QueueInterface */
         $queue        = $this->queuePluginManager->get($queueName);
         $eventManager = $this->getEventManager();
-        $this->configureStrategies();
+        $workerEvent  = new WorkerEvent($queue);
 
-        $workerEvent = new WorkerEvent($queue);
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_PRE, $workerEvent);
 
         /** @var ResponseCollection $results */
         $results  = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
@@ -90,57 +74,13 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_POST, $workerEvent);
+
         foreach($results as $key=>$message) {
             $messages[] = $message;
         }
 
         return $messages;
-    }
-
-    protected function configureStrategies(array $strategies = array())
-    {
-        $strategies_required = array(
-            array('name'=>'SlmQueue\Strategy\InterruptStrategy'),
-            array('name'=>'SlmQueue\Strategy\MaxMemoryStrategy', 'options' => $this->options->toArray()),
-            array('name'=>'SlmQueue\Strategy\MaxRunsStrategy', 'options' => $this->options->toArray())
-        );
-
-        $strategies = ArrayUtils::merge($strategies, $strategies_required);
-try {
-    $this->addStrategies($strategies);
-
-} catch (\Exception $e) {
-    print_r($e->getMessage());
-}
-    }
-
-    protected function addStrategies(array $strategies)
-    {
-        foreach ($strategies as $strategy) {
-            if (is_string($strategy)) {
-                $listener = $this->listenerPluginManager->get($strategy);
-                $this->addStrategy($listener);
-            } elseif (is_array($strategy)) {
-                $name     = $strategy['name'];
-                $listener = $this->listenerPluginManager->get($name);
-                if (array_key_exists('options', $strategy) && method_exists($listener, 'setOptions')) {
-                    $listener->setOptions($strategy['options']);
-                }
-
-                $priority = 1;
-                if (array_key_exists('priority', $strategy)) {
-                    $priority = $strategy['priority'];
-                }
-
-                $this->addStrategy($listener, $priority);
-            }
-        }
-    }
-
-
-    public function addStrategy(AbstractStrategy $strategy, $priority = 1)
-    {
-        $this->getEventManager()->attachAggregate($strategy, $priority);
     }
 
     /**

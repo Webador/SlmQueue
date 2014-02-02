@@ -7,6 +7,13 @@ use Zend\Filter\Word\UnderscoreToCamelCase;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {
+    protected $options;
+
+    public function __construct(array $options = array())
+    {
+        $this->options = $options;
+    }
+
     /**
      * Set options from array
      */
