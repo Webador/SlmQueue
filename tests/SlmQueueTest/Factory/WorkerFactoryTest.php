@@ -18,6 +18,7 @@ class AbstractWorkerTest extends TestCase
 
     public function testCreateService()
     {
+        $sm      = ServiceManagerFactory::getServiceManager();
         $factory = new WorkerFactory();
         $worker  = $factory->createService($sm, 'slmqueuetestassetsimpleworker', 'SlmQueueTest\Asset\SimpleWorker');
 
