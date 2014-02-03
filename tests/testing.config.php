@@ -17,6 +17,11 @@
  * <http://www.doctrine-project.org>.
  */
 return array(
+    'service_manager' => array(
+        'factories' => array(
+            'SlmQueueTest\Asset\SimpleWorker'    => 'SlmQueue\Factory\WorkerFactory',
+        )
+    ),
     'slm_queue' => array(
         /**
          * Queues config
