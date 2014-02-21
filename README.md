@@ -367,7 +367,7 @@ class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
         $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onPostJobProcessing'));
     }
 
-    protected function onPreJobProcessing(WorkerEvent $e) {
+    public function onPreJobProcessing(WorkerEvent $e) {
         /** @var \SlmQueue\Job\JobInterface */
         $job = $e->getJob();
 
@@ -379,7 +379,7 @@ class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
         $this->translator->setLocale($job->getLocale());
     }
 
-    protected function onPostJobProcessing(WorkerEvent $e) {
+    public function onPostJobProcessing(WorkerEvent $e) {
         $job = $e->getJob();
 
         if (!$job implements LocaleAwareJobInterface) {
