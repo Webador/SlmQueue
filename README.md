@@ -363,8 +363,8 @@ class BootstrapTranslatorJobListener extends AbstractListenerAggregate {
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this, 'onPreJobProcessing'));
-        $this->handlers[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onPostJobProcessing'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this, 'onPreJobProcessing'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onPostJobProcessing'));
     }
 
     public function onPreJobProcessing(WorkerEvent $e) {
