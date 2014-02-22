@@ -7,7 +7,7 @@ use Zend\ServiceManager\AbstractPluginManager;
 /**
  * JobPluginManager
  * 
- * @method JobInterface get
+ * @method JobInterface get($name)
  */
 class JobPluginManager extends AbstractPluginManager
 {
