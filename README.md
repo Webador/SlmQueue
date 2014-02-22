@@ -69,7 +69,7 @@ namespace MyModule\Job;
 
 use SlmQueue\Job\AbstractJob;
 
-class Email extends AbstractJob
+class EmailJob extends AbstractJob
 {
     public function execute()
     {
