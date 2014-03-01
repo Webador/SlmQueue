@@ -26,7 +26,7 @@ interface WorkerInterface
      *
      * @param  JobInterface   $job
      * @param  QueueInterface $queue
-     * @return void
+     * @return int Status of the job
      */
     public function processJob(JobInterface $job, QueueInterface $queue);
 }
