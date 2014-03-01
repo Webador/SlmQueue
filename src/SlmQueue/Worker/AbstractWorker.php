@@ -17,21 +17,6 @@ use Zend\EventManager\EventManagerInterface;
 abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
     /**
-     * Status for successfully finished job
-     */
-    const JOB_SUCCESSFUL   = 1;
-
-    /**
-     * Status for job that has failed and will not be processed again
-     */
-    const JOB_FAILED       = 2;
-
-    /**
-     * Status for job that has failed but will be processed again
-     */
-    const JOB_RESCHEDULED  = 4;
-
-    /**
      * @var QueuePluginManager
      */
     protected $queuePluginManager;
@@ -102,7 +87,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             }
 
             $workerEvent->setJob($job);
-            $workerEvent->setStatus(null);
+            $workerEvent->setResult(null);
 
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
