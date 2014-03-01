@@ -30,6 +30,12 @@ class WorkerEvent extends Event
     protected $job;
 
     /**
+     * Result of the processed job.
+     * @var int
+     */
+    protected $result;
+
+    /**
      * @param QueueInterface $queue
      */
     public function __construct(QueueInterface $queue)
@@ -61,4 +67,21 @@ class WorkerEvent extends Event
     {
         return $this->queue;
     }
+
+    /**
+     * @param int $result
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
+
 }
