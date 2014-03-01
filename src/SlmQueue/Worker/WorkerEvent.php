@@ -22,17 +22,17 @@ class WorkerEvent extends Event
     /**
      * Status for successfully finished job
      */
-    const JOB_SUCCESSFUL   = 1;
+    const JOB_SUCCESSFUL = 1;
 
     /**
      * Status for job that has failed and will not be processed again
      */
-    const JOB_FAILED       = 2;
+    const JOB_FAILED = 2;
 
     /**
      * Status for job that has failed but will be processed again
      */
-    const JOB_RESCHEDULED  = 4;
+    const JOB_RESCHEDULED = 4;
 
     /**
      * @var QueueInterface
