@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Controller\Plugin;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Controller\Plugin\Queue as QueuePlugin;
+use SlmQueue\Controller\Plugin\QueuePlugin;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\QueueAwareJob;

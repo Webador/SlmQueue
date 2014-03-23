@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Controller\Plugin\Queue as QueuePlugin;
+use SlmQueue\Controller\Plugin\QueuePlugin;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 

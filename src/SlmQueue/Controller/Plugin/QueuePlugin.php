@@ -11,7 +11,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 /**
  * Queue controller plugin
  */
-class Queue extends AbstractPlugin
+class QueuePlugin extends AbstractPlugin
 {
     /**
      * Plugin manager for queues
