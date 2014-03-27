@@ -11,7 +11,7 @@ before_script:
 
 script:
   - phpunit
-  - ./vendor/bin/phpcs --standard=PSR2 --config-set show_warnings 0 ./src/
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.3' ]; then ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/; fi"
 
 notifications:
   irc: "irc.freenode.org#zftalk.modules"
