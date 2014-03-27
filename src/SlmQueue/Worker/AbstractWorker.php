@@ -52,7 +52,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         if (function_exists('pcntl_signal')) {
             declare(ticks = 1);
             pcntl_signal(SIGTERM, array($this, 'handleSignal'));
-            pcntl_signal(SIGINT,  array($this, 'handleSignal'));
+            pcntl_signal(SIGINT, array($this, 'handleSignal'));
         }
     }
 

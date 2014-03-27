@@ -41,7 +41,8 @@ abstract class AbstractWorkerController extends AbstractActionController
         } catch (ExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
-                $e->getCode(), $e
+                $e->getCode(),
+                $e
             );
         }
 
