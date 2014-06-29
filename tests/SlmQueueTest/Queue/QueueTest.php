@@ -149,58 +149,41 @@ class QueueTest extends TestCase
 
     public function testCanCreateJobWithContent()
     {
-        $job = $this->getMock('SlmQueue\Job\JobInterface');
-        $job->expects($this->once())
-            ->method('setContent')
-            ->with('Foo')
-            ->will($this->returnValue($job));
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
 
-        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SimpleJob')
-                         ->will($this->returnValue($job));
+        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
+        $job     = $this->queue->unserializeJob($payload);
 
-        $queue  = new SimpleQueue('queue', $jobPluginManager);
-        $result = $queue->createJob('SimpleJob', serialize('Foo'));
+        $this->assertEquals('Foo', $job->getContent());
     }
 
     public function testCanCreateJobWithMetadata()
     {
-        $job = $this->getMock('SlmQueue\Job\JobInterface');
-        $job->expects($this->once())
-            ->method('setContent')
-            ->will($this->returnValue($job));
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
 
-        $job->expects($this->once())
-            ->method('setMetadata')
-            ->with(array('foo' => 'Bar'))
-            ->will($this->returnValue($job));
+        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
+        $job     = $this->queue->unserializeJob($payload);
 
-        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SimpleJob')
-                         ->will($this->returnValue($job));
-
-        $queue  = new SimpleQueue('queue', $jobPluginManager);
-        $result = $queue->createJob('SimpleJob', null, array('foo' => 'Bar'));
+        $this->assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
     public function testCreateQueueAwareJob()
     {
         $job = new QueueAwareJob();
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with('QueueAwareJob')
+                               ->will($this->returnValue($job));
 
-        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SlmQueueTest\Asset\QueueAwareJob')
-                         ->will($this->returnValue($job));
+        $payload = '{"name":"QueueAwareJob","content":"N;","metadata":{"name":"QueueAwareJob"}}';
+        $result  = $this->queue->unserializeJob($payload);
 
-        $queue = new SimpleQueue('queue', $jobPluginManager);
-
-        $result = $queue->createJob('SlmQueueTest\Asset\QueueAwareJob');
-
-        $this->assertSame($queue, $result->getQueue());
+        $this->assertSame($this->queue, $job->getQueue());
     }
 }
