@@ -3,6 +3,7 @@
 namespace SlmQueue\Queue;
 
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Job\JobInterface;
 
 /**
  * AbstractQueue
@@ -46,19 +47,25 @@ abstract class AbstractQueue implements QueueInterface
     }
 
     /**
-     * Create a concrete instance of a job
+     * Create a job instance based on serialized input
      *
-     * @param  string $className
-     * @param  mixed  $content
+     * The
+     *
+     * @param  string $string
      * @param  array  $metadata
      * @return \SlmQueue\Job\JobInterface
      */
-    public function createJob($className, $content = null, array $metadata = array())
+    public function unserializeJob($string, array $metadata = array())
     {
-        /** @var $job \SlmQueue\Job\JobInterface */
-        $job = $this->jobPluginManager->get($className);
+        $data     =  json_decode($string, true);
+        $name     =  $data['name'];
+        $metadata += $data['metadata'];
+        $content  =  unserialize($data['content']);
 
-        $job->setContent(unserialize($content));
+        /** @var $job \SlmQueue\Job\JobInterface */
+        $job = $this->getJobPluginManager()->get($name);
+
+        $job->setContent($content);
         $job->setMetadata($metadata);
 
         if ($job instanceof QueueAwareInterface) {
@@ -66,5 +73,28 @@ abstract class AbstractQueue implements QueueInterface
         }
 
         return $job;
+    }
+
+    /**
+     * Serialize job to allow persistence
+     *
+     * The serialization format is a JSON object with keys "content",
+     * "metadata" and "name". When a job is fetched from the SL, a job name
+     * will be set and be available as metadata. An invokable job has no service
+     * name and therefore the FQCN will be used.
+     *
+     * @param  JobInterface $job The job to persist
+     * @return string
+     */
+    public function serializeJob(JobInterface $job)
+    {
+        $name = $job->getMetadata('name');
+        $data = array(
+            'content'  => serialize($job->getContent()),
+            'metadata' => $job->getMetadata(),
+            'name'     => $name ?: get_class($job)
+        );
+
+        return json_encode($data);
     }
 }
