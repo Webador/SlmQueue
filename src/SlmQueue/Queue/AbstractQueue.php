@@ -90,9 +90,9 @@ abstract class AbstractQueue implements QueueInterface
     {
         $name = $job->getMetadata('name');
         $data = array(
+            'name'     => $name ?: get_class($job),
             'content'  => serialize($job->getContent()),
-            'metadata' => $job->getMetadata(),
-            'name'     => $name ?: get_class($job)
+            'metadata' => $job->getMetadata()
         );
 
         return json_encode($data);
