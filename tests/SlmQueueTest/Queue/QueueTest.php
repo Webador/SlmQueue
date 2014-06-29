@@ -10,41 +10,140 @@ use SlmQueueTest\Asset\SimpleJob;
 
 class QueueTest extends TestCase
 {
+    protected $job;
+    protected $jobName;
+    protected $jobPluginManager;
+    protected $queue;
+
+    public function setUp()
+    {
+        $this->job     = new SimpleJob;
+        $this->jobName = 'SlmQueueTest\Asset\SimpleJob';
+
+        $this->jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
+    }
+
     public function testCanPushThenPopJob()
     {
-        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SlmQueueTest\Asset\SimpleJob')
-                         ->will($this->returnValue(new SimpleJob()));
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
 
-        $queue = new SimpleQueue('queue', $jobPluginManager);
+        $this->queue->push($this->job);
+        $job = $this->queue->pop();
 
+        $this->assertInstanceOf($this->jobName, $job);
+
+        $expected = spl_object_hash($this->job);
+        $actual   = spl_object_hash($job);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCanPushThenPopWithJobContent()
+    {
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
+
+        $this->job->setContent('Foo');
+
+        $this->queue->push($this->job);
+        $job = $this->queue->pop();
+
+        $this->assertEquals('Foo', $job->getContent());
+    }
+
+    public function testCanPushThenPopWithJobMetadata()
+    {
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
+
+        $this->job->setMetadata('Foo', 'Bar');
+
+        $this->queue->push($this->job);
+        $job = $this->queue->pop();
+
+        $this->assertEquals(array('Foo' => 'Bar'), $job->getMetadata());
+        $this->assertEquals('Bar', $job->getMetadata('Foo'));
+    }
+
+    public function testCorrectlySerializeJobContent()
+    {
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $queue->push($job);
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
+        $actual   = $this->queue->serializeJob($job);
 
-        $job = $queue->pop();
+        $this->assertEquals($expected, $actual);
+    }
 
-        $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $job);
-        $this->assertEquals('Foo', $job->getContent());
+    public function testCorrectlySerializeJobMetadata()
+    {
+        $job = new SimpleJob();
+        $job->setMetadata('Foo', 'Bar');
+
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
+        $actual   = $this->queue->serializeJob($job);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCorrectlySerializeJobContentAndMetadata()
+    {
+        $job = new SimpleJob();
+        $job->setContent('Foo');
+        $job->setMetadata('Foo', 'Bar');
+
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"Foo":"Bar"}}';
+        $actual   = $this->queue->serializeJob($job);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCorrectlySerializeJobServiceName()
+    {
+        $job = new SimpleJob();
+        $job->setMetadata('name', 'SimpleJob');
+
+        $expected = '{"name":"SimpleJob","content":"N;","metadata":{"name":"SimpleJob"}}';
+        $actual   = $this->queue->serializeJob($job);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCanCreateJobWithFQCN()
+    {
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->jobName)
+                               ->will($this->returnValue($this->job));
+
+        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":[]}';
+        $job     = $this->queue->unserializeJob($payload);
+
+        $expected = spl_object_hash($this->job);
+        $actual   = spl_object_hash($job);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithStringName()
     {
-        $job = new SimpleJob();
-        $jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $jobPluginManager->expects($this->once())
-                         ->method('get')
-                         ->with('SimpleJob')
-                         ->will($this->returnValue($job));
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with('SimpleJob')
+                               ->will($this->returnValue($this->job));
 
-        $queue  = new SimpleQueue('queue', $jobPluginManager);
-        $result = $queue->createJob('SimpleJob');
+        $payload = '{"name":"SimpleJob","content":"N;","metadata":[]}';
+        $job     = $this->queue->unserializeJob($payload);
 
-        $expected = spl_object_hash($job);
-        $actual   = spl_object_hash($result);
+        $expected = spl_object_hash($this->job);
+        $actual   = spl_object_hash($job);
         $this->assertEquals($expected, $actual);
     }
 
