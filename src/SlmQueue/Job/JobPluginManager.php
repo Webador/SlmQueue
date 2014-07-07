@@ -16,6 +16,15 @@ class JobPluginManager extends AbstractPluginManager
      */
     protected $shareByDefault = false;
 
+    public function get($name, $options = array(), $usePeeringServiceManagers = true)
+    {
+        // parent::get calls valudatePlugin() so we're sure $instance is a JobInterface
+        $instance = parent::get($name, $options, $usePeeringServiceManagers);
+
+        $instance->setMetadata('name', $name);
+        return $instance;
+    }
+
     /**
      * @param  mixed $plugin
      * @throws Exception\RuntimeException

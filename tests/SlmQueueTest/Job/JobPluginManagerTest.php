@@ -34,4 +34,15 @@ class JobPluginManagerTest extends TestCase
 
         $this->assertNotSame($firstInstance, $secondInstance);
     }
+
+    public function testPluginManagerSetsServiceNameAsMetadata()
+    {
+        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager->setInvokableClass('SimpleJob', 'SlmQueueTest\Asset\SimpleJob');
+
+        $instance = $jobPluginManager->get('SimpleJob');
+
+        $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $instance);
+        $this->assertEquals('SimpleJob', $instance->getMetadata('name'));
+    }
 }
