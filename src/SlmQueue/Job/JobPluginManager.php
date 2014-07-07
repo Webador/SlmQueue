@@ -18,7 +18,7 @@ class JobPluginManager extends AbstractPluginManager
 
     public function get($name, $options = array(), $usePeeringServiceManagers = true)
     {
-        // parent::get calls valudatePlugin() so we're sure $instance is a JobInterface
+        // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
         $instance = parent::get($name, $options, $usePeeringServiceManagers);
 
         $instance->setMetadata('name', $name);
