@@ -31,21 +31,4 @@ abstract class AbstractJob extends Message implements JobInterface
     {
         return $this->getMetadata('id');
     }
-
-    /**
-     * The 'class' attribute that is saved allow to easily handle dependencies by pulling the job from
-     * the JobPluginManager whenever it is popped from the queue
-     *
-     * @return string
-     */
-    public function jsonSerialize()
-    {
-        $data = array(
-            'class'    => get_called_class(),
-            'content'  => serialize($this->getContent()),
-            'metadata' => $this->getMetadata(),
-        );
-
-        return json_encode($data);
-    }
 }
