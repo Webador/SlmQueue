@@ -49,7 +49,10 @@ abstract class AbstractQueue implements QueueInterface
     /**
      * Create a job instance based on serialized input
      *
-     * The
+     * Instantiate a job based on a serialized data string. The string
+     * is a JSON string containing job name, content and metadata. Use
+     * the decoded JSON value to create a job instance, configure it
+     * and return it.
      *
      * @param  string $string
      * @param  array  $metadata
