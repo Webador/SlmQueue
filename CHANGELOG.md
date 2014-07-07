@@ -1,3 +1,7 @@
+# 0.4.0
+
+- BC: job's jsonSerialize() removed in favour of the queue's serializeJob() method
+
 # 0.3.0
 
 - BC: raised dependency to ZF 2.2
