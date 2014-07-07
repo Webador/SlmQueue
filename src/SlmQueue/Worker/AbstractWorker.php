@@ -4,6 +4,7 @@ namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Options\WorkerOptions;
+use SlmQueue\Queue\BatchableQueueInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\QueueAwareInterface;
@@ -98,6 +99,78 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             // Check for internal stop condition
             if ($this->isMaxRunsReached($count) || $this->isMaxMemoryExceeded()) {
                 break;
+            }
+        }
+
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
+
+        return $count;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function processBatchableQueue($queueName, array $options = array())
+    {
+        /** @var $queue BatchableQueueInterface */
+        $queue = $this->queuePluginManager->get($queueName);
+
+        if (!$queue instanceof BatchableQueueInterface) {
+            throw new Exception\InvalidQueueException(sprintf(
+                'A queue that implements SlmQueue\Queue\BatchableQueueException was expected, but "%s" given',
+                get_class($queue)
+            ));
+        }
+
+        $eventManager = $this->getEventManager();
+        $count        = 0;
+
+        $workerEvent = new WorkerEvent();
+        $workerEvent->setQueue($queue);
+
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
+
+        while (true) {
+            // Check for external stop condition
+            if ($this->isStopped()) {
+                break;
+            }
+
+            $jobs = $queue->batchPop($options);
+
+            while (!empty($jobs)) {
+                $job = array_shift($jobs);
+
+                // The queue may return null, for instance if a timeout was set
+                if (!$job instanceof JobInterface) {
+                    continue;
+                }
+
+                // The job might want to get the queue injected
+                if ($job instanceof QueueAwareInterface) {
+                    $job->setQueue($queue);
+                }
+
+                $workerEvent->setJob($job);
+
+                $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
+
+                $this->processJob($job, $queue);
+                $count++;
+
+                $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
+
+                // Check for internal stop condition
+                if (
+                    $this->isStopped()
+                    || $count === $this->options->getMaxRuns()
+                    || memory_get_usage() > $this->options->getMaxMemory()
+                ) {
+                    // If there are still messages, they could not be handled because a termination criteria
+                    // was met, so we just reinsert them into the queue
+                    $queue->batchPush($jobs);
+                    break;
+                }
             }
         }
 
