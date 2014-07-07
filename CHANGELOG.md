@@ -1,6 +1,7 @@
 # 0.4.0
 
 - BC: job's jsonSerialize() removed in favour of the queue's serializeJob() method
+- BC: job's metadata field "name" is now reserved for SlmQueue and should not be used by end users
 
 # 0.3.0
 
