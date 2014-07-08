@@ -55,8 +55,7 @@ class QueuePlugin extends AbstractPlugin
     public function __invoke($name = null)
     {
         if (null !== $name) {
-            $queue = $this->getQueuePluginManager()->get($name);
-            $this->setQueue($queue);
+            $this->queue = $this->queuePluginManager->get($name);
         }
 
         return $this;
@@ -72,57 +71,17 @@ class QueuePlugin extends AbstractPlugin
      */
     public function push($name, $payload = null)
     {
-        if (null === $this->getQueue()) {
+        if (null === $this->queue) {
             throw new QueueNotFoundException(
                 'You cannot push a job without a queue selected'
             );
         }
 
-        $job = $this->getJobPluginManager()->get($name);
+        $job = $this->jobPluginManager->get($name);
         if (null !== $payload) {
             $job->setContent($payload);
         }
 
-        return $this->getQueue()->push($job);
-    }
-
-    /**
-     * Set internal queue
-     *
-     * @param QueueInterface $queue
-     */
-    protected function setQueue(QueueInterface $queue)
-    {
-        $this->queue = $queue;
-    }
-
-    /**
-     * Get internal queue
-     *
-     * @return QueueInterface
-     */
-    protected function getQueue()
-    {
-        return $this->queue;
-    }
-
-    /**
-     * Get queue plugin manager
-     *
-     * @return QueuePluginManager
-     */
-    protected function getQueuePluginManager()
-    {
-        return $this->queuePluginManager;
-    }
-
-    /**
-     * Get job plugin manager
-     *
-     * @return JobPluginManager
-     */
-    protected function getJobPluginManager()
-    {
-        return $this->jobPluginManager;
+        return $this->queue->push($job);
     }
 }
