@@ -9,6 +9,12 @@ return array(
         ),
     ),
 
+    'controller_plugins' => array(
+        'factories' => array(
+            'queue' => 'SlmQueue\Factory\QueueControllerPluginFactory'
+        ),
+    ),
+
     'slm_queue' => array(
         /**
          * Worker options
