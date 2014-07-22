@@ -16,7 +16,6 @@ class QueueControllerPluginFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $serviceLocator     = $serviceLocator->getServiceLocator();
         $queuePluginManager = $serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
         $jobPluginManager   = $serviceLocator->get('SlmQueue\Job\JobPluginManager');
 
