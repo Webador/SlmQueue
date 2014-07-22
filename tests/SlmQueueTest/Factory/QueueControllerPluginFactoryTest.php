@@ -17,5 +17,4 @@ class QueueControllerPluginFactoryTest extends TestCase
 
         $this->assertInstanceOf('SlmQueue\Controller\Plugin\QueuePlugin', $queueControllerPluginFactory);
     }
-
 }
