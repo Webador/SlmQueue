@@ -10,6 +10,6 @@ class SimpleWorker extends AbstractWorker
 {
     public function processJob(JobInterface $job, QueueInterface $queue)
     {
-        $job->execute();
+        return $job->execute();
     }
 }

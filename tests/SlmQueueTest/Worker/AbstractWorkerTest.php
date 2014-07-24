@@ -6,6 +6,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleWorker;
+use Zend\EventManager\EventManager;
 
 class AbstractWorkerTest extends TestCase
 {
@@ -114,6 +115,27 @@ class AbstractWorkerTest extends TestCase
         $eventManager->expects($this->at(3))
                      ->method('trigger')
                      ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_POST));
+
+        $this->worker->processQueue('foo');
+    }
+
+    public function testWorkerSetsJobStatusInEventClass()
+    {
+        $eventManager = new EventManager;
+        $this->worker->setEventManager($eventManager);
+
+        $this->job->expects($this->once())
+                  ->method('execute')
+                  ->will($this->returnValue(WorkerEvent::JOB_STATUS_SUCCESS));
+
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($this->job));
+
+        $self = $this;
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, function($e) use ($self) {
+            $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
+        });
 
         $this->worker->processQueue('foo');
     }
