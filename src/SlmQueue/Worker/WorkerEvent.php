@@ -20,6 +20,21 @@ class WorkerEvent extends Event
     const EVENT_PROCESS_JOB_POST   = 'processJob.post';
 
     /**
+     * Status for successfully finished job
+     */
+    const JOB_SUCCESS             = 1;
+ 
+    /**
+     * Status for job that has failed and cannot be processed again
+     */
+    const JOB_FAILURE             = 2;
+ 
+    /**
+     * Status for job that has failed but can be processed again
+     */
+    const JOB_FAILURE_RECOVERABLE = 4;
+
+    /**
      * @var QueueInterface
      */
     protected $queue;
@@ -83,5 +98,4 @@ class WorkerEvent extends Event
     {
         return $this->result;
     }
-
 }
