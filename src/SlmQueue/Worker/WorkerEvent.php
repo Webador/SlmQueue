@@ -20,6 +20,11 @@ class WorkerEvent extends Event
     const EVENT_PROCESS_JOB_POST   = 'processJob.post';
 
     /**
+     * Status for unstarted jobs
+     */
+    const JOB_UNKNOWN              = 0;
+
+    /**
      * Status for successfully finished job
      */
     const JOB_SUCCESS             = 1;
