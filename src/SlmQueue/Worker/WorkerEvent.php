@@ -22,22 +22,22 @@ class WorkerEvent extends Event
     /**
      * Status for unstarted jobs
      */
-    const JOB_UNKNOWN              = 0;
+    const JOB_STATUS_UNKNOWN             = 0;
 
     /**
      * Status for successfully finished job
      */
-    const JOB_SUCCESS             = 1;
+    const JOB_STATUS_SUCCESS             = 1;
  
     /**
      * Status for job that has failed and cannot be processed again
      */
-    const JOB_FAILURE             = 2;
+    const JOB_STATUS_FAILURE             = 2;
  
     /**
      * Status for job that has failed but can be processed again
      */
-    const JOB_FAILURE_RECOVERABLE = 4;
+    const JOB_STATUS_FAILURE_RECOVERABLE = 4;
 
     /**
      * @var QueueInterface

@@ -87,7 +87,7 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             }
 
             $workerEvent->setJob($job);
-            $workerEvent->setResult(WorkerEvent::JOB_UNKNOWN);
+            $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
