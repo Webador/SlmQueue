@@ -8,14 +8,15 @@ php:
 before_script:
   - composer self-update
   - composer install --dev --prefer-source
+  - mkdir -p tests/build/logs
 
 script:
   - vendor/bin/phpunit -c ./phpunit.xml
   - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.3' ]; then ./vendor/bin/phpcs --standard=PSR2 ./src/; fi"
 
 after_script:
-  - mkdir -p build/logs
-  - php vendor/bin/coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover tests/build/logs/clover.xml
 
 notifications:
   irc: "irc.freenode.org#zftalk.modules"

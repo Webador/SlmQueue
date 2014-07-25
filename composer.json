@@ -29,8 +29,7 @@
     "require-dev": {
         "zendframework/zendframework": "~2.2",
         "squizlabs/php_codesniffer": "1.5.*",
-        "phpunit/phpunit": "~4.1",
-        "satooshi/php-coveralls": "dev-master"
+        "phpunit/phpunit": "~4.1"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
