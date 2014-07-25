@@ -4,6 +4,7 @@ SlmQueue
 [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
+[![Dependency Status](https://www.versioneye.com/user/projects/53d0f4b9ead8b3e94400000c/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53d0f4b9ead8b3e94400000c)
 
 Created by Jurian Sluiman and Michaël Gallego
 
