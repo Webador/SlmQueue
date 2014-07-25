@@ -2,7 +2,7 @@ SlmQueue
 ========
 
 [![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
-[![Coverage Status](https://coveralls.io/repos/juriansluiman/SlmQueue/badge.png)](https://coveralls.io/r/juriansluiman/SlmQueue)
+[![Code Coverage](https://scrutinizer-ci.com/g/juriansluiman/SlmQueue/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/juriansluiman/SlmQueue/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
 [![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
 
