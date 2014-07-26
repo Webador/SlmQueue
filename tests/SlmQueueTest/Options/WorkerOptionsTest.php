@@ -5,6 +5,7 @@ namespace SlmQueueTest\Options;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Options\WorkerOptions;
 use SlmQueueTest\Util\ServiceManagerFactory;
+use Zend\ServiceManager\ServiceManager;
 
 class WorkerOptionsTest extends TestCase
 {

@@ -18,7 +18,7 @@ class AbstractControllerTest extends TestCase
     /**
      * @var QueuePluginManager
      */
-    protected $queuePluginManager;
+    protected $queue;
 
     /**
      * @var SimpleController
