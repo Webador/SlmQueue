@@ -12,6 +12,7 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setId(3);
 
+        $this->assertEquals(3, $job->getId());
         $this->assertEquals(3, $job->getMetadata('id'));
     }
 
