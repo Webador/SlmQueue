@@ -67,6 +67,29 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue('foo');
     }
 
+    public function testWorkerSkipsVoidValuesFromQueue()
+    {
+        $i   = 0;
+        $job = $this->job;
+        $callback = function() use (&$i, $job) {
+            // We return the job on the 4th call
+            if ($i === 3) {
+                return $job;
+            }
+
+            $i++;
+            return null;
+        };
+
+        $this->options->setMaxRuns(1);
+        $this->queue->expects($this->exactly(4))
+                    ->method('pop')
+                    ->will($this->returnCallback($callback));
+
+        $count = $this->worker->processQueue('foo');
+        $this->assertEquals(1, $count);
+    }
+
     public function testWorkerMaxMemory()
     {
         $this->options->setMaxMemory(1);
