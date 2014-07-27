@@ -20,8 +20,8 @@ class JobPluginManager extends AbstractPluginManager
     {
         // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
         $instance = parent::get($name, $options, $usePeeringServiceManagers);
-
         $instance->setMetadata('name', $name);
+        
         return $instance;
     }
 
