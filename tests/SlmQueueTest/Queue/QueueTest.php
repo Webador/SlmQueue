@@ -182,7 +182,7 @@ class QueueTest extends TestCase
                                ->will($this->returnValue($job));
 
         $payload = '{"name":"QueueAwareJob","content":"N;","metadata":{"name":"QueueAwareJob"}}';
-        $result  = $this->queue->unserializeJob($payload);
+        $this->queue->unserializeJob($payload);
 
         $this->assertSame($this->queue, $job->getQueue());
     }

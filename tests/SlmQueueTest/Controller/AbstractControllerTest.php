@@ -27,8 +27,8 @@ class AbstractControllerTest extends TestCase
 
     public function setUp()
     {
-        $this->queue = new QueuePluginManager(new Config(array('factories' => array('knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'))));
-        $this->controller = new SimpleController(new SimpleWorker($this->queue, new WorkerOptions()));
+        $this->queuePluginManager = new QueuePluginManager(new Config(array('factories' => array('knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'))));
+        $this->controller = new SimpleController(new SimpleWorker($this->queuePluginManager, new WorkerOptions()));
     }
 
     public function testThrowExceptionIfQueueIsUnknown()
@@ -43,7 +43,7 @@ class AbstractControllerTest extends TestCase
     public function testSimpleJob()
     {
         /** @var SimpleQueue $queue */
-        $queue = $this->queue->get('knownQueue');
+        $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new SimpleJob());
 
         $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
@@ -55,7 +55,7 @@ class AbstractControllerTest extends TestCase
     public function testFailingJobThrowException()
     {
         /** @var SimpleQueue $queue */
-        $queue = $this->queue->get('knownQueue');
+        $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new FailingJob());
 
         $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
