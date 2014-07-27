@@ -132,4 +132,41 @@ class AbstractWorkerTest extends TestCase
         $this->assertTrue($this->worker->isMaxRunsReached(10));
         $this->assertTrue($this->worker->isMaxRunsReached(11));
     }
+
+    public function testSignalStopsWorkerForSigterm()
+    {
+        $worker = $this->worker;
+        $this->queue->expects($this->never())
+                    ->method('pop');
+
+        $worker->handleSignal(SIGTERM);
+        $count = $worker->processQueue('foo');
+
+        $this->assertEquals(0, $count);
+    }
+
+    public function testSignalStopsWorkerForSigint()
+    {
+        $worker = $this->worker;
+        $this->queue->expects($this->never())
+                    ->method('pop');
+
+        $worker->handleSignal(SIGINT);
+        $count = $worker->processQueue('foo');
+
+        $this->assertEquals(0, $count);
+    }
+
+    public function testNonStoppingSignalDoesNotStopWorker()
+    {
+        $this->options->setMaxRuns(1);
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($this->job));
+
+        $this->worker->handleSignal(SIGPOLL);
+        $count = $this->worker->processQueue('foo');
+
+        $this->assertEquals(1, $count);
+    }
 }
