@@ -27,6 +27,17 @@ class QueueTest extends TestCase
         $plugin->__invoke('DefaultQueue');
     }
 
+    public function testPluginThrowsExceptionWhenNoQueueIsSet()
+    {
+        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
+        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $plugin             = new QueuePlugin($queuePluginManager, $jobPluginManager);
+
+        $this->setExpectedException('SlmQueue\Controller\Exception\QueueNotFoundException');
+        $plugin->push('TestJob');
+
+    }
+
     public function testPluginPushesJobIntoQueue()
     {
         $queuePluginManager = new QueuePluginManager;
