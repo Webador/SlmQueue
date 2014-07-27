@@ -45,4 +45,14 @@ class JobPluginManagerTest extends TestCase
         $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $instance);
         $this->assertEquals('SimpleJob', $instance->getMetadata('name'));
     }
+
+    public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
+    {
+        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager->setInvokableClass('InvalidJob', 'stdClass');
+
+        $this->setExpectedException('SlmQueue\Job\Exception\RuntimeException');
+
+        $instance = $jobPluginManager->get('InvalidJob');
+    }
 }
