@@ -4,10 +4,7 @@ namespace SlmQueueTest\Worker;
  
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
-use Zend\ServiceManager\Config;
 
 class WorkerEventTest extends TestCase
 {
@@ -15,13 +12,7 @@ class WorkerEventTest extends TestCase
 
     public function setUp()
     {
-        $queuePluginManager = new QueuePluginManager(new Config(array(
-            'factories' => array(
-                'simpleQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
-            )
-        )));
-
-        $this->queue = $queuePluginManager->get('simpleQueue');
+        $this->queue = $this->getMock('SlmQueue\Queue\QueueInterface');
     }
     public function testWorkerEventHoldsStateForQueue()
     {
