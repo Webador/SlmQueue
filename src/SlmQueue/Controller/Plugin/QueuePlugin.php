@@ -6,6 +6,7 @@ use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Controller\Exception\QueueNotFoundException;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**

@@ -3,6 +3,7 @@
 namespace SlmQueueTest\Job;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
@@ -37,12 +38,22 @@ class JobPluginManagerTest extends TestCase
 
     public function testPluginManagerSetsServiceNameAsMetadata()
     {
-        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager = new JobPluginManager;
         $jobPluginManager->setInvokableClass('SimpleJob', 'SlmQueueTest\Asset\SimpleJob');
 
         $instance = $jobPluginManager->get('SimpleJob');
 
         $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $instance);
         $this->assertEquals('SimpleJob', $instance->getMetadata('name'));
+    }
+
+    public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
+    {
+        $jobPluginManager = new JobPluginManager;
+        $jobPluginManager->setInvokableClass('InvalidJob', 'stdClass');
+
+        $this->setExpectedException('SlmQueue\Job\Exception\RuntimeException');
+
+        $instance = $jobPluginManager->get('InvalidJob');
     }
 }

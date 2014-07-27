@@ -27,6 +27,17 @@ class QueueTest extends TestCase
         $plugin->__invoke('DefaultQueue');
     }
 
+    public function testPluginThrowsExceptionWhenNoQueueIsSet()
+    {
+        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
+        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $plugin             = new QueuePlugin($queuePluginManager, $jobPluginManager);
+
+        $this->setExpectedException('SlmQueue\Controller\Exception\QueueNotFoundException');
+        $plugin->push('TestJob');
+
+    }
+
     public function testPluginPushesJobIntoQueue()
     {
         $queuePluginManager = new QueuePluginManager;
@@ -48,5 +59,30 @@ class QueueTest extends TestCase
 
         $result = $plugin->push('SimpleJob');
         $this->assertSame($job, $result);
+    }
+
+    public function testPayloadCanBeInjectedViaPlugin()
+    {
+        $queuePluginManager = new QueuePluginManager;
+        $jobPluginManager   = new JobPluginManager;
+
+        $name  = 'DefaultQueue';
+        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', array('push'), array($name, $jobPluginManager));
+        $job   = new SimpleJob;
+
+        $queue->expects($this->once())
+              ->method('push')
+              ->with($job)
+              ->will($this->returnValue($job));
+        $queuePluginManager->setService($name, $queue);
+        $jobPluginManager->setService('SimpleJob', $job);
+
+        $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
+        $plugin->__invoke($name);
+
+        $payload = array('foo' => 'bar');
+        $result  = $plugin->push('SimpleJob', $payload);
+
+        $this->assertSame($payload, $result->getContent());
     }
 }
