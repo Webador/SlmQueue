@@ -7,6 +7,7 @@ use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\QueueAwareInterface;
+use Zend\Console\Console;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -69,6 +70,11 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         $workerEvent = new WorkerEvent($queue);
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
 
+        if (array_key_exists('verbose', $options) && true === $options['verbose']) {
+            $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_PRE,  array($this, 'logJobProcessStart'));
+            $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'logJobProcessDone'));
+        }
+
         while (true) {
             // Check for external stop condition
             if ($this->isStopped()) {
@@ -106,6 +112,22 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
         return $count;
+    }
+
+    public function logJobProcessStart(WorkerEvent $e)
+    {
+        $job  = $e->getJob();
+        $name = $job->getMetadata('name');
+        if (null === $name) $name = get_class($job);
+
+        $console = Console::getInstance();
+        $console->write(sprintf('Processing job %s...', $name));
+    }
+
+    public function logJobProcessDone(WorkerEvent $e)
+    {
+        $console = Console::getInstance();
+        $console->writeLine('Done!');
     }
 
     /**
