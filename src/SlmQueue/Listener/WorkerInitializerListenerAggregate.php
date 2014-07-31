@@ -2,8 +2,9 @@
 
 namespace SlmQueue\Listener;
 
+use SlmQueue\Listener\Strategy\AbstractStrategy;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\ListenerEvent;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\EventManager\EventManagerInterface;
 use Zend\Stdlib\ArrayUtils;
@@ -43,11 +44,11 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_PRE, array($this, 'onAttachQueueListeners'));
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_POST, array($this, 'onDetachQueueListeners'));
+        $this->listeners[] = $events->attach(ListenerEvent::EVENT_PROCESS_PRE, array($this, 'onAttachQueueListeners'));
+        $this->listeners[] = $events->attach(ListenerEvent::EVENT_PROCESS_POST, array($this, 'onDetachQueueListeners'));
     }
 
-    public function onAttachQueueListeners(WorkerEvent $event)
+    public function onAttachQueueListeners(ListenerEvent $event)
     {
         $queueName = $event->getQueue()->getName();
 
@@ -102,11 +103,20 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
         }
     }
 
-    public function onDetachQueueListeners(WorkerEvent $event)
+    public function onDetachQueueListeners(ListenerEvent $event)
     {
+        $exitStates = array();
+
         while(count($this->strategies)) {
-            $this->worker->getEventManager()->detachAggregate(array_pop($this->strategies));
+            /** @var AbstractStrategy $strategy */
+            $strategy = array_pop($this->strategies);
+
+            $this->worker->getEventManager()->detachAggregate($strategy);
+
+            $exitStates[] = $strategy->getExitState();
         }
+
+        return array_filter($exitStates);
     }
 
 }
