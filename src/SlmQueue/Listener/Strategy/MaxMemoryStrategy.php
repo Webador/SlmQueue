@@ -31,18 +31,20 @@ class MaxMemoryStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'));
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'));
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'), $priority);
+        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'), $priority);
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
-            $event->stopPropagation(true);
+            $event->stopPropagation();
 
-            return 'reached maximum allowed memory usage';
+            $this->exitState = sprintf("memory threshold of '%s' exceeded", memory_get_usage());
+        } else {
+            $this->exitState = sprintf('%s memory usage', memory_get_usage());
         }
     }
 

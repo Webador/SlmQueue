@@ -7,12 +7,13 @@ use Zend\Filter\Word\UnderscoreToCamelCase;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {
-    protected $options;
 
-    public function __construct(array $options = array())
-    {
-        $this->options = $options;
-    }
+    /**
+     * The final state of the strategy when exiting
+     *
+     * @var string | null
+     */
+    protected $exitState;
 
     /**
      * Set options from array
@@ -28,4 +29,13 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
             }
         }
     }
+
+    /**
+     * @return false|string
+     */
+    public function getExitState()
+    {
+        return is_string($this->exitState) ? $this->exitState : false;
+    }
+
 }
