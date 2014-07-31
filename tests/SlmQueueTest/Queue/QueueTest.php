@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueueTest\Job;
+namespace SlmQueueTest\Queue;
 
 use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;

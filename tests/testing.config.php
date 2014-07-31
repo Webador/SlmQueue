@@ -23,7 +23,7 @@ return array(
          */
         'queue_manager' => array(
             'factories' => array(
-                'basic-queue' => function($locator) {
+                'basic-queue' => function ($locator) {
                     $parentLocator    = $locator->getServiceLocator();
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
