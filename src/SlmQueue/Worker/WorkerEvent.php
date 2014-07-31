@@ -20,6 +20,26 @@ class WorkerEvent extends Event
     const EVENT_PROCESS_JOB_POST   = 'processJob.post';
 
     /**
+     * Status for unstarted jobs
+     */
+    const JOB_STATUS_UNKNOWN             = 0;
+
+    /**
+     * Status for successfully finished job
+     */
+    const JOB_STATUS_SUCCESS             = 1;
+ 
+    /**
+     * Status for job that has failed and cannot be processed again
+     */
+    const JOB_STATUS_FAILURE             = 2;
+ 
+    /**
+     * Status for job that has failed but can be processed again
+     */
+    const JOB_STATUS_FAILURE_RECOVERABLE = 4;
+
+    /**
      * @var QueueInterface
      */
     protected $queue;
@@ -28,6 +48,12 @@ class WorkerEvent extends Event
      * @var JobInterface|null
      */
     protected $job;
+
+    /**
+     * Result of the processed job.
+     * @var int
+     */
+    protected $result;
 
     /**
      * @param QueueInterface $queue
@@ -60,5 +86,21 @@ class WorkerEvent extends Event
     public function getQueue()
     {
         return $this->queue;
+    }
+
+    /**
+     * @param int $result
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 }

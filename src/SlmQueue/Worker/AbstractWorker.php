@@ -87,12 +87,14 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             }
 
             $workerEvent->setJob($job);
+            $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
-            $this->processJob($job, $queue);
+            $result = $this->processJob($job, $queue);
             $count++;
 
+            $workerEvent->setResult($result);
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
 
             // Check for internal stop condition
