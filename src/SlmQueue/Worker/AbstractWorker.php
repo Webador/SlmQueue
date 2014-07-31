@@ -4,6 +4,7 @@ namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Listener\Strategy\AbstractStrategy;
+use SlmQueue\Listener\Strategy\LogJobStrategy;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use Zend\EventManager\EventManager;
@@ -46,6 +47,10 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         $queue        = $this->queuePluginManager->get($queueName);
         $eventManager = $this->getEventManager();
         $workerEvent  = new WorkerEvent($queue);
+
+        if (array_key_exists('verbose', $options) && true === $options['verbose']) {
+            $eventManager->attachAggregate(new LogJobStrategy());
+        }
 
         // Initializer listener attached many strategies
         $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
