@@ -12,13 +12,7 @@ use Zend\EventManager\Event;
 class WorkerEvent extends Event
 {
     /**
-     * Events reserved for internal use
-     */
-    const EVENT_PROCESS_PRE        = 'process.pre';
-    const EVENT_PROCESS_POST       = 'process.post';
-
-    /**
-     * Various events you can listen to
+     * Various events you can subscribe to
      */
     const EVENT_PROCESS_IDLE       = 'processQueue.idle';
     const EVENT_PROCESS_QUEUE_PRE  = 'processQueue.pre';
