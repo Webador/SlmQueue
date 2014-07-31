@@ -46,11 +46,11 @@ abstract class AbstractWorkerController extends AbstractActionController
         }
 
         $messages = implode("\n", array_map(function ($m) {
-            return str_repeat(' ', 4) . $m;
+            return sprintf(' - %s', $m);
         }, $messages));
 
         return sprintf(
-            "Finished worker for queue '%s' :\n%s\n",
+            "Finished worker for queue '%s':\n%s\n",
             $queue,
             $messages
         );
