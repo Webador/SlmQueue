@@ -47,40 +47,37 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         $eventManager = $this->getEventManager();
         $workerEvent  = new WorkerEvent($queue);
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_PRE, $workerEvent);
+        // Initializer listener attached many strategies
+        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
 
-        /** @var ResponseCollection $results */
-        $results  = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
-        $messages = array();
+        $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent)->stopped();
 
-        while (!$results->stopped()) {
+        while (!$exitRequested) {
             $job = $queue->pop($options);
 
             // The queue may return null, for instance if a timeout was set
             if (!$job instanceof JobInterface) {
-                $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent);
+                $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent)->stopped();
 
                 continue;
             }
 
             $workerEvent->setJob($job);
 
-            $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
+            // strategies may request an exit, however the job must be processed for this event
+            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent)->stopped();
 
             $this->processJob($job, $queue);
 
-            $results = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
+            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent)->stopped() || $exitRequested;
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_POST, $workerEvent);
+        // Initializer detaches strategies and collects exit states
+        $exitStates = $eventManager->trigger(ListenerEvent::EVENT_PROCESS_POST, new ListenerEvent($queue))->first();
 
-        foreach($results as $key=>$message) {
-            $messages[] = $message;
-        }
-
-        return $messages;
+        return $exitStates;
     }
 
     /**
