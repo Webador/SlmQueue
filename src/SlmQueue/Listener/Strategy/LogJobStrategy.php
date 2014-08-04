@@ -9,11 +9,6 @@ use Zend\EventManager\EventManagerInterface;
 class LogJobStrategy extends AbstractStrategy
 {
     /**
-     * @var bool
-     */
-    protected $interrupted = false;
-
-    /**
      * {@inheritDoc}
      */
     public function attach(EventManagerInterface $events, $priority = 1)
