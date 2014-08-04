@@ -15,9 +15,9 @@ class FileWatchStrategy extends AbstractStrategy
     /**
      * Watching these files
      *
-     * @var array | null
+     * @var array
      */
-    protected $files;
+    protected $files = array();
 
     /**
      * @param string $pattern
@@ -26,7 +26,7 @@ class FileWatchStrategy extends AbstractStrategy
     {
         $this->pattern = $pattern;
 
-        $this->files   = null;
+        $this->files   = array();
     }
 
     /**
@@ -35,6 +35,16 @@ class FileWatchStrategy extends AbstractStrategy
     public function getPattern()
     {
         return $this->pattern;
+    }
+
+    /**
+     * Files being watched
+     *
+     * @return array|null
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 
     /**
@@ -48,7 +58,7 @@ class FileWatchStrategy extends AbstractStrategy
 
     public function onStopConditionCheck(WorkerEvent $event)
     {
-        if (!$this->files) {
+        if (!count($this->files)) {
             $this->constructFileList();
         }
 
