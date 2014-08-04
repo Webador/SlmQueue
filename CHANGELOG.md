@@ -1,3 +1,9 @@
+# 0.4.0
+
+- Add controller plugin to ease push of jobs into queues
+- BC: job's jsonSerialize() removed in favour of the queue's serializeJob() method
+- BC: job's metadata field "name" is now reserved for SlmQueue and should not be used by end users
+
 # 0.3.0
 
 - BC: raised dependency to ZF 2.2

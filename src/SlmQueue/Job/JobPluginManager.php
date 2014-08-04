@@ -6,6 +6,8 @@ use Zend\ServiceManager\AbstractPluginManager;
 
 /**
  * JobPluginManager
+ * 
+ * @method JobInterface get($name)
  */
 class JobPluginManager extends AbstractPluginManager
 {
@@ -13,6 +15,15 @@ class JobPluginManager extends AbstractPluginManager
      * @var bool
      */
     protected $shareByDefault = false;
+
+    public function get($name, $options = array(), $usePeeringServiceManagers = true)
+    {
+        // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
+        $instance = parent::get($name, $options, $usePeeringServiceManagers);
+        $instance->setMetadata('name', $name);
+        
+        return $instance;
+    }
 
     /**
      * @param  mixed $plugin

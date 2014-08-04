@@ -28,14 +28,6 @@ interface JobInterface extends MessageInterface
     public function getId();
 
     /**
-     * Encode the data to Json in order to save it (we cannot use JsonSerializable because we need to support
-     * PHP 5.3)
-     *
-     * @return string
-     */
-    public function jsonSerialize();
-
-    /**
      * Execute the job
      *
      * @return void

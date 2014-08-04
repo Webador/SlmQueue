@@ -72,6 +72,31 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue('foo');
     }
 
+    public function testWorkerSkipsVoidValuesFromQueue()
+    {
+        $this->markTestSkipped('This test has been broken.');
+
+        $i   = 0;
+        $job = $this->job;
+        $callback = function() use (&$i, $job) {
+            // We return the job on the 4th call
+            if ($i === 3) {
+                return $job;
+            }
+
+            $i++;
+            return null;
+        };
+
+        $this->options->setMaxRuns(1);
+        $this->queue->expects($this->exactly(4))
+                    ->method('pop')
+                    ->will($this->returnCallback($callback));
+
+        $count = $this->worker->processQueue('foo');
+        $this->assertEquals(1, $count);
+    }
+
     public function testWorkerMaxMemory()
     {
         $this->markTestSkipped('This test has been broken.');
@@ -146,5 +171,48 @@ class AbstractWorkerTest extends TestCase
         $this->assertFalse($this->worker->isMaxRunsReached(9));
         $this->assertTrue($this->worker->isMaxRunsReached(10));
         $this->assertTrue($this->worker->isMaxRunsReached(11));
+    }
+
+    public function testSignalStopsWorkerForSigterm()
+    {
+        $this->markTestSkipped('This test has been broken.');
+
+        $worker = $this->worker;
+        $this->queue->expects($this->never())
+                    ->method('pop');
+
+        $worker->handleSignal(SIGTERM);
+        $count = $worker->processQueue('foo');
+
+        $this->assertEquals(0, $count);
+    }
+
+    public function testSignalStopsWorkerForSigint()
+    {
+        $this->markTestSkipped('This test has been broken.');
+
+        $worker = $this->worker;
+        $this->queue->expects($this->never())
+                    ->method('pop');
+
+        $worker->handleSignal(SIGINT);
+        $count = $worker->processQueue('foo');
+
+        $this->assertEquals(0, $count);
+    }
+
+    public function testNonStoppingSignalDoesNotStopWorker()
+    {
+        $this->markTestSkipped('This test has been broken.');
+
+        $this->options->setMaxRuns(1);
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($this->job));
+
+        $this->worker->handleSignal(SIGPOLL);
+        $count = $this->worker->processQueue('foo');
+
+        $this->assertEquals(1, $count);
     }
 }

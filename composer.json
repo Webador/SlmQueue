@@ -28,7 +28,8 @@
     },
     "require-dev": {
         "zendframework/zendframework": "~2.2",
-        "phpunit/phpunit": "~3.7"
+        "squizlabs/php_codesniffer": "1.5.*",
+        "phpunit/phpunit": "~4.1"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
@@ -37,7 +38,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3.x-dev"
+            "dev-master": "0.4.x-dev"
         }
     },
     "autoload": {
