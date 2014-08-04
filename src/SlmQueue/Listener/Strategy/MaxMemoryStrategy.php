@@ -48,19 +48,4 @@ class MaxMemoryStrategy extends AbstractStrategy
         }
     }
 
-    /**
-     * Handle the signal
-     *
-     * @param int $signo
-     */
-    public function handleSignal($signo)
-    {
-        switch($signo) {
-            case SIGTERM:
-            case SIGINT:
-                $this->stopped = true;
-                break;
-        }
-    }
-
 }
