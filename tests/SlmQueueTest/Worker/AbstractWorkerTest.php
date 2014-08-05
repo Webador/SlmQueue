@@ -85,18 +85,6 @@ class AbstractWorkerTest extends TestCase
         $this->assertEquals(1, $count);
     }
 
-    public function testWorkerMaxMemory()
-    {
-        $this->markTestSkipped('This test has been broken.');
-
-        $this->options->setMaxMemory(1);
-
-        $this->queue->expects($this->exactly(1))
-            ->method('pop');
-
-        $this->assertTrue($this->worker->processQueue($this->queue) === 0);
-    }
-
     public function testCorrectIdentifiersAreSetToEventManager()
     {
         $eventManager = $this->worker->getEventManager();
@@ -161,61 +149,4 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue($this->queue);
     }
 
-    public function testMethod_hasMemoryExceeded() 
-    {
-        $this->markTestSkipped('This test has been broken.');
-
-        $this->options->setMaxMemory(10000000000);
-        $this->assertFalse($this->worker->isMaxMemoryExceeded());
-
-        $this->options->setMaxMemory(1);
-        $this->assertTrue($this->worker->isMaxMemoryExceeded());
-    }
-
-    public function testMethod_willExceedMaxRuns()
-    {
-        $this->markTestSkipped('This test has been broken.');
-
-        $this->options->setMaxRuns(10);
-        $this->assertFalse($this->worker->isMaxRunsReached(9));
-        $this->assertTrue($this->worker->isMaxRunsReached(10));
-        $this->assertTrue($this->worker->isMaxRunsReached(11));
-    }
-
-    public function testSignalStopsWorkerForSigterm()
-    {
-        $worker = $this->worker;
-        $this->queue->expects($this->never())
-                    ->method('pop');
-
-        $worker->handleSignal(SIGTERM);
-        $count = $worker->processQueue($this->queue);
-
-        $this->assertEquals(0, $count);
-    }
-
-    public function testSignalStopsWorkerForSigint()
-    {
-        $worker = $this->worker;
-        $this->queue->expects($this->never())
-                    ->method('pop');
-
-        $worker->handleSignal(SIGINT);
-        $count = $worker->processQueue($this->queue);
-
-        $this->assertEquals(0, $count);
-    }
-
-    public function testNonStoppingSignalDoesNotStopWorker()
-    {
-        $this->options->setMaxRuns(1);
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->worker->handleSignal(SIGPOLL);
-        $count = $this->worker->processQueue($this->queue);
-
-        $this->assertEquals(1, $count);
-    }
 }
