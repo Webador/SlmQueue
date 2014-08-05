@@ -38,7 +38,11 @@ class MaxRunsStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'), $priority);
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
 
         $this->exitState = sprintf('%s jobs processed', $this->runCount);
     }
@@ -55,5 +59,4 @@ class MaxRunsStrategy extends AbstractStrategy
             $this->exitState = sprintf('%s jobs processed', $this->runCount);
         }
     }
-
 }

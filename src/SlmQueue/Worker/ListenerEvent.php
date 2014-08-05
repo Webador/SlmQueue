@@ -12,5 +12,4 @@ class ListenerEvent extends WorkerEvent
      */
     const EVENT_PROCESS_PRE        = 'process.pre';
     const EVENT_PROCESS_POST       = 'process.post';
-
 }

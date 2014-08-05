@@ -33,8 +33,16 @@ class MaxMemoryStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'), $priority);
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'), $priority);
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_IDLE,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
@@ -42,7 +50,11 @@ class MaxMemoryStrategy extends AbstractStrategy
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
             $event->stopPropagation();
 
-            $this->exitState = sprintf("memory threshold of %s exceeded (usage: %s)", $this->humanFormat($this->maxMemory), $this->humanFormat(memory_get_usage()));
+            $this->exitState = sprintf(
+                "memory threshold of %s exceeded (usage: %s)",
+                $this->humanFormat($this->maxMemory),
+                $this->humanFormat(memory_get_usage())
+            );
         } else {
             $this->exitState = sprintf('%s memory usage', $this->humanFormat(memory_get_usage()));
         }
@@ -55,7 +67,6 @@ class MaxMemoryStrategy extends AbstractStrategy
     private function humanFormat($bytes)
     {
         $units = array('b','kB','MB','GB','TB','PB');
-        return @round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2) . $units[$i];
+        return @round($bytes/pow(1024, ($i=floor(log($bytes, 1024)))), 2) . $units[$i];
     }
-
 }

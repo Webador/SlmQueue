@@ -37,5 +37,4 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     {
         return is_string($this->exitState) ? $this->exitState : false;
     }
-
 }

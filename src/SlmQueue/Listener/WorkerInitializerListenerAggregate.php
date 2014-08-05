@@ -57,7 +57,7 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
         }
 
         // normalize and merge strategy configuration with common and queue ones.
-        $listenersOptions = array_merge( $this->options['common'], $this->options['queues'][$queueName]);
+        $listenersOptions = array_merge($this->options['common'], $this->options['queues'][$queueName]);
         $normalizedOptions = array();
 
         foreach ($listenersOptions as $listenerOptions) {
@@ -82,7 +82,9 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
                     array_filter(array('name' => $name, 'options' => $options, 'priority' => $priority))
                 );
             } else {
-                $normalizedOptions[$name] = array_filter(array('name' => $name, 'options' => $options, 'priority' => $priority));
+                $normalizedOptions[$name] = array_filter(
+                    array('name' => $name, 'options' => $options, 'priority' => $priority)
+                );
             }
         }
 
@@ -107,7 +109,7 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
     {
         $exitStates = array();
 
-        while(count($this->strategies)) {
+        while (count($this->strategies)) {
             /** @var AbstractStrategy $strategy */
             $strategy = array_pop($this->strategies);
 
@@ -118,5 +120,4 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
 
         return array_filter($exitStates);
     }
-
 }

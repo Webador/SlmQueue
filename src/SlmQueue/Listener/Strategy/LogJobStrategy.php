@@ -13,8 +13,16 @@ class LogJobStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this, 'onLogJobProcessStart'), $priority);
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onLogJobProcessDone'), $priority);
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_PRE,
+            array($this, 'onLogJobProcessStart'),
+            $priority
+        );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            array($this, 'onLogJobProcessDone'),
+            $priority
+        );
     }
 
     /**
@@ -24,7 +32,9 @@ class LogJobStrategy extends AbstractStrategy
     {
         $job  = $e->getJob();
         $name = $job->getMetadata('name');
-        if (null === $name) $name = get_class($job);
+        if (null === $name) {
+            $name = get_class($job);
+        }
 
         $console = Console::getInstance();
         $console->write(sprintf('Processing job %s...', $name));
@@ -38,5 +48,4 @@ class LogJobStrategy extends AbstractStrategy
         $console = Console::getInstance();
         $console->writeLine('Done!');
     }
-
 }

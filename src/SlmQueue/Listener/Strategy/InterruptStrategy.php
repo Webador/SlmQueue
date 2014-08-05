@@ -17,7 +17,7 @@ class InterruptStrategy extends AbstractStrategy
         if (function_exists('pcntl_signal')) { // Conditional because of lack of pcntl_signal on windows
             declare(ticks = 1);
             pcntl_signal(SIGTERM, array($this, 'onPCNTLSignal'));
-            pcntl_signal(SIGINT,  array($this, 'onPCNTLSignal'));
+            pcntl_signal(SIGINT, array($this, 'onPCNTLSignal'));
         }
     }
 
@@ -26,8 +26,16 @@ class InterruptStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'), $priority);
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'), $priority);
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_IDLE,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
     }
 
     /**
@@ -59,6 +67,4 @@ class InterruptStrategy extends AbstractStrategy
                 break;
         }
     }
-
-
 }

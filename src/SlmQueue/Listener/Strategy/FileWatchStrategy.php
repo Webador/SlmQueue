@@ -52,8 +52,16 @@ class FileWatchStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'onStopConditionCheck'), $priority);
-        $this->listeners[] = $events->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this, 'onStopConditionCheck'), $priority);
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_IDLE,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            array($this, 'onStopConditionCheck'),
+            $priority
+        );
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
@@ -62,7 +70,7 @@ class FileWatchStrategy extends AbstractStrategy
             $this->constructFileList();
         }
 
-        foreach($this->files as $checksum=>$file) {
+        foreach ($this->files as $checksum => $file) {
             if (!file_exists($file) || !is_readable($file) || $checksum != hash_file('crc32', $file)) {
                 $event->stopPropagation();
 
@@ -77,7 +85,7 @@ class FileWatchStrategy extends AbstractStrategy
         $files      = new \RecursiveIteratorIterator($iterator);
 
         /** @var $fileinfo \SplFileInfo  */
-        foreach($files as $file) {
+        foreach ($files as $file) {
             if ($file->isDir()) {
                 continue;
             }
@@ -89,5 +97,4 @@ class FileWatchStrategy extends AbstractStrategy
             $this->files[hash_file('crc32', $file)] = (string) $file;
         }
     }
-
 }

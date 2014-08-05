@@ -65,7 +65,8 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
             $workerEvent->setResult($result);
 
-            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent)->stopped() || $exitRequested;
+            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent)->stopped()
+                || $exitRequested;
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
@@ -100,5 +101,4 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
         return $this->eventManager;
     }
-
 }
