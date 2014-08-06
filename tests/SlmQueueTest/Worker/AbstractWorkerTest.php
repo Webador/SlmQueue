@@ -59,7 +59,7 @@ class AbstractWorkerTest extends TestCase
     {
         $i   = 0;
         $job = $this->job;
-        $callback = function() use (&$i, $job) {
+        $callback = function () use (&$i, $job) {
             // We return the job on the 4th call
             if ($i === 3) {
                 return $job;
@@ -143,14 +143,15 @@ class AbstractWorkerTest extends TestCase
                     ->will($this->returnValue($this->job));
 
         $self = $this;
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, function($e) use ($self) {
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, function ($e) use ($self) {
             $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
         });
 
         $this->worker->processQueue($this->queue);
     }
 
-    public function testMethod_hasMemoryExceeded() {
+    public function testMethod_hasMemoryExceeded()
+    {
         $this->options->setMaxMemory(10000000000);
         $this->assertFalse($this->worker->isMaxMemoryExceeded());
 
@@ -158,7 +159,8 @@ class AbstractWorkerTest extends TestCase
         $this->assertTrue($this->worker->isMaxMemoryExceeded());
     }
 
-    public function testMethod_willExceedMaxRuns() {
+    public function testMethod_willExceedMaxRuns()
+    {
         $this->options->setMaxRuns(10);
         $this->assertFalse($this->worker->isMaxRunsReached(9));
         $this->assertTrue($this->worker->isMaxRunsReached(10));
