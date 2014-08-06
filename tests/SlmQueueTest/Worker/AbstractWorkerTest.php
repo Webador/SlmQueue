@@ -10,31 +10,18 @@ use Zend\EventManager\EventManager;
 
 class AbstractWorkerTest extends TestCase
 {
-    protected $worker, $plugins, $options, $queue, $job;
+    protected $options, $worker, $queue, $job;
 
     public function setUp()
     {
-        $queueName = 'foo';
         $options   = new WorkerOptions;
         $options->setMaxRuns(1);
         $options->setMaxMemory(1024*1024*1024);
 
-        $plugins = $this->getMock('SlmQueue\Queue\QueuePluginManager', array('get'));
-        $worker  = new SimpleWorker($plugins, $options);
-
-        $queue   = $this->getMock('SlmQueue\Queue\QueueInterface');
-        $plugins->expects($this->any())
-                ->method('get')
-                ->with($queueName)
-                ->will($this->returnValue($queue));
-
-        $job = $this->getMock('SlmQueue\Job\JobInterface');
-
-        $this->worker  = $worker;
-        $this->plugins = $plugins;
         $this->options = $options;
-        $this->queue   = $queue;
-        $this->job     = $job;
+        $this->worker  = new SimpleWorker($options);
+        $this->queue   = $this->getMock('SlmQueue\Queue\QueueInterface');
+        $this->job     = $this->getMock('SlmQueue\Job\JobInterface');
     }
     public function testWorkerPopsFromQueue()
     {
@@ -42,7 +29,7 @@ class AbstractWorkerTest extends TestCase
                     ->method('pop')
                     ->will($this->returnValue($this->job));
 
-        $this->worker->processQueue('foo');
+        $this->worker->processQueue($this->queue);
     }
 
     public function testWorkerExecutesJob()
@@ -54,7 +41,7 @@ class AbstractWorkerTest extends TestCase
         $this->job->expects($this->once())
                   ->method('execute');
 
-        $this->worker->processQueue('foo');
+        $this->worker->processQueue($this->queue);
     }
 
     public function testWorkerCountsRuns()
@@ -65,7 +52,7 @@ class AbstractWorkerTest extends TestCase
                     ->method('pop')
                     ->will($this->returnValue($this->job));
 
-        $this->worker->processQueue('foo');
+        $this->worker->processQueue($this->queue);
     }
 
     public function testWorkerSkipsVoidValuesFromQueue()
@@ -87,7 +74,7 @@ class AbstractWorkerTest extends TestCase
                     ->method('pop')
                     ->will($this->returnCallback($callback));
 
-        $count = $this->worker->processQueue('foo');
+        $count = $this->worker->processQueue($this->queue);
         $this->assertEquals(1, $count);
     }
 
@@ -98,7 +85,7 @@ class AbstractWorkerTest extends TestCase
         $this->queue->expects($this->exactly(1))
             ->method('pop');
 
-        $this->assertTrue($this->worker->processQueue('foo') === 0);
+        $this->assertTrue($this->worker->processQueue($this->queue) === 0);
     }
 
     public function testCorrectIdentifiersAreSetToEventManager()
@@ -139,7 +126,7 @@ class AbstractWorkerTest extends TestCase
                      ->method('trigger')
                      ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_POST));
 
-        $this->worker->processQueue('foo');
+        $this->worker->processQueue($this->queue);
     }
 
     public function testWorkerSetsJobStatusInEventClass()
@@ -160,7 +147,7 @@ class AbstractWorkerTest extends TestCase
             $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
         });
 
-        $this->worker->processQueue('foo');
+        $this->worker->processQueue($this->queue);
     }
 
     public function testMethod_hasMemoryExceeded() {
@@ -185,7 +172,7 @@ class AbstractWorkerTest extends TestCase
                     ->method('pop');
 
         $worker->handleSignal(SIGTERM);
-        $count = $worker->processQueue('foo');
+        $count = $worker->processQueue($this->queue);
 
         $this->assertEquals(0, $count);
     }
@@ -197,7 +184,7 @@ class AbstractWorkerTest extends TestCase
                     ->method('pop');
 
         $worker->handleSignal(SIGINT);
-        $count = $worker->processQueue('foo');
+        $count = $worker->processQueue($this->queue);
 
         $this->assertEquals(0, $count);
     }
@@ -210,7 +197,7 @@ class AbstractWorkerTest extends TestCase
                     ->will($this->returnValue($this->job));
 
         $this->worker->handleSignal(SIGPOLL);
-        $count = $this->worker->processQueue('foo');
+        $count = $this->worker->processQueue($this->queue);
 
         $this->assertEquals(1, $count);
     }
