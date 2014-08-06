@@ -79,7 +79,7 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     {
         $this->listener->onLogJobProcessStart($this->event);
 
-        $this->assertFalse($this->event->propagationIsStopped());
+        $this->assertFalse($this->event->shouldWorkerExitLoop());
     }
 
     public function testOnLogJobProcessDone_SendsOutputToConsole()
@@ -91,7 +91,6 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     }
     public function testOnLogJobProcessDone_DoesNotGenerateState()
     {
-
         $this->listener->onLogJobProcessDone($this->event);
 
         $this->assertFalse($this->listener->onReportQueueState($this->event));
@@ -100,6 +99,6 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     {
         $this->listener->onLogJobProcessDone($this->event);
 
-        $this->assertFalse($this->event->propagationIsStopped());
+        $this->assertFalse($this->event->shouldWorkerExitLoop());
     }
 }

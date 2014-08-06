@@ -58,7 +58,8 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
     {
         $this->listener->onStopConditionCheck($this->event);
         $this->assertFalse($this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->propagationIsStopped());
+        $this->assertFalse($this->event->shouldWorkerExitLoop());
+
     }
 
     public function testOnStopConditionCheckHandler_SIGTERM()
@@ -66,7 +67,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->onPCNTLSignal(SIGTERM);
         $this->listener->onStopConditionCheck($this->event);
         $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->propagationIsStopped());
+        $this->assertTrue($this->event->shouldWorkerExitLoop());
     }
 
     public function testOnStopConditionCheckHandler_SIGINT()
@@ -74,6 +75,6 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->onPCNTLSignal(SIGTERM);
         $this->listener->onStopConditionCheck($this->event);
         $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->propagationIsStopped());
+        $this->assertTrue($this->event->shouldWorkerExitLoop());
     }
 }
