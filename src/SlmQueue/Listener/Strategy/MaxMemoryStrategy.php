@@ -50,13 +50,13 @@ class MaxMemoryStrategy extends AbstractStrategy
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
             $event->stopPropagation();
 
-            $this->exitState = sprintf(
+            $this->state = sprintf(
                 "memory threshold of %s exceeded (usage: %s)",
                 $this->humanFormat($this->maxMemory),
                 $this->humanFormat(memory_get_usage())
             );
         } else {
-            $this->exitState = sprintf('%s memory usage', $this->humanFormat(memory_get_usage()));
+            $this->state = sprintf('%s memory usage', $this->humanFormat(memory_get_usage()));
         }
     }
 

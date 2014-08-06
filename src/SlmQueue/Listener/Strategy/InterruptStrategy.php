@@ -49,7 +49,7 @@ class InterruptStrategy extends AbstractStrategy
         if ($this->interrupted) {
             $event->stopPropagation();
 
-            $this->exitState = sprintf("interrupt by an external signal on '%s'", $event->getName());
+            $this->state = sprintf("interrupt by an external signal on '%s'", $event->getName());
         }
     }
 

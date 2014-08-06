@@ -52,9 +52,9 @@ class MaxRunsStrategy extends AbstractStrategy
         if ($this->maxRuns && $this->runCount >= $this->maxRuns) {
             $event->stopPropagation();
 
-            $this->exitState = sprintf('maximum of %s jobs processed', $this->runCount);
+            $this->state = sprintf('maximum of %s jobs processed', $this->runCount);
         } else {
-            $this->exitState = sprintf('%s jobs processed', $this->runCount);
+            $this->state = sprintf('%s jobs processed', $this->runCount);
         }
     }
 }

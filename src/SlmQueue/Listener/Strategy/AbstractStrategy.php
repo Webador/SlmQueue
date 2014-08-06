@@ -9,11 +9,11 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
 {
 
     /**
-     * The final state of the strategy when exiting
+     * The state of the strategy
      *
      * @var string | null
      */
-    protected $exitState;
+    protected $state;
 
     /**
      * Set options from array
@@ -33,8 +33,8 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     /**
      * @return false|string
      */
-    public function getExitState()
+    public function getState()
     {
-        return is_string($this->exitState) ? $this->exitState : false;
+        return is_string($this->state) ? $this->state : false;
     }
 }

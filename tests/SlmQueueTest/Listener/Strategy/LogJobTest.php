@@ -50,13 +50,13 @@ class LogJobTest extends PHPUnit_Framework_TestCase
 //        $this->listener->setMaxMemory(1024*1024*1000);
 //
 //        $this->listener->onStopConditionCheck($ev);
-//        $this->assertContains('memory usage', $this->listener->getExitState());
+//        $this->assertContains('memory usage', $this->listener->getState());
 //        $this->assertFalse($ev->propagationIsStopped());
 //
 //        $this->listener->setMaxMemory(1024);
 //
 //        $this->listener->onStopConditionCheck($ev);
-//        $this->assertContains('memory threshold of 1kB exceeded (usage: ', $this->listener->getExitState());
+//        $this->assertContains('memory threshold of 1kB exceeded (usage: ', $this->listener->getState());
 //        $this->assertTrue($ev->propagationIsStopped());
 //
 //    }

@@ -74,7 +74,7 @@ class FileWatchStrategy extends AbstractStrategy
             if (!file_exists($file) || !is_readable($file) || $checksum != hash_file('crc32', $file)) {
                 $event->stopPropagation();
 
-                $this->exitState = sprintf("file modification detected for '%s'", $file);
+                $this->state = sprintf("file modification detected for '%s'", $file);
             }
         }
     }

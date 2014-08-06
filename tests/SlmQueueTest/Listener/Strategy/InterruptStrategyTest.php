@@ -49,7 +49,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
 
         $this->listener->onStopConditionCheck($ev);
-        $this->assertFalse($this->listener->getExitState());
+        $this->assertFalse($this->listener->getState());
         $this->assertFalse($ev->propagationIsStopped());
     }
 
@@ -67,7 +67,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onPCNTLSignal(SIGTERM);
         $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('interrupt by an external signal', $this->listener->getExitState());
+        $this->assertContains('interrupt by an external signal', $this->listener->getState());
         $this->assertTrue($ev->propagationIsStopped());
     }
 
@@ -85,7 +85,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onPCNTLSignal(SIGTERM);
         $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('interrupt by an external signal', $this->listener->getExitState());
+        $this->assertContains('interrupt by an external signal', $this->listener->getState());
         $this->assertTrue($ev->propagationIsStopped());
     }
 }

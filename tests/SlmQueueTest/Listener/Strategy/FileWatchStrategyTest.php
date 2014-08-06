@@ -106,7 +106,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
         $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('file modification detected for', $this->listener->getExitState());
+        $this->assertContains('file modification detected for', $this->listener->getState());
         $this->assertTrue($this->event->propagationIsStopped());
     }
 
@@ -125,7 +125,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onStopConditionCheck($this->event);
 
-        $this->assertContains('file modification detected for', $this->listener->getExitState());
+        $this->assertContains('file modification detected for', $this->listener->getState());
         $this->assertTrue($this->event->propagationIsStopped());
     }
 }

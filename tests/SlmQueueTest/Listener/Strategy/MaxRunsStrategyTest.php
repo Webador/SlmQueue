@@ -61,15 +61,15 @@ class MaxRunsStrategyTest extends PHPUnit_Framework_TestCase
 
 
         $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('1 jobs processed', $this->listener->getExitState());
+        $this->assertContains('1 jobs processed', $this->listener->getState());
         $this->assertFalse($ev->propagationIsStopped());
 
         $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('2 jobs processed', $this->listener->getExitState());
+        $this->assertContains('2 jobs processed', $this->listener->getState());
         $this->assertFalse($ev->propagationIsStopped());
 
         $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('maximum of 3 jobs processed', $this->listener->getExitState());
+        $this->assertContains('maximum of 3 jobs processed', $this->listener->getState());
         $this->assertTrue($ev->propagationIsStopped());
     }
 }
