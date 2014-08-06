@@ -68,7 +68,7 @@ class QueueTest extends TestCase
         $this->queue->push($this->job);
         $job = $this->queue->pop();
 
-        $this->assertEquals(array('Foo' => 'Bar'), $job->getMetadata());
+        $this->assertEquals(array('Foo' => 'Bar', 'name' => 'SlmQueueTest\Asset\SimpleJob'), $job->getMetadata());
         $this->assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
@@ -77,7 +77,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"name":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -88,7 +88,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar","name":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -100,7 +100,7 @@ class QueueTest extends TestCase
         $job->setContent('Foo');
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"Foo":"Bar"}}';
+        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"Foo":"Bar","name":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
