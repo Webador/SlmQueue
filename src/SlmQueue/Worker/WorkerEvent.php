@@ -58,6 +58,12 @@ class WorkerEvent extends Event
     protected $result;
 
     /**
+     * Flag indicating we want to exit on the next available occasion
+     * @var bool
+     */
+    protected $exitWorker = false;
+
+    /**
      * @param QueueInterface $queue
      */
     public function __construct(QueueInterface $queue)
@@ -104,5 +110,21 @@ class WorkerEvent extends Event
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * @param boolean $exitWorker
+     */
+    public function exitWorkerLoop()
+    {
+        $this->exitWorker = true;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function shouldWorkerExitLoop()
+    {
+        return $this->exitWorker;
     }
 }

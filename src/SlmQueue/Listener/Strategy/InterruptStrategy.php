@@ -52,7 +52,7 @@ class InterruptStrategy extends AbstractStrategy
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if ($this->interrupted) {
-            $event->stopPropagation();
+            $event->exitWorkerLoop();
 
             $this->state = sprintf("interrupt by an external signal on '%s'", $event->getName());
         }

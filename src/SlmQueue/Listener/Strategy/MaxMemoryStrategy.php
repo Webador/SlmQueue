@@ -53,7 +53,7 @@ class MaxMemoryStrategy extends AbstractStrategy
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
-            $event->stopPropagation();
+            $event->exitWorkerLoop();
 
             $this->state = sprintf(
                 "memory threshold of %s exceeded (usage: %s)",

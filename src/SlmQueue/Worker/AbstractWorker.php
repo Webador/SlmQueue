@@ -43,14 +43,14 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         // Initializer listener attached many strategies
         $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
 
-        $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent)->stopped();
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
 
-        while (!$exitRequested) {
+        while (!$workerEvent->exitWorkerLoop()) {
             $job = $queue->pop($options);
 
             // The queue may return null, for instance if a timeout was set
             if (!$job instanceof JobInterface) {
-                $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent)->stopped();
+                $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent);
 
                 continue;
             }
@@ -58,15 +58,13 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             $workerEvent->setJob($job);
             $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
-            // strategies may request an exit, however the job must be processed for this event
-            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent)->stopped();
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
             $result = $this->processJob($job, $queue);
 
             $workerEvent->setResult($result);
 
-            $exitRequested = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent)->stopped()
-                || $exitRequested;
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
