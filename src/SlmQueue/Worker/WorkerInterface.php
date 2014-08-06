@@ -12,14 +12,14 @@ use SlmQueue\Queue\QueueInterface;
 interface WorkerInterface
 {
     /**
-     * Process jobs in the queue identified by its name. Some queuing systems accept various options when
+     * Process jobs in the given queue. Some queuing systems accept various options when
      * popping jobs, so you can set the options array. Those options depends on the concrete worker
      *
-     * @param  string $queueName
-     * @param  array  $options
+     * @param  QueueInterface $queue
+     * @param  array          $options
      * @return int How many jobs were processed
      */
-    public function processQueue($queueName, array $options = array());
+    public function processQueue(QueueInterface $queue, array $options = array());
 
     /**
      * Process a job that comes from the given queue
