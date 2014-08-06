@@ -43,8 +43,6 @@ class MaxRunsStrategy extends AbstractStrategy
             array($this, 'onStopConditionCheck'),
             $priority
         );
-
-        $this->exitState = sprintf('%s jobs processed', $this->runCount);
     }
 
     public function onStopConditionCheck(WorkerEvent $event)
