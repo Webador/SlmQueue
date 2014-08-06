@@ -5,7 +5,6 @@ namespace SlmQueue\Worker;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
-use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\QueueAwareInterface;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
@@ -16,11 +15,6 @@ use Zend\EventManager\EventManagerInterface;
  */
 abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
-    /**
-     * @var QueuePluginManager
-     */
-    protected $queuePluginManager;
-
     /**
      * @var EventManagerInterface
      */
@@ -39,13 +33,11 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     /**
      * Constructor
      *
-     * @param QueuePluginManager $queuePluginManager
-     * @param WorkerOptions      $options
+     * @param WorkerOptions $options
      */
-    public function __construct(QueuePluginManager $queuePluginManager, WorkerOptions $options)
+    public function __construct(WorkerOptions $options)
     {
-        $this->queuePluginManager = $queuePluginManager;
-        $this->options            = $options;
+        $this->options = $options;
 
         // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly. Note that
         // because pcntl_signal may not be available on Windows, we needed to check for the existence of the function
@@ -59,10 +51,8 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     /**
      * {@inheritDoc}
      */
-    public function processQueue($queueName, array $options = array())
+    public function processQueue(QueueInterface $queue, array $options = array())
     {
-        /** @var $queue QueueInterface */
-        $queue        = $this->queuePluginManager->get($queueName);
         $eventManager = $this->getEventManager();
         $count        = 0;
 

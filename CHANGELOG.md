@@ -1,5 +1,6 @@
 # 0.4.0
 
+- Refactoring of dependency injection to use queue instead of queue name in worker
 - Add job status codes so listeners can act on the result of a job's outcome
 - Add controller plugin to ease push of jobs into queues
 - BC: job's jsonSerialize() removed in favour of the queue's serializeJob() method

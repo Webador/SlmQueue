@@ -5,6 +5,7 @@ namespace SlmQueue\Controller;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Worker\WorkerInterface;
+use SlmQueue\Queue\QueuePluginManager;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
@@ -18,11 +19,18 @@ abstract class AbstractWorkerController extends AbstractActionController
     protected $worker;
 
     /**
-     * @param WorkerInterface $worker
+     * @var QueuePluginManager
      */
-    public function __construct(WorkerInterface $worker)
+    protected $queuePluginManager;
+
+    /**
+     * @param WorkerInterface    $worker
+     * @param QueuePluginManager $queuePluginManager
+     */
+    public function __construct(WorkerInterface $worker, QueuePluginManager $queuePluginManager)
     {
-        $this->worker = $worker;
+        $this->worker             = $worker;
+        $this->queuePluginManager = $queuePluginManager;
     }
 
     /**
@@ -34,7 +42,8 @@ abstract class AbstractWorkerController extends AbstractActionController
     public function processAction()
     {
         $options = $this->params()->fromRoute();
-        $queue   = $options['queue'];
+        $name    = $options['queue'];
+        $queue   = $this->queuePluginManager->get($name);
 
         try {
             $result = $this->worker->processQueue($queue, $options);
@@ -48,7 +57,7 @@ abstract class AbstractWorkerController extends AbstractActionController
 
         return sprintf(
             "Finished worker for queue '%s' with %s jobs\n",
-            $queue,
+            $name,
             $result
         );
     }
