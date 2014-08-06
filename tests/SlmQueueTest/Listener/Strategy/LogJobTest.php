@@ -14,9 +14,24 @@ class LogJobTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
+    /**
+     * @var WorkerEvent
+     */
+    protected $event;
+
     public function setUp()
     {
+        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $ev    = new WorkerEvent($queue);
+        $job   = new SimpleJob();
+
+        $ev->setJob($job);
+
         $this->listener = new LogJobStrategy();
+        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()

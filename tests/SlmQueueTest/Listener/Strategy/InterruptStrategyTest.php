@@ -4,6 +4,7 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Listener\Strategy\InterruptStrategy;
+use SlmQueue\Worker\ListenerEvent;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleJob;
 
@@ -14,9 +15,24 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
+    /**
+     * @var ListenerEvent
+     */
+    protected $event;
+
     public function setUp()
     {
+        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $ev    = new WorkerEvent($queue);
+        $job   = new SimpleJob();
+
+        $ev->setJob($job);
+
         $this->listener = new InterruptStrategy();
+        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
@@ -32,60 +48,32 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
             ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onStopConditionCheck'));
         $evm->expects($this->at(1))->method('attach')
             ->with(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this->listener, 'onStopConditionCheck'));
+        $evm->expects($this->at(2))->method('attach')
+            ->with(WorkerEvent::EVENT_PROCESS_STATE, array($this->listener, 'onReportQueueState'));
 
         $this->listener->attach($evm);
     }
 
     public function testOnStopConditionCheckHandler_NoSignal()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev    = new WorkerEvent($queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
-
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertFalse($this->listener->getState());
-        $this->assertFalse($ev->propagationIsStopped());
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertFalse($this->listener->onReportQueueState($this->event));
+        $this->assertFalse($this->event->propagationIsStopped());
     }
 
     public function testOnStopConditionCheckHandler_SIGTERM()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev    = new WorkerEvent($queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
-
         $this->listener->onPCNTLSignal(SIGTERM);
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('interrupt by an external signal', $this->listener->getState());
-        $this->assertTrue($ev->propagationIsStopped());
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
+        $this->assertTrue($this->event->propagationIsStopped());
     }
 
     public function testOnStopConditionCheckHandler_SIGINT()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev    = new WorkerEvent($queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
-
         $this->listener->onPCNTLSignal(SIGTERM);
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('interrupt by an external signal', $this->listener->getState());
-        $this->assertTrue($ev->propagationIsStopped());
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
+        $this->assertTrue($this->event->propagationIsStopped());
     }
 }

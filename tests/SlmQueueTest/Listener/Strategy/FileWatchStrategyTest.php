@@ -14,6 +14,11 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
+    /**
+     * @var WorkerEvent
+     */
+    protected $event;
+
     public function setUp()
     {
         $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
@@ -42,6 +47,8 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
             ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onStopConditionCheck'));
         $evm->expects($this->at(1))->method('attach')
             ->with(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this->listener, 'onStopConditionCheck'));
+        $evm->expects($this->at(2))->method('attach')
+            ->with(WorkerEvent::EVENT_PROCESS_STATE, array($this->listener, 'onReportQueueState'));
 
         $this->listener->attach($evm);
     }
@@ -106,7 +113,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
         $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('file modification detected for', $this->listener->getState());
+        $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
         $this->assertTrue($this->event->propagationIsStopped());
     }
 
@@ -125,7 +132,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onStopConditionCheck($this->event);
 
-        $this->assertContains('file modification detected for', $this->listener->getState());
+        $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
         $this->assertTrue($this->event->propagationIsStopped());
     }
 }

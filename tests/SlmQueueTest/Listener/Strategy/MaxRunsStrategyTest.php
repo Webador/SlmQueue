@@ -14,9 +14,24 @@ class MaxRunsStrategyTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
+    /**
+     * @var WorkerEvent
+     */
+    protected $event;
+
     public function setUp()
     {
+        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $ev    = new WorkerEvent($queue);
+        $job   = new SimpleJob();
+
+        $ev->setJob($job);
+
         $this->listener = new MaxRunsStrategy();
+        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
@@ -42,34 +57,26 @@ class MaxRunsStrategyTest extends PHPUnit_Framework_TestCase
 
         $evm->expects($this->at(0))->method('attach')
             ->with(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this->listener, 'onStopConditionCheck'));
+        $evm->expects($this->at(1))->method('attach')
+            ->with(WorkerEvent::EVENT_PROCESS_STATE, array($this->listener, 'onReportQueueState'));
 
         $this->listener->attach($evm);
     }
 
     public function testOnStopConditionCheckHandler()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $ev    = new WorkerEvent($queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
         $this->listener->setMaxRuns(3);
 
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertContains('1 jobs processed', $this->listener->onReportQueueState($this->event));
+        $this->assertFalse($this->event->propagationIsStopped());
 
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('1 jobs processed', $this->listener->getState());
-        $this->assertFalse($ev->propagationIsStopped());
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertContains('2 jobs processed', $this->listener->onReportQueueState($this->event));
+        $this->assertFalse($this->event->propagationIsStopped());
 
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('2 jobs processed', $this->listener->getState());
-        $this->assertFalse($ev->propagationIsStopped());
-
-        $this->listener->onStopConditionCheck($ev);
-        $this->assertContains('maximum of 3 jobs processed', $this->listener->getState());
-        $this->assertTrue($ev->propagationIsStopped());
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertContains('maximum of 3 jobs processed', $this->listener->onReportQueueState($this->event));
+        $this->assertTrue($this->event->propagationIsStopped());
     }
 }
