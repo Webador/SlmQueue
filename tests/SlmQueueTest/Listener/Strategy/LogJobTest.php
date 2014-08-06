@@ -19,6 +19,11 @@ class LogJobTest extends PHPUnit_Framework_TestCase
      */
     protected $event;
 
+    /**
+     * @var Zend\Console\Adapter\AdapterInterface
+     */
+    protected $console;
+
     public function setUp()
     {
         $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
@@ -30,8 +35,14 @@ class LogJobTest extends PHPUnit_Framework_TestCase
 
         $ev->setJob($job);
 
-        $this->listener = new LogJobStrategy();
+        $this->console  = $this->getMock('Zend\Console\Adapter\AdapterInterface');
+        $this->listener = new LogJobStrategy($this->console);
         $this->event    = $ev;
+    }
+
+    public function tearDown()
+    {
+
     }
 
     public function testListenerInstanceOfAbstractStrategy()
@@ -50,29 +61,45 @@ class LogJobTest extends PHPUnit_Framework_TestCase
 
         $this->listener->attach($evm);
     }
-//
-//    public function testOnStopConditionCheckHandler()
-//    {
-//        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-//            ->disableOriginalConstructor()
-//            ->getMock();
-//
-//        $ev    = new WorkerEvent($queue);
-//        $job   = new SimpleJob();
-//
-//        $ev->setJob($job);
-//
-//        $this->listener->setMaxMemory(1024*1024*1000);
-//
-//        $this->listener->onStopConditionCheck($ev);
-//        $this->assertContains('memory usage', $this->listener->getState());
-//        $this->assertFalse($ev->propagationIsStopped());
-//
-//        $this->listener->setMaxMemory(1024);
-//
-//        $this->listener->onStopConditionCheck($ev);
-//        $this->assertContains('memory threshold of 1kB exceeded (usage: ', $this->listener->getState());
-//        $this->assertTrue($ev->propagationIsStopped());
-//
-//    }
+
+    public function testOnLogJobProcessStart_SendsOutputToConsole()
+    {
+        $this->console->expects($this->once())->method('write')
+            ->with('Processing job SlmQueueTest\Asset\SimpleJob...');
+
+        $this->listener->onLogJobProcessStart($this->event);
+    }
+    public function testOnLogJobProcessStart_DoesNotGenerateState()
+    {
+        $this->listener->onLogJobProcessStart($this->event);
+
+        $this->assertFalse($this->listener->onReportQueueState($this->event));
+    }
+    public function testOnLogJobProcessStart_DoesNotHaltPropagation()
+    {
+        $this->listener->onLogJobProcessStart($this->event);
+
+        $this->assertFalse($this->event->propagationIsStopped());
+    }
+
+    public function testOnLogJobProcessDone_SendsOutputToConsole()
+    {
+        $this->console->expects($this->once())->method('writeLine')
+            ->with('Done!');
+
+        $this->listener->onLogJobProcessDone($this->event);
+    }
+    public function testOnLogJobProcessDone_DoesNotGenerateState()
+    {
+
+        $this->listener->onLogJobProcessDone($this->event);
+
+        $this->assertFalse($this->listener->onReportQueueState($this->event));
+    }
+    public function testOnLogJobProcessDone_DoesNotHaltPropagation()
+    {
+        $this->listener->onLogJobProcessDone($this->event);
+
+        $this->assertFalse($this->event->propagationIsStopped());
+    }
 }

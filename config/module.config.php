@@ -55,6 +55,9 @@ return array(
                 'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Listener\Strategy\MaxMemoryStrategy',
                 'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Listener\Strategy\FileWatchStrategy',
             ),
+            'factories' => array(
+                'SlmQueue\Strategy\LogJobStrategy'          => 'SlmQueue\Listener\Strategy\Factory\LogJobStrategyFactory',
+            )
         ),
     )
 );
