@@ -43,6 +43,11 @@ class MaxMemoryStrategy extends AbstractStrategy
             array($this, 'onStopConditionCheck'),
             $priority
         );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_STATE,
+            array($this, 'onReportQueueState'),
+            $priority
+        );
     }
 
     public function onStopConditionCheck(WorkerEvent $event)

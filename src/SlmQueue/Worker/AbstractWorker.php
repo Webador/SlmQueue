@@ -71,10 +71,12 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
 
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
-        // Initializer detaches strategies and collects exit states
-        $exitStates = $eventManager->trigger(ListenerEvent::EVENT_PROCESS_POST, new ListenerEvent($queue))->first();
+        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_REPORT, $workerEvent);
 
-        return $exitStates;
+        // Initializer detaches strategies
+        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_POST, new ListenerEvent($queue));
+
+        return $queueState;
     }
 
     /**

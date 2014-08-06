@@ -14,6 +14,7 @@ class WorkerEvent extends Event
     /**
      * Various events you can subscribe to
      */
+    const EVENT_PROCESS_STATE      = 'processQueue.state';
     const EVENT_PROCESS_IDLE       = 'processQueue.idle';
     const EVENT_PROCESS_QUEUE_PRE  = 'processQueue.pre';
     const EVENT_PROCESS_QUEUE_POST = 'processQueue.post';

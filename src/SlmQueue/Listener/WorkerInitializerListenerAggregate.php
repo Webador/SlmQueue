@@ -89,6 +89,7 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
         }
 
         foreach ($normalizedOptions as $name => $normalizedListenerOptions) {
+            /** @var AbstractStrategy $listener */
             $listener = $this->strategyPluginManager->get($name);
 
             if (array_key_exists('options', $normalizedListenerOptions) && method_exists($listener, 'setOptions')) {
@@ -107,17 +108,11 @@ class WorkerInitializerListenerAggregate extends AbstractListenerAggregate
 
     public function onDetachQueueListeners(ListenerEvent $event)
     {
-        $exitStates = array();
-
         while (count($this->strategies)) {
             /** @var AbstractStrategy $strategy */
             $strategy = array_pop($this->strategies);
 
             $this->worker->getEventManager()->detachAggregate($strategy);
-
-            $exitStates[] = $strategy->getExitState();
         }
-
-        return array_filter($exitStates);
     }
 }

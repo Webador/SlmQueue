@@ -2,6 +2,7 @@
 
 namespace SlmQueue\Listener\Strategy;
 
+use SlmQueue\Worker\ListenerEvent;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
@@ -60,6 +61,11 @@ class FileWatchStrategy extends AbstractStrategy
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_JOB_POST,
             array($this, 'onStopConditionCheck'),
+            $priority
+        );
+        $this->listeners[] = $events->attach(
+            WorkerEvent::EVENT_PROCESS_STATE,
+            array($this, 'onReportQueueState'),
             $priority
         );
     }

@@ -2,6 +2,7 @@
 
 namespace SlmQueue\Listener\Strategy;
 
+use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\AbstractListenerAggregate;
 use Zend\Filter\Word\UnderscoreToCamelCase;
 
@@ -31,9 +32,12 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     }
 
     /**
-     * @return false|string
+     * Event listener which returns the state of the queue
+     *
+     * @param WorkerEvent $event
+     * @return bool|string
      */
-    public function getState()
+    public function onReportQueueState(WorkerEvent $event)
     {
         return is_string($this->state) ? $this->state : false;
     }
