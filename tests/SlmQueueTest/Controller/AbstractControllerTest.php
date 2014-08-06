@@ -27,8 +27,15 @@ class AbstractControllerTest extends TestCase
 
     public function setUp()
     {
-        $this->queuePluginManager = new QueuePluginManager(new Config(array('factories' => array('knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'))));
-        $this->controller = new SimpleController(new SimpleWorker($this->queuePluginManager, new WorkerOptions()));
+        $worker = new SimpleWorker(new WorkerOptions());
+        $config = new Config(array(
+            'factories' => array(
+                'knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
+            ),
+        ));
+
+        $this->queuePluginManager = new QueuePluginManager($config);
+        $this->controller         = new SimpleController($worker, $this->queuePluginManager);
     }
 
     public function testThrowExceptionIfQueueIsUnknown()
