@@ -25,8 +25,9 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
         $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
             ->disableOriginalConstructor()
             ->getMock();
+        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
 
-        $ev    = new WorkerEvent($queue);
+        $ev    = new WorkerEvent($worker, $queue);
         $job   = new SimpleJob();
 
         $ev->setJob($job);

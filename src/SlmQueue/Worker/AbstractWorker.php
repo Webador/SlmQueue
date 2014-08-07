@@ -32,7 +32,7 @@ abstract class AbstractWorker implements WorkerInterface
     public function processQueue(QueueInterface $queue, array $options = array())
     {
         $eventManager = $this->eventManager;
-        $workerEvent  = new WorkerEvent($queue);
+        $workerEvent  = new WorkerEvent($this, $queue);
 
         // Initializer listener attached many strategies
         $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));

@@ -66,8 +66,10 @@ class WorkerEvent extends Event
     /**
      * @param QueueInterface $queue
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(WorkerInterface $target, QueueInterface $queue)
     {
+        $this->setTarget($target);
+
         $this->queue = $queue;
     }
 
