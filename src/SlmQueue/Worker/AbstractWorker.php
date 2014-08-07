@@ -6,8 +6,6 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Listener\Strategy\AbstractStrategy;
 use SlmQueue\Listener\Strategy\LogJobStrategy;
 use SlmQueue\Queue\QueueInterface;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ResponseCollection;
 use Zend\Stdlib\ArrayUtils;
@@ -15,7 +13,7 @@ use Zend\Stdlib\ArrayUtils;
 /**
  * AbstractWorker
  */
-abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
+abstract class AbstractWorker implements WorkerInterface
 {
 
     /**
@@ -28,12 +26,22 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
      */
     protected $eventManager;
 
+    public function __construct(EventManagerInterface $eventManager)
+    {
+        $eventManager->setIdentifiers(array(
+            get_called_class(),
+            'SlmQueue\Worker\WorkerInterface'
+        ));
+
+        $this->eventManager = $eventManager;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function processQueue(QueueInterface $queue, array $options = array())
     {
-        $eventManager = $this->getEventManager();
+        $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($queue);
 
         if (array_key_exists('verbose', $options) && true === $options['verbose']) {
@@ -76,28 +84,8 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         return $queueState;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setEventManager(EventManagerInterface $eventManager)
-    {
-        $eventManager->setIdentifiers(array(
-            get_called_class(),
-            'SlmQueue\Worker\WorkerInterface'
-        ));
-
-        $this->eventManager = $eventManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getEventManager()
     {
-        if (null === $this->eventManager) {
-            $this->setEventManager(new EventManager());
-        }
-
         return $this->eventManager;
     }
 }

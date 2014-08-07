@@ -24,13 +24,14 @@ class WorkerFactory implements FactoryInterface
         $config                = $serviceLocator->get('Config');
         $strategies            = $config['slm_queue']['strategies'];
 
+        $eventManager          = $serviceLocator->get('EventManager');
         $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');
 
         /** @var AbstractWorker $worker */
-        $worker                = new $requestedName();
+        $worker                = new $requestedName($eventManager);
         $attachQueueListener   = new WorkerInitializerListenerAggregate($worker, $listenerPluginManager, $strategies);
 
-        $worker->getEventManager()->attachAggregate($attachQueueListener);
+        $eventManager->attachAggregate($attachQueueListener);
 
         return $worker;
     }
