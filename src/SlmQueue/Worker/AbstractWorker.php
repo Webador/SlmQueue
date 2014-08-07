@@ -3,24 +3,14 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Listener\Strategy\AbstractStrategy;
-use SlmQueue\Listener\Strategy\LogJobStrategy;
 use SlmQueue\Queue\QueueInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
-use Zend\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker
  */
 abstract class AbstractWorker implements WorkerInterface
 {
-
-    /**
-     * @var ListenerPluginManager
-     */
-    protected $listenerPluginManager;
-
     /**
      * @var EventManagerInterface
      */
