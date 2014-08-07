@@ -2,7 +2,7 @@
 namespace SlmQueue\Factory;
 
 use SlmQueue\Listener\StrategyPluginManager;
-use SlmQueue\Worker\AbstractWorker;
+use SlmQueue\Worker\WorkerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -15,10 +15,10 @@ class WorkerFactory implements FactoryInterface
     /**
      * Create service
      *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param null $canonicalName
-     * @param null $requestedName
-     * @return AbstractWorker
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  null $canonicalName
+     * @param  null $requestedName
+     * @return WorkerInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
@@ -29,7 +29,7 @@ class WorkerFactory implements FactoryInterface
         $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');
         $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
-        /** @var AbstractWorker $worker */
+        /** @var WorkerInterface $worker */
         $worker = new $requestedName($eventManager);
         return $worker;
     }
