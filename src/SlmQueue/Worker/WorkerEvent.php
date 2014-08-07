@@ -30,12 +30,12 @@ class WorkerEvent extends Event
      * Status for successfully finished job
      */
     const JOB_STATUS_SUCCESS             = 1;
- 
+
     /**
      * Status for job that has failed and cannot be processed again
      */
     const JOB_STATUS_FAILURE             = 2;
- 
+
     /**
      * Status for job that has failed but can be processed again
      */
@@ -78,6 +78,7 @@ class WorkerEvent extends Event
     public function setJob(JobInterface $job)
     {
         $this->job = $job;
+        $this->setResult(self::JOB_STATUS_UNKNOWN);
     }
 
     /**

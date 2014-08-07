@@ -17,7 +17,7 @@ use Zend\Stdlib\ArrayUtils;
  */
 abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
 {
-    
+
     /**
      * @var ListenerPluginManager
      */
@@ -56,7 +56,6 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             }
 
             $workerEvent->setJob($job);
-            $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
 
