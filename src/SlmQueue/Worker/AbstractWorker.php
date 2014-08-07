@@ -44,10 +44,6 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($queue);
 
-        if (array_key_exists('verbose', $options) && true === $options['verbose']) {
-            $eventManager->attachAggregate(new LogJobStrategy());
-        }
-
         // Initializer listener attached many strategies
         $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
 
