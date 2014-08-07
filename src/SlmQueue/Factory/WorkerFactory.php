@@ -1,8 +1,9 @@
 <?php
 namespace SlmQueue\Factory;
 
-use SlmQueue\Listener\WorkerInitializerListenerAggregate;
+use SlmQueue\Listener\StrategyPluginManager;
 use SlmQueue\Worker\AbstractWorker;
+use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -22,17 +23,33 @@ class WorkerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
         $config                = $serviceLocator->get('Config');
-        $strategies            = $config['slm_queue']['strategies'];
+        $strategies            = $config['slm_queue']['strategies']['common'];
 
         $eventManager          = $serviceLocator->get('EventManager');
         $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');
+        $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
         /** @var AbstractWorker $worker */
-        $worker                = new $requestedName($eventManager);
-        $attachQueueListener   = new WorkerInitializerListenerAggregate($worker, $listenerPluginManager, $strategies);
-
-        $eventManager->attachAggregate($attachQueueListener);
-
+        $worker = new $requestedName($eventManager);
         return $worker;
+    }
+
+    protected function attachWorkerListeners(EventManagerInterface $eventManager, StrategyPluginManager $listenerPluginManager, array $strategyConfig = array())
+    {
+        foreach ($strategyConfig as $strategy) {
+            $options  = array();
+            if (array_key_exists('options', $strategy)) {
+                $options = $strategy['options'];
+            }
+            $priority = null;
+
+            $listener = $listenerPluginManager->get($strategy['name'], $options);
+            if (array_key_exists('priority', $strategy)) {
+                $priority = $strategy['priority'];
+                $eventManager->attachAggregate($listener, $priority);
+            } else {
+                $eventManager->attachAggregate($listener);
+            }
+        }
     }
 }
