@@ -34,7 +34,7 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($this, $queue);
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
+        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
 
         while (!$workerEvent->exitWorkerLoop()) {
             $job = $queue->pop($options);
@@ -57,7 +57,7 @@ abstract class AbstractWorker implements WorkerInterface
             $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
         }
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
+        $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
 
         $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_REPORT, $workerEvent);
 
