@@ -3,49 +3,46 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Listener\Strategy\AbstractStrategy;
-use SlmQueue\Listener\Strategy\LogJobStrategy;
 use SlmQueue\Queue\QueueInterface;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
-use Zend\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker
  */
-abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
+abstract class AbstractWorker implements WorkerInterface
 {
-    
-    /**
-     * @var ListenerPluginManager
-     */
-    protected $listenerPluginManager;
-
     /**
      * @var EventManagerInterface
      */
     protected $eventManager;
 
     /**
+     * @var array
+     */
+    protected $defaultListeners;
+
+    public function __construct(EventManagerInterface $eventManager)
+    {
+        $eventManager->setIdentifiers(array(
+            get_called_class(),
+            'SlmQueue\Worker\WorkerInterface'
+        ));
+
+        $this->eventManager = $eventManager;
+        $this->attachDefaultListeners();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function processQueue(QueueInterface $queue, array $options = array())
     {
-        $eventManager = $this->getEventManager();
-        $workerEvent  = new WorkerEvent($queue);
+        $eventManager = $this->eventManager;
+        $workerEvent  = new WorkerEvent($this, $queue);
 
-        if (array_key_exists('verbose', $options) && true === $options['verbose']) {
-            $eventManager->attachAggregate(new LogJobStrategy());
-        }
+        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
 
-        // Initializer listener attached many strategies
-        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
-
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
-
-        while (!$workerEvent->exitWorkerLoop()) {
+        while (!$workerEvent->shouldWorkerExitLoop()) {
             $job = $queue->pop($options);
 
             // The queue may return null, for instance if a timeout was set
@@ -56,49 +53,38 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
             }
 
             $workerEvent->setJob($job);
-            $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
 
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
-
-            $result = $this->processJob($job, $queue);
-
-            $workerEvent->setResult($result);
-
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS, $workerEvent);
         }
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
+        $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
 
-        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_REPORT, $workerEvent);
-
-        // Initializer detaches strategies
-        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_POST, new ListenerEvent($queue));
+        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
 
         return $queueState;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setEventManager(EventManagerInterface $eventManager)
-    {
-        $eventManager->setIdentifiers(array(
-            get_called_class(),
-            'SlmQueue\Worker\WorkerInterface'
-        ));
-
-        $this->eventManager = $eventManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getEventManager()
     {
-        if (null === $this->eventManager) {
-            $this->setEventManager(new EventManager());
-        }
-
         return $this->eventManager;
+    }
+
+    protected function attachDefaultListeners()
+    {
+        if (null === $this->defaultListeners) {
+            $this->defaultListeners[] = $this->eventManager->attach(
+                WorkerEvent::EVENT_PROCESS,
+                array($this, 'onProcessJob')
+            );
+        }
+    }
+
+    public function onProcessJob(WorkerEvent $e)
+    {
+        $queue  = $e->getQueue();
+        $job    = $e->getJob();
+
+        $result = $this->processJob($job, $queue);
+        $e->setResult($result);
     }
 }

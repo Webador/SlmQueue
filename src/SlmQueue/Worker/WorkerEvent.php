@@ -14,12 +14,11 @@ class WorkerEvent extends Event
     /**
      * Various events you can subscribe to
      */
-    const EVENT_PROCESS_STATE      = 'processQueue.state';
-    const EVENT_PROCESS_IDLE       = 'processQueue.idle';
-    const EVENT_PROCESS_QUEUE_PRE  = 'processQueue.pre';
-    const EVENT_PROCESS_QUEUE_POST = 'processQueue.post';
-    const EVENT_PROCESS_JOB_PRE    = 'processJob.pre';
-    const EVENT_PROCESS_JOB_POST   = 'processJob.post';
+    const EVENT_BOOTSTRAP        = 'boostrap';
+    const EVENT_FINISH           = 'finish';
+    const EVENT_PROCESS_IDLE     = 'idle';
+    const EVENT_PROCESS_STATE    = 'state';
+    const EVENT_PROCESS          = 'process';
 
     /**
      * Status for unstarted jobs
@@ -30,12 +29,12 @@ class WorkerEvent extends Event
      * Status for successfully finished job
      */
     const JOB_STATUS_SUCCESS             = 1;
- 
+
     /**
      * Status for job that has failed and cannot be processed again
      */
     const JOB_STATUS_FAILURE             = 2;
- 
+
     /**
      * Status for job that has failed but can be processed again
      */
@@ -66,8 +65,10 @@ class WorkerEvent extends Event
     /**
      * @param QueueInterface $queue
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(WorkerInterface $target, QueueInterface $queue)
     {
+        $this->setTarget($target);
+
         $this->queue = $queue;
     }
 
@@ -78,6 +79,7 @@ class WorkerEvent extends Event
     public function setJob(JobInterface $job)
     {
         $this->job = $job;
+        $this->setResult(self::JOB_STATUS_UNKNOWN);
     }
 
     /**

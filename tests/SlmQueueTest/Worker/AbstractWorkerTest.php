@@ -4,6 +4,7 @@ namespace SlmQueueTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Listener\Strategy\MaxRunsStrategy;
 use SlmQueueTest\Asset\SimpleWorker;
 use Zend\EventManager\EventManager;
 
@@ -13,19 +14,18 @@ class AbstractWorkerTest extends TestCase
 
     public function setUp()
     {
-        $options   = array();
-        $options['max_runs'] = 1;
-        $options['max_memory'] = 1024*1024*1024;
-
-        $this->options = $options;
-        $this->worker  = new SimpleWorker($options);
+        $this->worker  = new SimpleWorker;
         $this->queue   = $this->getMock('SlmQueue\Queue\QueueInterface');
         $this->job     = $this->getMock('SlmQueue\Job\JobInterface');
+
+        // set max runs so our tests won't run forever
+        $this->maxRuns = new MaxRunsStrategy;
+        $this->maxRuns->setMaxRuns(1);
+        $this->worker->getEventManager()->attach($this->maxRuns);
     }
+
     public function testWorkerPopsFromQueue()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         $this->queue->expects($this->once())
                     ->method('pop')
                     ->will($this->returnValue($this->job));
@@ -35,8 +35,6 @@ class AbstractWorkerTest extends TestCase
 
     public function testWorkerExecutesJob()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         $this->queue->expects($this->once())
                     ->method('pop')
                     ->will($this->returnValue($this->job));
@@ -49,9 +47,7 @@ class AbstractWorkerTest extends TestCase
 
     public function testWorkerCountsRuns()
     {
-        $this->markTestSkipped('This test has been broken.');
-
-        $this->options->setMaxRuns(2);
+        $this->maxRuns->setMaxRuns(2);
 
         $this->queue->expects($this->exactly(2))
                     ->method('pop')
@@ -62,8 +58,6 @@ class AbstractWorkerTest extends TestCase
 
     public function testWorkerSkipsVoidValuesFromQueue()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         $i   = 0;
         $job = $this->job;
         $callback = function () use (&$i, $job) {
@@ -76,13 +70,12 @@ class AbstractWorkerTest extends TestCase
             return null;
         };
 
-        $this->options->setMaxRuns(1);
+        $this->maxRuns->setMaxRuns(1);
         $this->queue->expects($this->exactly(4))
                     ->method('pop')
                     ->will($this->returnCallback($callback));
 
-        $count = $this->worker->processQueue($this->queue);
-        $this->assertEquals(1, $count);
+        $this->worker->processQueue($this->queue);
     }
 
     public function testCorrectIdentifiersAreSetToEventManager()
@@ -95,45 +88,47 @@ class AbstractWorkerTest extends TestCase
 
     public function testEventManagerTriggersEvents()
     {
-        $this->markTestSkipped('This test has been broken.');
+        /**
+         * The stop condition is now a listener on the event manager, this
+         * makes it really hard to test this thing. We cannot use attach here
+         * as the trigger will not call the listeners (the "trigger" is mocked),
+         * however if we do not mock the EVM, we cannot assert that the triggers
+         * are going...
+         */
+        $this->markTestSkipped('TODO: This test should still be fixed');
 
         $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $this->worker->setEventManager($eventManager);
+        $this->worker = new SimpleWorker($eventManager);
 
         $this->queue->expects($this->once())
                     ->method('pop')
                     ->will($this->returnValue($this->job));
 
-        // Trigger will be called 4: one for process queue pre, post, and process job pre, post
+        // Trigger will be called 3: one for bootstrap, process and finish
 
-        $eventManager->expects($this->exactly(4))
+        $eventManager->expects($this->exactly(3))
                      ->method('trigger');
 
         $eventManager->expects($this->at(0))
                      ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_PRE));
+                     ->with($this->equalTo(WorkerEvent::EVENT_BOOTSTRAP));
 
         $eventManager->expects($this->at(1))
                      ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_JOB_PRE));
+                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS));
 
         $eventManager->expects($this->at(2))
                      ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_JOB_POST));
-
-        $eventManager->expects($this->at(3))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_POST));
+                     ->with($this->equalTo(WorkerEvent::EVENT_FINISH));
 
         $this->worker->processQueue($this->queue);
     }
 
     public function testWorkerSetsJobStatusInEventClass()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         $eventManager = new EventManager;
-        $this->worker->setEventManager($eventManager);
+        $this->worker = new SimpleWorker($eventManager);
+        $this->worker->getEventManager()->attach($this->maxRuns);
 
         $this->job->expects($this->once())
                   ->method('execute')
@@ -144,9 +139,9 @@ class AbstractWorkerTest extends TestCase
                     ->will($this->returnValue($this->job));
 
         $self = $this;
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, function ($e) use ($self) {
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS, function ($e) use ($self) {
             $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
-        });
+        }, -100);
 
         $this->worker->processQueue($this->queue);
     }

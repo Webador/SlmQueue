@@ -23,14 +23,14 @@ class LogJobStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_JOB_PRE,
+            WorkerEvent::EVENT_PROCESS,
             array($this, 'onLogJobProcessStart'),
-            $priority
+            10000
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_JOB_POST,
+            WorkerEvent::EVENT_PROCESS,
             array($this, 'onLogJobProcessDone'),
-            $priority
+            -1000
         );
     }
 
