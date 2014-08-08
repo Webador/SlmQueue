@@ -3,9 +3,9 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Options\WorkerOptions'    => 'SlmQueue\Factory\WorkerOptionsFactory',
-            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
+            'SlmQueue\Job\JobPluginManager'             => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Listener\StrategyPluginManager'   => 'SlmQueue\Factory\StrategyPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager'         => 'SlmQueue\Factory\QueuePluginManagerFactory'
         ),
     ),
 
@@ -19,9 +19,15 @@ return array(
         /**
          * Worker options
          */
-        'worker' => array(
-            'max_runs'   => 100000,
-            'max_memory' => 100 * 1024 * 1024
+        'strategies' => array(
+            'default' => array( // per worker
+                array('name' => 'SlmQueue\Strategy\MaxRunsStrategy', 'options' => array('max_runs' => 100000)),
+                array('name' => 'SlmQueue\Strategy\MaxMemoryStrategy', 'options' => array('max_memory' => 100 * 1024 * 1024)),
+                array('name' => 'SlmQueue\Strategy\FileWatchStrategy'),
+                array('name' => 'SlmQueue\Strategy\InterruptStrategy', 'priority' => - PHP_INT_MAX),
+            ),
+            'queues' => array( // per queue
+            ),
         ),
 
         /**
@@ -38,5 +44,20 @@ return array(
          * Queue manager configuration
          */
         'queue_manager' => array(),
+
+        /**
+         * Strategy manager configuration
+         */
+        'strategy_manager' => array(
+            'invokables' => array(
+                'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Listener\Strategy\InterruptStrategy',
+                'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Listener\Strategy\MaxRunsStrategy',
+                'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Listener\Strategy\MaxMemoryStrategy',
+                'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Listener\Strategy\FileWatchStrategy',
+            ),
+            'factories' => array(
+                'SlmQueue\Strategy\LogJobStrategy'          => 'SlmQueue\Listener\Strategy\Factory\LogJobStrategyFactory',
+            )
+        ),
     )
 );

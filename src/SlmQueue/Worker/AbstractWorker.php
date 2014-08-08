@@ -3,17 +3,13 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Job\JobInterface;
-use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueueInterface;
-use SlmQueue\Queue\QueueAwareInterface;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
 
 /**
  * AbstractWorker
  */
-abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInterface
+abstract class AbstractWorker implements WorkerInterface
 {
     /**
      * @var EventManagerInterface
@@ -21,87 +17,11 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
     protected $eventManager;
 
     /**
-     * @var bool
+     * @var array
      */
-    protected $stopped = false;
+    protected $defaultListeners;
 
-    /**
-     * @var WorkerOptions
-     */
-    protected $options;
-
-    /**
-     * Constructor
-     *
-     * @param WorkerOptions $options
-     */
-    public function __construct(WorkerOptions $options)
-    {
-        $this->options = $options;
-
-        // Listen to the signals SIGTERM and SIGINT so that the worker can be killed properly. Note that
-        // because pcntl_signal may not be available on Windows, we needed to check for the existence of the function
-        if (function_exists('pcntl_signal')) {
-            declare(ticks = 1);
-            pcntl_signal(SIGTERM, array($this, 'handleSignal'));
-            pcntl_signal(SIGINT, array($this, 'handleSignal'));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function processQueue(QueueInterface $queue, array $options = array())
-    {
-        $eventManager = $this->getEventManager();
-        $count        = 0;
-
-        $workerEvent = new WorkerEvent($queue);
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
-
-        while (true) {
-            // Check for external stop condition
-            if ($this->isStopped()) {
-                break;
-            }
-
-            $job = $queue->pop($options);
-
-            // The queue may return null, for instance if a timeout was set
-            if (!$job instanceof JobInterface) {
-                // Check for internal stop condition
-                if ($this->isMaxMemoryExceeded()) {
-                    break;
-                }
-                continue;
-            }
-
-            $workerEvent->setJob($job);
-            $workerEvent->setResult(WorkerEvent::JOB_STATUS_UNKNOWN);
-
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
-
-            $result = $this->processJob($job, $queue);
-            $count++;
-
-            $workerEvent->setResult($result);
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
-
-            // Check for internal stop condition
-            if ($this->isMaxRunsReached($count) || $this->isMaxMemoryExceeded()) {
-                break;
-            }
-        }
-
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
-
-        return $count;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setEventManager(EventManagerInterface $eventManager)
+    public function __construct(EventManagerInterface $eventManager)
     {
         $eventManager->setIdentifiers(array(
             get_called_class(),
@@ -109,63 +29,62 @@ abstract class AbstractWorker implements WorkerInterface, EventManagerAwareInter
         ));
 
         $this->eventManager = $eventManager;
+        $this->attachDefaultListeners();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getEventManager()
+    public function processQueue(QueueInterface $queue, array $options = array())
     {
-        if (null === $this->eventManager) {
-            $this->setEventManager(new EventManager());
+        $eventManager = $this->eventManager;
+        $workerEvent  = new WorkerEvent($this, $queue);
+
+        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
+
+        while (!$workerEvent->shouldWorkerExitLoop()) {
+            $job = $queue->pop($options);
+
+            // The queue may return null, for instance if a timeout was set
+            if (!$job instanceof JobInterface) {
+                $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $workerEvent);
+
+                continue;
+            }
+
+            $workerEvent->setJob($job);
+
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS, $workerEvent);
         }
 
+        $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
+
+        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
+
+        return $queueState;
+    }
+
+    public function getEventManager()
+    {
         return $this->eventManager;
     }
 
-    /**
-     * Check if the script has been stopped from a signal
-     *
-     * @return bool
-     */
-    public function isStopped()
+    protected function attachDefaultListeners()
     {
-        return $this->stopped;
-    }
-
-    /**
-     * Did worker exceed the threshold for memory usage?
-     *
-     * @return bool
-     */
-    public function isMaxMemoryExceeded()
-    {
-        return memory_get_usage() > $this->options->getMaxMemory();
-    }
-
-    /**
-     * Is the worker about to exceed the threshold for the number of jobs allowed to run?
-     *
-     * @param $count current count of executed jobs
-     * @return bool
-     */
-    public function isMaxRunsReached($count)
-    {
-        return $count >= $this->options->getMaxRuns();
-    }
-
-    /**
-     * Handle the signal
-     *
-     * @param int $signo
-     */
-    public function handleSignal($signo)
-    {
-        switch($signo) {
-            case SIGTERM:
-            case SIGINT:
-                $this->stopped = true;
-                break;
+        if (null === $this->defaultListeners) {
+            $this->defaultListeners[] = $this->eventManager->attach(
+                WorkerEvent::EVENT_PROCESS,
+                array($this, 'onProcessJob')
+            );
         }
+    }
+
+    public function onProcessJob(WorkerEvent $e)
+    {
+        $queue  = $e->getQueue();
+        $job    = $e->getJob();
+
+        $result = $this->processJob($job, $queue);
+        $e->setResult($result);
     }
 }

@@ -46,7 +46,7 @@ abstract class AbstractWorkerController extends AbstractActionController
         $queue   = $this->queuePluginManager->get($name);
 
         try {
-            $result = $this->worker->processQueue($queue, $options);
+            $messages = $this->worker->processQueue($queue, $options);
         } catch (ExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
@@ -55,10 +55,14 @@ abstract class AbstractWorkerController extends AbstractActionController
             );
         }
 
+        $messages = implode("\n", array_map(function ($m) {
+            return sprintf(' - %s', $m);
+        }, $messages));
+
         return sprintf(
-            "Finished worker for queue '%s' with %s jobs\n",
+            "Finished worker for queue '%s':\n%s\n",
             $name,
-            $result
+            $messages
         );
     }
 }

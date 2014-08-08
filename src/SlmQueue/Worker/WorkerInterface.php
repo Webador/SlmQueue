@@ -17,7 +17,7 @@ interface WorkerInterface
      *
      * @param  QueueInterface $queue
      * @param  array          $options
-     * @return int How many jobs were processed
+     * @return array          description of exit states from strategies that report it
      */
     public function processQueue(QueueInterface $queue, array $options = array());
 
