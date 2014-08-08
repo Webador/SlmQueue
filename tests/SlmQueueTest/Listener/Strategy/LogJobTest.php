@@ -56,9 +56,9 @@ class LogJobTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB_PRE, array($this->listener, 'onLogJobProcessStart'));
+            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onLogJobProcessStart'));
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB_POST, array($this->listener, 'onLogJobProcessDone'));
+            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onLogJobProcessDone'));
 
         $this->listener->attach($evm);
     }

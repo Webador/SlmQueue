@@ -16,6 +16,11 @@ abstract class AbstractWorker implements WorkerInterface
      */
     protected $eventManager;
 
+    /**
+     * @var array
+     */
+    protected $defaultListeners;
+
     public function __construct(EventManagerInterface $eventManager)
     {
         $eventManager->setIdentifiers(array(
@@ -24,6 +29,7 @@ abstract class AbstractWorker implements WorkerInterface
         ));
 
         $this->eventManager = $eventManager;
+        $this->attachDefaultListeners();
     }
 
     /**
@@ -36,7 +42,7 @@ abstract class AbstractWorker implements WorkerInterface
 
         $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
 
-        while (!$workerEvent->exitWorkerLoop()) {
+        while (!$workerEvent->shouldWorkerExitLoop()) {
             $job = $queue->pop($options);
 
             // The queue may return null, for instance if a timeout was set
@@ -48,18 +54,12 @@ abstract class AbstractWorker implements WorkerInterface
 
             $workerEvent->setJob($job);
 
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_PRE, $workerEvent);
-
-            $result = $this->processJob($job, $queue);
-
-            $workerEvent->setResult($result);
-
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB_POST, $workerEvent);
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS, $workerEvent);
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
 
-        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_REPORT, $workerEvent);
+        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
 
         return $queueState;
     }
@@ -67,5 +67,24 @@ abstract class AbstractWorker implements WorkerInterface
     public function getEventManager()
     {
         return $this->eventManager;
+    }
+
+    protected function attachDefaultListeners()
+    {
+        if (null === $this->defaultListeners) {
+            $this->defaultListeners[] = $this->eventManager->attach(
+                WorkerEvent::EVENT_PROCESS,
+                array($this, 'onProcessJob')
+            );
+        }
+    }
+
+    public function onProcessJob(WorkerEvent $e)
+    {
+        $queue  = $e->getQueue();
+        $job    = $e->getJob();
+
+        $result = $this->processJob($job, $queue);
+        $e->setResult($result);
     }
 }
