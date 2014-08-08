@@ -34,8 +34,11 @@ class WorkerFactory implements FactoryInterface
         return $worker;
     }
 
-    protected function attachWorkerListeners(EventManagerInterface $eventManager, StrategyPluginManager $listenerPluginManager, array $strategyConfig = array())
-    {
+    protected function attachWorkerListeners(
+        EventManagerInterface $eventManager,
+        StrategyPluginManager $listenerPluginManager,
+        array $strategyConfig = array()
+    ) {
         foreach ($strategyConfig as $strategy) {
             $options  = array();
             if (array_key_exists('options', $strategy)) {
