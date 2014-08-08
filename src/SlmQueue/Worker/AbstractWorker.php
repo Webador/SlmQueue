@@ -34,9 +34,6 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($this, $queue);
 
-        // Initializer listener attached many strategies
-        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_PRE, new ListenerEvent($queue));
-
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_PRE, $workerEvent);
 
         while (!$workerEvent->exitWorkerLoop()) {
@@ -63,9 +60,6 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE_POST, $workerEvent);
 
         $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_REPORT, $workerEvent);
-
-        // Initializer detaches strategies
-        $eventManager->trigger(ListenerEvent::EVENT_PROCESS_POST, new ListenerEvent($queue));
 
         return $queueState;
     }
