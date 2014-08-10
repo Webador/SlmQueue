@@ -56,6 +56,24 @@ class AbstractWorkerTest extends TestCase
         $this->worker->processQueue($this->queue);
     }
 
+    public function testWorkerReturnsArray()
+    {
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($this->job));
+
+        $this->assertTrue(is_array($this->worker->processQueue($this->queue)));
+    }
+
+    public function testWorkerContainsMessages()
+    {
+        $this->queue->expects($this->once())
+                    ->method('pop')
+                    ->will($this->returnValue($this->job));
+
+        $this->assertContains('maximum of 1 jobs processed', $this->worker->processQueue($this->queue));
+    }
+
     public function testWorkerSkipsVoidValuesFromQueue()
     {
         $i   = 0;

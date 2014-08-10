@@ -5,6 +5,7 @@ namespace SlmQueue\Worker;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use Zend\EventManager\EventManagerInterface;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker
@@ -60,6 +61,8 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
 
         $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
+
+        $queueState = array_filter(ArrayUtils::iteratorToArray($queueState));
 
         return $queueState;
     }
