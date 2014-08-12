@@ -24,7 +24,7 @@ class LogJobStrategyFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $strategy = new LogJobStrategy($serviceLocator->get('Console'));
+        $strategy = new LogJobStrategy($serviceLocator->getServiceLocator()->get('Console'), $this->options);
 
         return $strategy;
     }
