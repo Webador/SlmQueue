@@ -23,7 +23,7 @@ return array(
             'default' => array( // per worker
                 array('name' => 'SlmQueue\Strategy\MaxRunsStrategy', 'options' => array('max_runs' => 100000)),
                 array('name' => 'SlmQueue\Strategy\MaxMemoryStrategy', 'options' => array('max_memory' => 100 * 1024 * 1024)),
-                array('name' => 'SlmQueue\Strategy\InterruptStrategy', 'priority' => - PHP_INT_MAX),
+                array('name' => 'SlmQueue\Strategy\InterruptStrategy'),
                 // array('name' => 'SlmQueue\Strategy\FileWatchStrategy'),
             ),
             'queues' => array( // per queue
