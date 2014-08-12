@@ -39,20 +39,25 @@ class WorkerFactory implements FactoryInterface
         StrategyPluginManager $listenerPluginManager,
         array $strategyConfig = array()
     ) {
-        foreach ($strategyConfig as $strategy) {
-            $options  = array();
-            if (array_key_exists('options', $strategy)) {
-                $options = $strategy['options'];
+        foreach ($strategyConfig as $strategy => $options) {
+            if (is_numeric($strategy) && is_string($options)) { // no options given, name stored as value
+                $strategy = $options;
+                $options = array();
             }
-            $priority = null;
 
-            $listener = $listenerPluginManager->get($strategy['name'], $options);
-            if (array_key_exists('priority', $strategy)) {
-                $priority = $strategy['priority'];
-                $eventManager->attachAggregate($listener, $priority);
-            } else {
-                $eventManager->attachAggregate($listener);
+            if (!is_string($strategy) || !is_array($options)) {
+                continue;
             }
+
+            $priority = null;
+            if (array_key_exists('priority', $options)) {
+                $priority = $options['priority'];
+                unset($options['priority']);
+            }
+
+            $listener = $listenerPluginManager->get($strategy, $options);
+
+            $eventManager->attachAggregate($listener, $priority);
         }
     }
 }
