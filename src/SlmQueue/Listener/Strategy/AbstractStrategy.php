@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Listener\Strategy;
 
+use SlmQueue\Exception;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\AbstractListenerAggregate;
-use Zend\Filter\Word\UnderscoreToCamelCase;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {
@@ -33,13 +33,16 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
      */
     public function setOptions(array $options)
     {
-        $filter = new UnderscoreToCamelCase();
-
         foreach ($options as $key => $value) {
-            $method = 'set' . ucfirst($filter->filter($key));
-            if (method_exists($this, $method)) {
-                $this->$method($value);
+            $setter = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
+            if (!method_exists($this, $setter)) {
+                throw new Exception\BadMethodCallException(
+                    'The option "' . $key . '" does not '
+                    . 'have a matching ' . $setter . ' setter method '
+                    . 'which must be defined'
+                );
             }
+            $this->{$setter}($value);
         }
     }
 
