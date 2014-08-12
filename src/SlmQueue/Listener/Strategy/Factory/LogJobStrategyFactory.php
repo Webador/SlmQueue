@@ -10,6 +10,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class LogJobStrategyFactory implements FactoryInterface
 {
+    protected $options;
+
+    public function __construct(array $options = null)
+    {
+        $this->options = $options;
+    }
     /**
      * Create service
      *

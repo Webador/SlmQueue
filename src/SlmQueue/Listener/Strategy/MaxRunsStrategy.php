@@ -18,6 +18,11 @@ class MaxRunsStrategy extends AbstractStrategy
     protected $maxRuns = 0;
 
     /**
+     * {@inheritDoc}
+     */
+    protected $state = '0 jobs processed';
+
+    /**
      * @param int $maxRuns
      */
     public function setMaxRuns($maxRuns)

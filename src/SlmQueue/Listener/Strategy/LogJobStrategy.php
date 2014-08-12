@@ -13,10 +13,17 @@ class LogJobStrategy extends AbstractStrategy
      */
     protected $console;
 
-    public function __construct(AdapterInterface $console)
+    /**
+     * @param AdapterInterface $console
+     * @param array            $options
+     */
+    public function __construct(AdapterInterface $console, array $options = null)
     {
         $this->console = $console;
+
+        parent::__construct($options);
     }
+
     /**
      * {@inheritDoc}
      */
