@@ -4,7 +4,6 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Listener\Strategy\InterruptStrategy;
-use SlmQueue\Worker\ListenerEvent;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleJob;
 
@@ -16,7 +15,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
     protected $listener;
 
     /**
-     * @var ListenerEvent
+     * @var WorkerEvent
      */
     protected $event;
 

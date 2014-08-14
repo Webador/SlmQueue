@@ -2,7 +2,6 @@
 
 namespace SlmQueue\Listener\Strategy;
 
-use SlmQueue\Worker\ListenerEvent;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
