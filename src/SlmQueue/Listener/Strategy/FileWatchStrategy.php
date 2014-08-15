@@ -78,7 +78,7 @@ class FileWatchStrategy extends AbstractStrategy
         }
 
         foreach ($this->files as $checksum => $file) {
-            if (!file_exists($file) || !is_readable($file) || $checksum != hash_file('crc32', $file)) {
+            if (!file_exists($file) || !is_readable($file) || (string) $checksum !== hash_file('crc32', $file)) {
                 $event->exitWorkerLoop();
 
                 $this->state = sprintf("file modification detected for '%s'", $file);
