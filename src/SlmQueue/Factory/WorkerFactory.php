@@ -50,7 +50,7 @@ class WorkerFactory implements FactoryInterface
             }
 
             $priority = null;
-            if (array_key_exists('priority', $options)) {
+            if (isset($options['priority'])) {
                 $priority = $options['priority'];
                 unset($options['priority']);
             }
