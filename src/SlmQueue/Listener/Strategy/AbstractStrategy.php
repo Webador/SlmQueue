@@ -8,7 +8,6 @@ use Zend\EventManager\AbstractListenerAggregate;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {
-
     /**
      * The state of the strategy
      *

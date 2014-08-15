@@ -2,7 +2,6 @@
 
 namespace SlmQueue\Worker;
 
-use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\Stdlib\ArrayUtils;
@@ -16,11 +15,6 @@ abstract class AbstractWorker implements WorkerInterface
      * @var EventManagerInterface
      */
     protected $eventManager;
-
-    /**
-     * @var array
-     */
-    protected $defaultListeners;
 
     public function __construct(EventManagerInterface $eventManager)
     {
