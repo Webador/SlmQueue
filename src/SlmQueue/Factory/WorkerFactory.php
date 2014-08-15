@@ -23,7 +23,7 @@ class WorkerFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
         $config                = $serviceLocator->get('Config');
-        $strategies            = $config['slm_queue']['strategies']['default'];
+        $strategies            = $config['slm_queue']['worker_strategies']['default'];
 
         $eventManager          = $serviceLocator->get('EventManager');
         $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');

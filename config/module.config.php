@@ -17,9 +17,9 @@ return array(
 
     'slm_queue' => array(
         /**
-         * Worker options
+         * Worker Strategies
          */
-        'strategies' => array(
+        'worker_strategies' => array(
             'default' => array( // per worker
                 'SlmQueue\Strategy\ProcessQueueStrategy',
                 'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
