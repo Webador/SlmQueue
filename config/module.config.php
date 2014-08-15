@@ -21,6 +21,7 @@ return array(
          */
         'strategies' => array(
             'default' => array( // per worker
+                'SlmQueue\Strategy\ProcessQueueStrategy',
                 'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
                 'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
                 'SlmQueue\Strategy\InterruptStrategy',
@@ -50,6 +51,7 @@ return array(
          */
         'strategy_manager' => array(
             'invokables' => array(
+                'SlmQueue\Strategy\ProcessQueueStrategy'    => 'SlmQueue\Listener\Strategy\ProcessQueueStrategy',
                 'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Listener\Strategy\InterruptStrategy',
                 'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Listener\Strategy\MaxRunsStrategy',
                 'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Listener\Strategy\MaxMemoryStrategy',

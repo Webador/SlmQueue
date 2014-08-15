@@ -63,6 +63,12 @@ class WorkerEvent extends Event
     protected $exitWorker = false;
 
     /**
+     * Array of options
+     * @var array
+     */
+    protected $options = array();
+
+    /**
      * @param QueueInterface $queue
      */
     public function __construct(WorkerInterface $target, QueueInterface $queue)
@@ -128,5 +134,21 @@ class WorkerEvent extends Event
     public function shouldWorkerExitLoop()
     {
         return $this->exitWorker;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 }
