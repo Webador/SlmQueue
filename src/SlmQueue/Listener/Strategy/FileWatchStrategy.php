@@ -73,6 +73,8 @@ class FileWatchStrategy extends AbstractStrategy
     {
         if (!count($this->files)) {
             $this->constructFileList();
+
+            $this->state = sprintf("watching %s files for modifications", count($this->files));
         }
 
         foreach ($this->files as $checksum => $file) {
@@ -89,7 +91,7 @@ class FileWatchStrategy extends AbstractStrategy
         $iterator   = new \RecursiveDirectoryIterator('.', \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
         $files      = new \RecursiveIteratorIterator($iterator);
 
-        /** @var $fileinfo \SplFileInfo  */
+        /** @var $file \SplFileInfo  */
         foreach ($files as $file) {
             if ($file->isDir()) {
                 continue;
