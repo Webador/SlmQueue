@@ -30,7 +30,6 @@ abstract class AbstractWorker implements WorkerInterface
         ));
 
         $this->eventManager = $eventManager;
-//        $this->attachDefaultListeners();
     }
 
     /**
@@ -62,23 +61,4 @@ abstract class AbstractWorker implements WorkerInterface
     {
         return $this->eventManager;
     }
-
-//    protected function attachDefaultListeners()
-//    {
-//        if (null === $this->defaultListeners) {
-//            $this->defaultListeners[] = $this->eventManager->attach(
-//                WorkerEvent::EVENT_PROCESS,
-//                array($this, 'onProcessJob')
-//            );
-//        }
-//    }
-//
-//    public function onProcessJob(WorkerEvent $e)
-//    {
-//        $queue  = $e->getQueue();
-//        $job    = $e->getJob();
-//
-//        $result = $this->processJob($job, $queue);
-//        $e->setResult($result);
-//    }
 }
