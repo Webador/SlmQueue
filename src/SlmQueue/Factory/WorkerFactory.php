@@ -57,7 +57,11 @@ class WorkerFactory implements FactoryInterface
 
             $listener = $listenerPluginManager->get($strategy, $options);
 
-            $eventManager->attachAggregate($listener, $priority);
+            if (!is_null($priority)) {
+                $eventManager->attachAggregate($listener, $priority);
+            } else {
+                $eventManager->attachAggregate($listener);
+            }
         }
     }
 }
