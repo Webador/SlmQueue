@@ -1,7 +1,9 @@
 <?php
 namespace SlmQueue\Factory;
 
+use SlmQueue\Exception\RunTimeException;
 use SlmQueue\Listener\StrategyPluginManager;
+use SlmQueue\Worker\WorkerEvent;
 use SlmQueue\Worker\WorkerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -34,6 +36,12 @@ class WorkerFactory implements FactoryInterface
         return $worker;
     }
 
+    /**
+     * @param EventManagerInterface $eventManager
+     * @param StrategyPluginManager $listenerPluginManager
+     * @param array $strategyConfig
+     * @throws \SlmQueue\Exception\RunTimeException
+     */
     protected function attachWorkerListeners(
         EventManagerInterface $eventManager,
         StrategyPluginManager $listenerPluginManager,
@@ -62,6 +70,13 @@ class WorkerFactory implements FactoryInterface
             } else {
                 $eventManager->attachAggregate($listener);
             }
+        }
+
+        if (!in_array(WorkerEvent::EVENT_BOOTSTRAP, $eventManager->getEvents())) {
+            throw new RunTimeException(sprintf(
+                "No worker strategy has been registered to respond to the '%s' event.",
+                WorkerEvent::EVENT_BOOTSTRAP
+            ));
         }
     }
 }

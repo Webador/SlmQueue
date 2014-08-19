@@ -2,6 +2,7 @@
 
 namespace SlmQueue\Listener\Strategy;
 
+use SlmQueue\Exception\RunTimeException;
 use SlmQueue\Listener\StrategyPluginManager;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;
@@ -37,6 +38,10 @@ class AttachQueueListenersStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param WorkerEvent $e
+     * @throws \SlmQueue\Exception\RunTimeException
+     */
     public function attachQueueListeners(WorkerEvent $e)
     {
         /** @var AbstractWorker $worker */
@@ -75,6 +80,13 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             } else {
                 $eventManager->attachAggregate($listener);
             }
+        }
+
+        if (!in_array(WorkerEvent::EVENT_PROCESS, $eventManager->getEvents())) {
+            throw new RunTimeException(sprintf(
+                "No worker strategy has been registered to respond to the '%s' event.",
+                WorkerEvent::EVENT_PROCESS
+            ));
         }
 
         $e->stopPropagation();
