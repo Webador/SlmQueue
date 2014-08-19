@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Listener\Strategy;
+namespace SlmQueue\Strategy;
 
 use SlmQueue\Worker\WorkerEvent;
 use Zend\Console\Adapter\AdapterInterface;

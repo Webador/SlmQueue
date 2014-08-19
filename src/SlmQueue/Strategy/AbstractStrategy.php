@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Listener\Strategy;
+namespace SlmQueue\Strategy;
 
 use SlmQueue\Exception;
 use SlmQueue\Worker\WorkerEvent;

@@ -1,8 +1,8 @@
 <?php
 
-namespace SlmQueue\Listener;
+namespace SlmQueue\Strategy;
 
-use SlmQueue\Listener\Strategy\AbstractStrategy;
+use SlmQueue\Exception\RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
 
 /**
@@ -17,7 +17,7 @@ class StrategyPluginManager extends AbstractPluginManager
 
     /**
      * @param  mixed $plugin
-     * @throws Exception\RuntimeException
+     * @throws RuntimeException
      * @return void
      */
     public function validatePlugin($plugin)
@@ -26,8 +26,8 @@ class StrategyPluginManager extends AbstractPluginManager
             return; // we're okay
         }
 
-        throw new Exception\RuntimeException(sprintf(
-            'Plugin of type %s is invalid; must extend SlmQueue\Listener\Strategy\AbstractStrategy',
+        throw new RuntimeException(sprintf(
+            'Plugin of type %s is invalid; must extend SlmQueue\Strategy\AbstractStrategy',
             (is_object($plugin) ? get_class($plugin) : gettype($plugin))
         ));
     }

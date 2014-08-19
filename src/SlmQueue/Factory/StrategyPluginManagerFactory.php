@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Listener\StrategyPluginManager;
+use SlmQueue\Strategy\StrategyPluginManager;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

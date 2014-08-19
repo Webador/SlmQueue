@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Listener\Strategy;
+namespace SlmQueue\Strategy;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Worker\AbstractWorker;

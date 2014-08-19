@@ -1,9 +1,9 @@
 <?php
 
-namespace SlmQueueTest\Listener\Strategy;
+namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
-use SlmQueue\Listener\Strategy\LogJobStrategy;
+use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleJob;
 
@@ -20,7 +20,7 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     protected $event;
 
     /**
-     * @var Zend\Console\Adapter\AdapterInterface
+     * @var \Zend\Console\Adapter\AdapterInterface
      */
     protected $console;
 
@@ -48,7 +48,7 @@ class LogJobTest extends PHPUnit_Framework_TestCase
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Listener\Strategy\AbstractStrategy', $this->listener);
+        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
     }
 
     public function testListensToCorrectEvents()

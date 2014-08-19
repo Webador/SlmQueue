@@ -1,10 +1,10 @@
 <?php
 
-namespace SlmQueueTest\Listener\Strategy\Factory;
+namespace SlmQueueTest\Strategy\Factory;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Listener\Strategy\Factory\LogJobStrategyFactory;
-use SlmQueue\Listener\StrategyPluginManager;
+use SlmQueue\Strategy\Factory\LogJobStrategyFactory;
+use SlmQueue\StrategyPluginManager;
 use SlmQueueTest\Util\ServiceManagerFactory;
 
 class LogJobFactoryTest extends TestCase
@@ -20,7 +20,7 @@ class LogJobFactoryTest extends TestCase
         $factory  = new LogJobStrategyFactory();
         $strategy = $factory->createService($plugin);
 
-        $this->assertInstanceOf('SlmQueue\Listener\Strategy\LogJobStrategy', $strategy);
+        $this->assertInstanceOf('SlmQueue\Strategy\LogJobStrategy', $strategy);
     }
 
 }

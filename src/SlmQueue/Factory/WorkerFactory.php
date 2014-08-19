@@ -2,7 +2,7 @@
 namespace SlmQueue\Factory;
 
 use SlmQueue\Exception\RunTimeException;
-use SlmQueue\Listener\StrategyPluginManager;
+use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueue\Worker\WorkerInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -40,7 +40,7 @@ class WorkerFactory implements FactoryInterface
      * @param EventManagerInterface $eventManager
      * @param StrategyPluginManager $listenerPluginManager
      * @param array $strategyConfig
-     * @throws \SlmQueue\Exception\RunTimeException
+     * @throws RunTimeException
      */
     protected function attachWorkerListeners(
         EventManagerInterface $eventManager,

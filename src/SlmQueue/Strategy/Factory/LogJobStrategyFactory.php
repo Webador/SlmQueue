@@ -1,7 +1,7 @@
 <?php
-namespace SlmQueue\Listener\Strategy\Factory;
+namespace SlmQueue\Strategy\Factory;
 
-use SlmQueue\Listener\Strategy\LogJobStrategy;
+use SlmQueue\Strategy\LogJobStrategy;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 

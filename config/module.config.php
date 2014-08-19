@@ -21,13 +21,16 @@ return array(
          */
         'worker_strategies' => array(
             'default' => array( // per worker
-                'SlmQueue\Strategy\ProcessQueueStrategy',
+                'SlmQueue\Strategy\AttachQueueListenersStrategy', // attaches strategies per queue
                 'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
                 'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
                 'SlmQueue\Strategy\InterruptStrategy',
                 // 'SlmQueue\Strategy\FileWatchStrategy',
             ),
             'queues' => array( // per queue
+                'default' => array(
+                    'SlmQueue\Strategy\ProcessQueueStrategy',
+                )
             ),
         ),
 
@@ -51,14 +54,15 @@ return array(
          */
         'strategy_manager' => array(
             'invokables' => array(
-                'SlmQueue\Strategy\ProcessQueueStrategy'    => 'SlmQueue\Listener\Strategy\ProcessQueueStrategy',
-                'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Listener\Strategy\InterruptStrategy',
-                'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Listener\Strategy\MaxRunsStrategy',
-                'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Listener\Strategy\MaxMemoryStrategy',
-                'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Listener\Strategy\FileWatchStrategy',
+                'SlmQueue\Strategy\ProcessQueueStrategy'    => 'SlmQueue\Strategy\ProcessQueueStrategy',
+                'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Strategy\InterruptStrategy',
+                'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Strategy\MaxRunsStrategy',
+                'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Strategy\MaxMemoryStrategy',
+                'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Strategy\FileWatchStrategy',
             ),
             'factories' => array(
-                'SlmQueue\Strategy\LogJobStrategy'          => 'SlmQueue\Listener\Strategy\Factory\LogJobStrategyFactory',
+                'SlmQueue\Strategy\AttachQueueListenersStrategy' => 'SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory',
+                'SlmQueue\Strategy\LogJobStrategy'               => 'SlmQueue\Strategy\Factory\LogJobStrategyFactory',
             )
         ),
     )

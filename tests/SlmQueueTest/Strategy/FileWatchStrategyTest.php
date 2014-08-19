@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
-use SlmQueue\Listener\Strategy\FileWatchStrategy;
+use SlmQueue\Strategy\FileWatchStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleJob;
 
@@ -37,7 +37,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Listener\Strategy\AbstractStrategy', $this->listener);
+        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
     }
 
     public function testListensToCorrectEvents()

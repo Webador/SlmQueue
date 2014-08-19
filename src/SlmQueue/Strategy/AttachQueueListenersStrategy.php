@@ -1,9 +1,8 @@
 <?php
 
-namespace SlmQueue\Listener\Strategy;
+namespace SlmQueue\Strategy;
 
 use SlmQueue\Exception\RunTimeException;
-use SlmQueue\Listener\StrategyPluginManager;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;

@@ -3,8 +3,10 @@
 namespace SlmQueueTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use SlmQueue\Strategy\InterruptStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueue\Worker\WorkerEvent;
-use SlmQueue\Listener\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueTest\Asset\SimpleWorker;
 use Zend\EventManager\EventManager;
 
