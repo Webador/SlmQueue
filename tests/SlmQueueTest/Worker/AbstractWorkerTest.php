@@ -26,78 +26,6 @@ class AbstractWorkerTest extends TestCase
         $this->worker->getEventManager()->attach($this->maxRuns);
     }
 
-    public function testWorkerPopsFromQueue()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerExecutesJob()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->job->expects($this->once())
-                  ->method('execute');
-
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerCountsRuns()
-    {
-        $this->maxRuns->setMaxRuns(2);
-
-        $this->queue->expects($this->exactly(2))
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerReturnsArray()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->assertTrue(is_array($this->worker->processQueue($this->queue)));
-    }
-
-    public function testWorkerContainsMessages()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->assertContains('maximum of 1 jobs processed', $this->worker->processQueue($this->queue));
-    }
-
-    public function testWorkerSkipsVoidValuesFromQueue()
-    {
-        $i   = 0;
-        $job = $this->job;
-        $callback = function () use (&$i, $job) {
-            // We return the job on the 4th call
-            if ($i === 3) {
-                return $job;
-            }
-
-            $i++;
-            return null;
-        };
-
-        $this->maxRuns->setMaxRuns(1);
-        $this->queue->expects($this->exactly(4))
-                    ->method('pop')
-                    ->will($this->returnCallback($callback));
-
-        $this->worker->processQueue($this->queue);
-    }
-
     public function testCorrectIdentifiersAreSetToEventManager()
     {
         $eventManager = $this->worker->getEventManager();
@@ -106,64 +34,89 @@ class AbstractWorkerTest extends TestCase
         $this->assertContains('SlmQueueTest\Asset\SimpleWorker', $eventManager->getIdentifiers());
     }
 
-    public function testEventManagerTriggersEvents()
+    /**
+     * @dataProvider providerWorkerLoopEvents
+     */
+    public function testWorkerLoopEvents($exitedBy, $exitAfter, $expectedCalledEvents)
     {
-        /**
-         * The stop condition is now a listener on the event manager, this
-         * makes it really hard to test this thing. We cannot use attach here
-         * as the trigger will not call the listeners (the "trigger" is mocked),
-         * however if we do not mock the EVM, we cannot assert that the triggers
-         * are going...
-         */
-        $this->markTestSkipped('TODO: This test should still be fixed');
+        $this->worker  = new SimpleWorker();
 
-        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $this->worker = new SimpleWorker($eventManager);
+        /** @var EventManager $eventManager */
+        $eventManager = $this->worker->getEventManager();
 
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
+        $this->exitedBy     = $exitedBy;
+        $this->exitAfter    = $exitAfter;
+        $this->actualCalled = array();
 
-        // Trigger will be called 3: one for bootstrap, process and finish
-
-        $eventManager->expects($this->exactly(3))
-                     ->method('trigger');
-
-        $eventManager->expects($this->at(0))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_BOOTSTRAP));
-
-        $eventManager->expects($this->at(1))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS));
-
-        $eventManager->expects($this->at(2))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_FINISH));
+        $eventManager->attach(WorkerEvent::EVENT_BOOTSTRAP, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_FINISH, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_STATE, array($this, 'callbackWorkerLoopEvents'));
 
         $this->worker->processQueue($this->queue);
+
+        $this->assertEquals($expectedCalledEvents, $this->actualCalled);
     }
 
-    public function testWorkerSetsJobStatusInEventClass()
-    {
-        $eventManager = new EventManager;
-        $this->worker = new SimpleWorker($eventManager);
-        $this->worker->getEventManager()->attach($this->maxRuns);
-
-        $this->job->expects($this->once())
-                  ->method('execute')
-                  ->will($this->returnValue(WorkerEvent::JOB_STATUS_SUCCESS));
-
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $self = $this;
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS, function ($e) use ($self) {
-            $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
-        }, -100);
-
-        $this->worker->processQueue($this->queue);
+    public function providerWorkerLoopEvents() {
+        return array(
+            array(WorkerEvent::EVENT_BOOTSTRAP, 1, array('bootstrap' => 1, 'finish' => 1, 'state' => 1)),
+            array(WorkerEvent::EVENT_PROCESS, 10, array('bootstrap' => 1, 'process' => 10, 'idle' => 5, 'finish' => 1, 'state' => 1))
+        );
     }
 
+    /**
+     * Callback facilitating the worker loop
+     *
+     * It simulates a process queue strategy. And triggers an idle event on every uneven invokation of the PROCESS event
+     *
+     * @param WorkerEvent $e
+     */
+    public function callbackWorkerLoopEvents(WorkerEvent $e) {
+        if (!isset($this->actualCalled[$e->getName()])) {
+            $this->actualCalled[$e->getName()] = 1;
+        } else {
+            $this->actualCalled[$e->getName()]++;
+        }
+
+        // mark for exit when event is due
+        if ($e->getName() == $this->exitedBy && $this->actualCalled[$e->getName()] >= $this->exitAfter) {
+            $e->exitWorkerLoop();
+        }
+
+        // simulate process queue strategy, trigger idle event on every uneven call
+        if ($e->getName() == WorkerEvent::EVENT_PROCESS) {
+            if (!($this->actualCalled[WorkerEvent::EVENT_PROCESS] % 2)) {
+                $e->getTarget()->getEventManager()->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $e);
+                $e->stopPropagation();
+
+                return;
+            }
+        }
+    }
+
+    public function testProcessQueueSetOptionsOnWorkerEvent() {
+        /** @var EventManager $eventManager */
+        $eventManager = $this->worker->getEventManager();
+
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS, array($this, 'callbackProcessQueueSetOptionsOnWorkerEvent'));
+
+        $options = array('foo' => 'bar');
+
+        $this->worker->processQueue($this->queue, $options);
+
+        $this->assertEquals($this->eventOptions, $options);
+    }
+
+    /**
+     * Callback facilitating the worker loop
+     *
+     * @param WorkerEvent $e
+     */
+    public function callbackProcessQueueSetOptionsOnWorkerEvent(WorkerEvent $e) {
+        $e->exitWorkerLoop();
+
+        $this->eventOptions = $e->getOptions();
+    }
 }
