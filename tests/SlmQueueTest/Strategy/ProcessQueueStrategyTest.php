@@ -28,13 +28,13 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $worker = new SimpleWorker();
 
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
+        $event    = new WorkerEvent($worker, $queue);
+        $this->job   = new SimpleJob();
+        $event->setOptions(array('foo' => 'bar'));
+        $event->setJob($this->job);
 
         $this->listener = new ProcessQueueStrategy();
-        $this->event    = $ev;
+        $this->event    = $event;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
@@ -63,9 +63,43 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->onJobPop($this->event);
         $this->assertFalse($this->event->shouldWorkerExitLoop());
     }
-//
-//    public function testOnJobProcessHandler()
-//    {
-//
-//    }
+
+    public function testOnJobPopPopsFromQueueWithOptions()
+    {
+        $this->event->getQueue()
+            ->expects($this->once())
+            ->method('pop')
+            ->with(array('foo' => 'bar'))
+            ->will($this->returnValue($this->job));
+
+        $this->listener->onJobPop($this->event);
+    }
+
+    public function testOnJobPopPopsTriggersIdleAndStopPropagation()
+    {
+        $this->event->getQueue()
+            ->expects($this->once())
+            ->method('pop')
+            ->will($this->returnValue(null));
+
+        $called = false;
+        $this->event->getTarget()->getEventManager()->attach(
+            WorkerEvent::EVENT_PROCESS_IDLE,
+            function(WorkerEvent $e) use (&$called) {
+                $called = true;
+            }
+        );
+
+        $this->listener->onJobPop($this->event);
+
+        $this->assertTrue($called);
+        $this->assertTrue($this->event->propagationIsStopped());
+    }
+
+    public function testOnJobProcessHandlerEventGetsJobResult()
+    {
+        $this->listener->onJobProcess($this->event);
+        $this->assertTrue($this->event->getResult() == 'result');
+    }
+
 }

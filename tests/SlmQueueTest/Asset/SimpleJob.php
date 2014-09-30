@@ -13,5 +13,7 @@ class SimpleJob extends AbstractJob
     {
         // Just set some stupid metadata
         $this->setMetadata('foo', 'bar');
+
+        return 'result';
     }
 }

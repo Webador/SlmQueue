@@ -4,6 +4,9 @@ namespace SlmQueueTest\Controller;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
+use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
@@ -28,6 +31,9 @@ class AbstractControllerTest extends TestCase
     public function setUp()
     {
         $worker = new SimpleWorker();
+
+        $worker->getEventManager()->attachAggregate(new ProcessQueueStrategy());
+        $worker->getEventManager()->attachAggregate(new MaxRunsStrategy(array('max_runs' => 1)));
         $config = new Config(array(
             'factories' => array(
                 'knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
@@ -49,24 +55,22 @@ class AbstractControllerTest extends TestCase
 
     public function testSimpleJob()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         /** @var SimpleQueue $queue */
-        $queue = $this->queue->get('knownQueue');
+        $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new SimpleJob());
 
         $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->assertContains("Finished worker for queue 'knownQueue' with 1 jobs", $this->controller->processAction());
+        $result = $this->controller->processAction();
+        $this->assertContains("Finished worker for queue 'knownQueue'", $result);
+        $this->assertContains("maximum of 1 jobs processed", $result);
     }
 
     public function testFailingJobThrowException()
     {
-        $this->markTestSkipped('This test has been broken.');
-
         /** @var SimpleQueue $queue */
-        $queue = $this->queue->get('knownQueue');
+        $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new FailingJob());
 
         $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
