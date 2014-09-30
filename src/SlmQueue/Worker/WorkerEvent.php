@@ -14,7 +14,7 @@ class WorkerEvent extends Event
     /**
      * Various events you can subscribe to
      */
-    const EVENT_BOOTSTRAP        = 'boostrap';
+    const EVENT_BOOTSTRAP        = 'bootstrap';
     const EVENT_FINISH           = 'finish';
     const EVENT_PROCESS_IDLE     = 'idle';
     const EVENT_PROCESS_STATE    = 'state';
