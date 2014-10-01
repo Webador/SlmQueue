@@ -25,7 +25,6 @@ return array(
                 'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
                 'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
                 'SlmQueue\Strategy\InterruptStrategy',
-                // 'SlmQueue\Strategy\FileWatchStrategy',
             ),
             'queues' => array( // per queue
                 'default' => array(

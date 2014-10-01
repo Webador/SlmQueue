@@ -131,7 +131,7 @@ class WorkerEvent extends Event
     /**
      * @return boolean
      */
-    public function shouldWorkerExitLoop()
+    public function shouldExitWorkerLoop()
     {
         return $this->exitWorker;
     }

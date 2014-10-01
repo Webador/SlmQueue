@@ -61,7 +61,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
     public function testOnJobPopHandler()
     {
         $this->listener->onJobPop($this->event);
-        $this->assertFalse($this->event->shouldWorkerExitLoop());
+        $this->assertFalse($this->event->shouldExitWorkerLoop());
     }
 
     public function testOnJobPopPopsFromQueueWithOptions()

@@ -80,7 +80,7 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     {
         $this->listener->onLogJobProcessStart($this->event);
 
-        $this->assertFalse($this->event->shouldWorkerExitLoop());
+        $this->assertFalse($this->event->shouldExitWorkerLoop());
     }
 
     public function testOnLogJobProcessDone_SendsOutputToConsole()
@@ -100,6 +100,6 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     {
         $this->listener->onLogJobProcessDone($this->event);
 
-        $this->assertFalse($this->event->shouldWorkerExitLoop());
+        $this->assertFalse($this->event->shouldExitWorkerLoop());
     }
 }

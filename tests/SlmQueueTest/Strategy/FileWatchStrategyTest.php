@@ -115,7 +115,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onStopConditionCheck($this->event);
         $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldWorkerExitLoop());
+        $this->assertTrue($this->event->shouldExitWorkerLoop());
     }
 
     public function testWatchedFileRemovedStopsPropagation()
@@ -134,6 +134,6 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->onStopConditionCheck($this->event);
 
         $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldWorkerExitLoop());
+        $this->assertTrue($this->event->shouldExitWorkerLoop());
     }
 }

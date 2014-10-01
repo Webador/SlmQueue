@@ -72,7 +72,7 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->listener->onStopConditionCheck($this->event);
         $this->assertContains('memory usage', $this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->shouldWorkerExitLoop());
+        $this->assertFalse($this->event->shouldExitWorkerLoop());
     }
 
     public function testRequestStopWhileThresholdExceeded()
@@ -84,6 +84,6 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
             'memory threshold of 1kB exceeded (usage: ',
             $this->listener->onReportQueueState($this->event)
         );
-        $this->assertTrue($this->event->shouldWorkerExitLoop());
+        $this->assertTrue($this->event->shouldExitWorkerLoop());
     }
 }
