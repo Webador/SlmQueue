@@ -38,11 +38,11 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.4.x-dev"
+            "dev-master": "0.5.x-dev"
         }
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "SlmQueue": "src/"
         },
         "classmap": [
