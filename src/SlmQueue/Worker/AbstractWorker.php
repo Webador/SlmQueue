@@ -19,6 +19,7 @@ abstract class AbstractWorker implements WorkerInterface
     public function __construct(EventManagerInterface $eventManager)
     {
         $eventManager->setIdentifiers(array(
+            __CLASS__,
             get_called_class(),
             'SlmQueue\Worker\WorkerInterface'
         ));
