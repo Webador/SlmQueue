@@ -26,11 +26,13 @@ class QueueAwareTraitTest extends TestCase
         $this->job = new QueueAwareTraitJob();
     }
 
-    public function testDefaultGetter() {
+    public function testDefaultGetter()
+    {
         $this->assertNull($this->job->getQueue());
     }
 
-    public function testSetter() {
+    public function testSetter()
+    {
         $queue = new SimpleQueue('name', new JobPluginManager());
         $this->job->setQueue($queue);
 

@@ -3,8 +3,10 @@
 namespace SlmQueueTest\Controller;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Options\WorkerOptions;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
+use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
@@ -25,9 +27,13 @@ class AbstractControllerTest extends TestCase
      */
     protected $controller;
 
+
     public function setUp()
     {
-        $worker = new SimpleWorker(new WorkerOptions());
+        $worker = new SimpleWorker();
+
+        $worker->getEventManager()->attachAggregate(new ProcessQueueStrategy());
+        $worker->getEventManager()->attachAggregate(new MaxRunsStrategy(array('max_runs' => 1)));
         $config = new Config(array(
             'factories' => array(
                 'knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
@@ -56,7 +62,9 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->assertContains("Finished worker for queue 'knownQueue' with 1 jobs", $this->controller->processAction());
+        $result = $this->controller->processAction();
+        $this->assertContains("Finished worker for queue 'knownQueue'", $result);
+        $this->assertContains("maximum of 1 jobs processed", $result);
     }
 
     public function testFailingJobThrowException()

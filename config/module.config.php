@@ -3,9 +3,9 @@
 return array(
     'service_manager' => array(
         'factories' => array(
-            'SlmQueue\Job\JobPluginManager'     => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Options\WorkerOptions'    => 'SlmQueue\Factory\WorkerOptionsFactory',
-            'SlmQueue\Queue\QueuePluginManager' => 'SlmQueue\Factory\QueuePluginManagerFactory'
+            'SlmQueue\Job\JobPluginManager'             => 'SlmQueue\Factory\JobPluginManagerFactory',
+            'SlmQueue\Listener\StrategyPluginManager'   => 'SlmQueue\Factory\StrategyPluginManagerFactory',
+            'SlmQueue\Queue\QueuePluginManager'         => 'SlmQueue\Factory\QueuePluginManagerFactory'
         ),
     ),
 
@@ -17,11 +17,20 @@ return array(
 
     'slm_queue' => array(
         /**
-         * Worker options
+         * Worker Strategies
          */
-        'worker' => array(
-            'max_runs'   => 100000,
-            'max_memory' => 100 * 1024 * 1024
+        'worker_strategies' => array(
+            'default' => array( // per worker
+                'SlmQueue\Strategy\AttachQueueListenersStrategy', // attaches strategies per queue
+                'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
+                'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
+                'SlmQueue\Strategy\InterruptStrategy',
+            ),
+            'queues' => array( // per queue
+                'default' => array(
+                    'SlmQueue\Strategy\ProcessQueueStrategy',
+                )
+            ),
         ),
 
         /**
@@ -38,5 +47,22 @@ return array(
          * Queue manager configuration
          */
         'queue_manager' => array(),
+
+        /**
+         * Strategy manager configuration
+         */
+        'strategy_manager' => array(
+            'invokables' => array(
+                'SlmQueue\Strategy\ProcessQueueStrategy'    => 'SlmQueue\Strategy\ProcessQueueStrategy',
+                'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Strategy\InterruptStrategy',
+                'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Strategy\MaxRunsStrategy',
+                'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Strategy\MaxMemoryStrategy',
+                'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Strategy\FileWatchStrategy',
+            ),
+            'factories' => array(
+                'SlmQueue\Strategy\AttachQueueListenersStrategy' => 'SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory',
+                'SlmQueue\Strategy\LogJobStrategy'               => 'SlmQueue\Strategy\Factory\LogJobStrategyFactory',
+            )
+        ),
     )
 );

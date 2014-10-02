@@ -3,8 +3,10 @@
 namespace SlmQueueTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Options\WorkerOptions;
+use SlmQueue\Strategy\InterruptStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueueTest\Asset\SimpleWorker;
 use Zend\EventManager\EventManager;
 
@@ -14,78 +16,14 @@ class AbstractWorkerTest extends TestCase
 
     public function setUp()
     {
-        $options   = new WorkerOptions;
-        $options->setMaxRuns(1);
-        $options->setMaxMemory(1024*1024*1024);
-
-        $this->options = $options;
-        $this->worker  = new SimpleWorker($options);
+        $this->worker  = new SimpleWorker;
         $this->queue   = $this->getMock('SlmQueue\Queue\QueueInterface');
         $this->job     = $this->getMock('SlmQueue\Job\JobInterface');
-    }
-    public function testWorkerPopsFromQueue()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
 
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerExecutesJob()
-    {
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->job->expects($this->once())
-                  ->method('execute');
-
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerCountsRuns()
-    {
-        $this->options->setMaxRuns(2);
-
-        $this->queue->expects($this->exactly(2))
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->worker->processQueue($this->queue);
-    }
-
-    public function testWorkerSkipsVoidValuesFromQueue()
-    {
-        $i   = 0;
-        $job = $this->job;
-        $callback = function () use (&$i, $job) {
-            // We return the job on the 4th call
-            if ($i === 3) {
-                return $job;
-            }
-
-            $i++;
-            return null;
-        };
-
-        $this->options->setMaxRuns(1);
-        $this->queue->expects($this->exactly(4))
-                    ->method('pop')
-                    ->will($this->returnCallback($callback));
-
-        $count = $this->worker->processQueue($this->queue);
-        $this->assertEquals(1, $count);
-    }
-
-    public function testWorkerMaxMemory()
-    {
-        $this->options->setMaxMemory(1);
-
-        $this->queue->expects($this->exactly(1))
-            ->method('pop');
-
-        $this->assertTrue($this->worker->processQueue($this->queue) === 0);
+        // set max runs so our tests won't run forever
+        $this->maxRuns = new MaxRunsStrategy;
+        $this->maxRuns->setMaxRuns(1);
+        $this->worker->getEventManager()->attach($this->maxRuns);
     }
 
     public function testCorrectIdentifiersAreSetToEventManager()
@@ -96,111 +34,89 @@ class AbstractWorkerTest extends TestCase
         $this->assertContains('SlmQueueTest\Asset\SimpleWorker', $eventManager->getIdentifiers());
     }
 
-    public function testEventManagerTriggersEvents()
+    /**
+     * @dataProvider providerWorkerLoopEvents
+     */
+    public function testWorkerLoopEvents($exitedBy, $exitAfter, $expectedCalledEvents)
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $this->worker->setEventManager($eventManager);
+        $this->worker  = new SimpleWorker();
 
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
+        /** @var EventManager $eventManager */
+        $eventManager = $this->worker->getEventManager();
 
-        // Trigger will be called 4: one for process queue pre, post, and process job pre, post
+        $this->exitedBy     = $exitedBy;
+        $this->exitAfter    = $exitAfter;
+        $this->actualCalled = array();
 
-        $eventManager->expects($this->exactly(4))
-                     ->method('trigger');
-
-        $eventManager->expects($this->at(0))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_PRE));
-
-        $eventManager->expects($this->at(1))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_JOB_PRE));
-
-        $eventManager->expects($this->at(2))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_JOB_POST));
-
-        $eventManager->expects($this->at(3))
-                     ->method('trigger')
-                     ->with($this->equalTo(WorkerEvent::EVENT_PROCESS_QUEUE_POST));
+        $eventManager->attach(WorkerEvent::EVENT_BOOTSTRAP, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_FINISH, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_STATE, array($this, 'callbackWorkerLoopEvents'));
 
         $this->worker->processQueue($this->queue);
+
+        $this->assertEquals($expectedCalledEvents, $this->actualCalled);
     }
 
-    public function testWorkerSetsJobStatusInEventClass()
-    {
-        $eventManager = new EventManager;
-        $this->worker->setEventManager($eventManager);
-
-        $this->job->expects($this->once())
-                  ->method('execute')
-                  ->will($this->returnValue(WorkerEvent::JOB_STATUS_SUCCESS));
-
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $self = $this;
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_JOB_POST, function ($e) use ($self) {
-            $self->assertEquals(WorkerEvent::JOB_STATUS_SUCCESS, $e->getResult());
-        });
-
-        $this->worker->processQueue($this->queue);
+    public function providerWorkerLoopEvents() {
+        return array(
+            array(WorkerEvent::EVENT_BOOTSTRAP, 1, array('bootstrap' => 1, 'finish' => 1, 'state' => 1)),
+            array(WorkerEvent::EVENT_PROCESS, 10, array('bootstrap' => 1, 'process' => 10, 'idle' => 5, 'finish' => 1, 'state' => 1))
+        );
     }
 
-    public function testMethod_hasMemoryExceeded()
-    {
-        $this->options->setMaxMemory(10000000000);
-        $this->assertFalse($this->worker->isMaxMemoryExceeded());
+    /**
+     * Callback facilitating the worker loop
+     *
+     * It simulates a process queue strategy. And triggers an idle event on every uneven invokation of the PROCESS event
+     *
+     * @param WorkerEvent $e
+     */
+    public function callbackWorkerLoopEvents(WorkerEvent $e) {
+        if (!isset($this->actualCalled[$e->getName()])) {
+            $this->actualCalled[$e->getName()] = 1;
+        } else {
+            $this->actualCalled[$e->getName()]++;
+        }
 
-        $this->options->setMaxMemory(1);
-        $this->assertTrue($this->worker->isMaxMemoryExceeded());
+        // mark for exit when event is due
+        if ($e->getName() == $this->exitedBy && $this->actualCalled[$e->getName()] >= $this->exitAfter) {
+            $e->exitWorkerLoop();
+        }
+
+        // simulate process queue strategy, trigger idle event on every uneven call
+        if ($e->getName() == WorkerEvent::EVENT_PROCESS) {
+            if (!($this->actualCalled[WorkerEvent::EVENT_PROCESS] % 2)) {
+                $e->getTarget()->getEventManager()->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $e);
+                $e->stopPropagation();
+
+                return;
+            }
+        }
     }
 
-    public function testMethod_willExceedMaxRuns()
-    {
-        $this->options->setMaxRuns(10);
-        $this->assertFalse($this->worker->isMaxRunsReached(9));
-        $this->assertTrue($this->worker->isMaxRunsReached(10));
-        $this->assertTrue($this->worker->isMaxRunsReached(11));
+    public function testProcessQueueSetOptionsOnWorkerEvent() {
+        /** @var EventManager $eventManager */
+        $eventManager = $this->worker->getEventManager();
+
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS, array($this, 'callbackProcessQueueSetOptionsOnWorkerEvent'));
+
+        $options = array('foo' => 'bar');
+
+        $this->worker->processQueue($this->queue, $options);
+
+        $this->assertEquals($this->eventOptions, $options);
     }
 
-    public function testSignalStopsWorkerForSigterm()
-    {
-        $worker = $this->worker;
-        $this->queue->expects($this->never())
-                    ->method('pop');
+    /**
+     * Callback facilitating the worker loop
+     *
+     * @param WorkerEvent $e
+     */
+    public function callbackProcessQueueSetOptionsOnWorkerEvent(WorkerEvent $e) {
+        $e->exitWorkerLoop();
 
-        $worker->handleSignal(SIGTERM);
-        $count = $worker->processQueue($this->queue);
-
-        $this->assertEquals(0, $count);
-    }
-
-    public function testSignalStopsWorkerForSigint()
-    {
-        $worker = $this->worker;
-        $this->queue->expects($this->never())
-                    ->method('pop');
-
-        $worker->handleSignal(SIGINT);
-        $count = $worker->processQueue($this->queue);
-
-        $this->assertEquals(0, $count);
-    }
-
-    public function testNonStoppingSignalDoesNotStopWorker()
-    {
-        $this->options->setMaxRuns(1);
-        $this->queue->expects($this->once())
-                    ->method('pop')
-                    ->will($this->returnValue($this->job));
-
-        $this->worker->handleSignal(SIGPOLL);
-        $count = $this->worker->processQueue($this->queue);
-
-        $this->assertEquals(1, $count);
+        $this->eventOptions = $e->getOptions();
     }
 }

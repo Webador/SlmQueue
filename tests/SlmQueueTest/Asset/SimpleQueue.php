@@ -27,6 +27,10 @@ class SimpleQueue extends AbstractQueue
     public function pop(array $options = array())
     {
         $payload = array_pop($this->jobs);
+        if (!$payload) {
+            return;
+        }
+
         return $this->unserializeJob($payload);
     }
 
