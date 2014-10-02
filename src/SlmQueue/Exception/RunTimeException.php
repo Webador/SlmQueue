@@ -2,6 +2,8 @@
 
 namespace SlmQueue\Exception;
 
-class RunTimeException extends \RunTimeException implements ExceptionInterface
+use RuntimeException as BaseRuntimeException;
+
+class RuntimeException extends BaseRuntimeException implements ExceptionInterface
 {
 }

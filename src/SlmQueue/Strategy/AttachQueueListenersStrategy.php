@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Exception\RunTimeException;
+use SlmQueue\Exception\RuntimeException;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
@@ -43,7 +43,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
 
     /**
      * @param WorkerEvent $e
-     * @throws \SlmQueue\Exception\RunTimeException
+     * @throws \SlmQueue\Exception\RuntimeException
      */
     public function attachQueueListeners(WorkerEvent $e)
     {
@@ -86,7 +86,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
         }
 
         if (!in_array(WorkerEvent::EVENT_PROCESS, $eventManager->getEvents())) {
-            throw new RunTimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 "No worker strategy has been registered to respond to the '%s' event.",
                 WorkerEvent::EVENT_PROCESS
             ));
