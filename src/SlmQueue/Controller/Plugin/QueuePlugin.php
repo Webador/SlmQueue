@@ -2,11 +2,11 @@
 
 namespace SlmQueue\Controller\Plugin;
 
-use SlmQueue\Job\JobPluginManager;
-use SlmQueue\Job\JobInterface;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Controller\Exception\QueueNotFoundException;
+use SlmQueue\Job\JobInterface;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Queue\QueuePluginManager;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**

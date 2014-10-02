@@ -29,6 +29,9 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
 
     /**
      * Set options from array
+     *
+     * @param  array $options
+     * @return void
      */
     public function setOptions(array $options)
     {

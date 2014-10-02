@@ -19,6 +19,10 @@ class AttachQueueListenersStrategy extends AbstractStrategy
      */
     protected $strategyConfig;
 
+    /**
+     * @param StrategyPluginManager $pluginManager
+     * @param array                 $strategyConfig
+     */
     public function __construct(StrategyPluginManager $pluginManager, array $strategyConfig)
     {
         $this->pluginManager  = $pluginManager;

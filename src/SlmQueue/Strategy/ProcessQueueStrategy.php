@@ -26,6 +26,10 @@ class ProcessQueueStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param  WorkerEvent $e
+     * @return void
+     */
     public function onJobPop(WorkerEvent $e)
     {
         $queue   = $e->getQueue();
@@ -48,6 +52,10 @@ class ProcessQueueStrategy extends AbstractStrategy
         $e->setJob($job);
     }
 
+    /**
+     * @param  WorkerEvent $e
+     * @return void
+     */
     public function onJobProcess(WorkerEvent $e)
     {
         $job    = $e->getJob();

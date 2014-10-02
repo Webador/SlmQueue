@@ -2,6 +2,8 @@
 
 namespace SlmQueue\Strategy;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SlmQueue\Worker\WorkerEvent;
 use Zend\EventManager\EventManagerInterface;
 
@@ -69,6 +71,10 @@ class FileWatchStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param  WorkerEvent $event
+     * @return void
+     */
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if (!count($this->files)) {
@@ -86,10 +92,13 @@ class FileWatchStrategy extends AbstractStrategy
         }
     }
 
+    /**
+     * @return void
+     */
     protected function constructFileList()
     {
-        $iterator   = new \RecursiveDirectoryIterator('.', \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
-        $files      = new \RecursiveIteratorIterator($iterator);
+        $iterator   = new RecursiveDirectoryIterator('.', RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $files      = new RecursiveIteratorIterator($iterator);
 
         /** @var $file \SplFileInfo  */
         foreach ($files as $file) {

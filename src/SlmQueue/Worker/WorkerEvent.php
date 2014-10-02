@@ -69,7 +69,8 @@ class WorkerEvent extends Event
     protected $options = array();
 
     /**
-     * @param QueueInterface $queue
+     * @param WorkerInterface $target
+     * @param QueueInterface  $queue
      */
     public function __construct(WorkerInterface $target, QueueInterface $queue)
     {
@@ -121,7 +122,7 @@ class WorkerEvent extends Event
     }
 
     /**
-     * @param boolean $exitWorker
+     * @return void
      */
     public function exitWorkerLoop()
     {
