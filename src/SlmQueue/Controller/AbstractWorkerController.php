@@ -4,8 +4,8 @@ namespace SlmQueue\Controller;
 
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
-use SlmQueue\Worker\WorkerInterface;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Worker\WorkerInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**

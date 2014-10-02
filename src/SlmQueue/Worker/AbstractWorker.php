@@ -52,6 +52,9 @@ abstract class AbstractWorker implements WorkerInterface
         return $queueState;
     }
 
+    /**
+     * @return EventManagerInterface
+     */
     public function getEventManager()
     {
         return $this->eventManager;

@@ -2,8 +2,8 @@
 
 namespace SlmQueue\Queue;
 
-use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Job\JobPluginManager;
 
 /**
  * AbstractQueue

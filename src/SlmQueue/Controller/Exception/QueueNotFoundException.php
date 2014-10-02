@@ -2,8 +2,8 @@
 
 namespace SlmQueue\Controller\Exception;
 
-use SlmQueue\Exception\ExceptionInterface;
 use InvalidArgumentException;
+use SlmQueue\Exception\ExceptionInterface;
 
 class QueueNotFoundException extends InvalidArgumentException implements ExceptionInterface
 {

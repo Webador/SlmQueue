@@ -50,6 +50,10 @@ class MaxMemoryStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param  WorkerEvent $event
+     * @return void
+     */
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
@@ -66,7 +70,7 @@ class MaxMemoryStrategy extends AbstractStrategy
     }
 
     /**
-     * @param $bytes bytes to be formatted
+     * @param  string $bytes Bytes to be formatted
      * @return string human readable
      */
     private function humanFormat($bytes)
