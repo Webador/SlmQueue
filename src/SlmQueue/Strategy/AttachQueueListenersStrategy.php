@@ -50,7 +50,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
 
         $eventManager->detachAggregate($this);
 
-        if (!array_key_exists($name, $this->strategyConfig)) {
+        if (!isset($this->strategyConfig[$name])) {
             return;
         }
 
