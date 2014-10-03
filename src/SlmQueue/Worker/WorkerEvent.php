@@ -16,6 +16,7 @@ class WorkerEvent extends Event
      */
     const EVENT_BOOTSTRAP        = 'bootstrap';
     const EVENT_FINISH           = 'finish';
+    const EVENT_EMIT             = 'emit';
     const EVENT_PROCESS_IDLE     = 'idle';
     const EVENT_PROCESS_STATE    = 'state';
     const EVENT_PROCESS          = 'process';
