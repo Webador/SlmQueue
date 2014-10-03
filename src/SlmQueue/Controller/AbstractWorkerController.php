@@ -63,7 +63,7 @@ abstract class AbstractWorkerController extends AbstractActionController
      * @param  array  $messages
      * @return string
      */
-    protected function formatOutput($queueName, array $messages = [])
+    protected function formatOutput($queueName, array $messages = array())
     {
         $messages = implode("\n", array_map(function ($m) {
             return sprintf(' - %s', $m);
