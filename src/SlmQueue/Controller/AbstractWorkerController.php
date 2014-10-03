@@ -55,13 +55,23 @@ abstract class AbstractWorkerController extends AbstractActionController
             );
         }
 
+        return $this->formatOutput($name, $messages);
+    }
+
+    /**
+     * @param  string $queueName
+     * @param  array  $messages
+     * @return string
+     */
+    protected function formatOutput($queueName, array $messages = [])
+    {
         $messages = implode("\n", array_map(function ($m) {
             return sprintf(' - %s', $m);
         }, $messages));
 
         return sprintf(
             "Finished worker for queue '%s':\n%s\n",
-            $name,
+            $queueName,
             $messages
         );
     }
