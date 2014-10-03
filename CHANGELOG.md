@@ -1,4 +1,6 @@
-# 0.4.0
+# 0.4.0-beta2
+
+# 0.4.0-beta1
 
 - Refactoring of dependency injection to use queue instead of queue name in worker
 - Add job status codes so listeners can act on the result of a job's outcome
