@@ -1,5 +1,7 @@
 # 0.4.0-beta2
 
+- Fix a bug when default queue listener was not attached in some circumstances
+
 # 0.4.0-beta1
 
 - Refactoring of dependency injection to use queue instead of queue name in worker
