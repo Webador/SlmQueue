@@ -39,7 +39,7 @@ class MaxMemoryStrategy extends AbstractStrategy
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_QUEUE,
             array($this, 'onStopConditionCheck'),
             -1000
         );
