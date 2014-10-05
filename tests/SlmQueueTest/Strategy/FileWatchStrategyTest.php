@@ -47,7 +47,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         $evm->expects($this->at(0))->method('attach')
             ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onStopConditionCheck'));
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onStopConditionCheck'));
+            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onStopConditionCheck'));
         $evm->expects($this->at(2))->method('attach')
             ->with(WorkerEvent::EVENT_PROCESS_STATE, array($this->listener, 'onReportQueueState'));
 

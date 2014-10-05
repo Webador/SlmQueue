@@ -68,7 +68,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $workerMock       = $this->event->getTarget();
         $eventManagerMock = $workerMock->getEventManager();
         $eventManagerMock->expects($this->once())->method('detachAggregate')->with($this->listener);
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS)));
+        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS_QUEUE)));
 
         $this->listener->attachQueueListeners($this->event);
     }
@@ -88,7 +88,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
     public function testAttachQueueListenersStrategyConfig() {
         $workerMock       = $this->event->getTarget();
         $eventManagerMock = $workerMock->getEventManager();
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS)));
+        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS_QUEUE)));
 
         $class = new \ReflectionClass('SlmQueue\Strategy\AttachQueueListenersStrategy');
         $property = $class->getProperty('strategyConfig');

@@ -16,6 +16,9 @@ abstract class AbstractWorker implements WorkerInterface
      */
     protected $eventManager;
 
+    /**
+     * @param EventManagerInterface $eventManager
+     */
     public function __construct(EventManagerInterface $eventManager)
     {
         $eventManager->setIdentifiers(array(
@@ -40,7 +43,7 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
 
         while (!$workerEvent->shouldExitWorkerLoop()) {
-            $eventManager->trigger(WorkerEvent::EVENT_EMIT, $workerEvent);
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE, $workerEvent);
         }
 
         $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
