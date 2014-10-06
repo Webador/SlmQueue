@@ -59,9 +59,9 @@ class FileWatchStrategy extends AbstractStrategy
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_QUEUE,
+            WorkerEvent::EVENT_PROCESS_JOB,
             array($this, 'onStopConditionCheck'),
-            -1000
+            1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,
