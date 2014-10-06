@@ -85,10 +85,10 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             }
         }
 
-        if (!in_array(WorkerEvent::EVENT_PROCESS, $eventManager->getEvents())) {
+        if (!in_array(WorkerEvent::EVENT_PROCESS_QUEUE, $eventManager->getEvents())) {
             throw new RuntimeException(sprintf(
                 "No worker strategy has been registered to respond to the '%s' event.",
-                WorkerEvent::EVENT_PROCESS
+                WorkerEvent::EVENT_PROCESS_QUEUE
             ));
         }
 

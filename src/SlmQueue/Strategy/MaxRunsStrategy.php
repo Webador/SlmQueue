@@ -44,7 +44,7 @@ class MaxRunsStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_QUEUE,
             array($this, 'onStopConditionCheck'),
             -1000
         );

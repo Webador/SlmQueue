@@ -27,7 +27,6 @@ class FileWatchStrategy extends AbstractStrategy
     public function setPattern($pattern)
     {
         $this->pattern = $pattern;
-
         $this->files   = array();
     }
 
@@ -60,9 +59,9 @@ class FileWatchStrategy extends AbstractStrategy
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_JOB,
             array($this, 'onStopConditionCheck'),
-            -1000
+            1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,

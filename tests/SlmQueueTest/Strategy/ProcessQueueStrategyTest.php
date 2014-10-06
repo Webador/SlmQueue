@@ -50,10 +50,10 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $evm->expects($this->at(0))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onJobPop'), $priority + 1);
+            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onJobPop'), $priority);
         $evm->expects($this->at(1))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS, array($this->listener, 'onJobProcess'), $priority);
+            ->with(WorkerEvent::EVENT_PROCESS_JOB, array($this->listener, 'onJobProcess'), $priority);
 
         $this->listener->attach($evm, $priority);
     }
@@ -72,7 +72,19 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
             ->with(array('foo' => 'bar'))
             ->will($this->returnValue($this->job));
 
+        $called = false;
+
+        $this->event->getTarget()->getEventManager()->attach(
+            WorkerEvent::EVENT_PROCESS_JOB,
+            function(WorkerEvent $e) use (&$called) {
+                $called = true;
+            }
+        );
+
         $this->listener->onJobPop($this->event);
+
+        $this->assertTrue($called);
+        $this->assertSame($this->job, $this->event->getJob());
     }
 
     public function testOnJobPopPopsTriggersIdleAndStopPropagation()

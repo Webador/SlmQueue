@@ -15,12 +15,12 @@ class ProcessQueueStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_QUEUE,
             array($this, 'onJobPop'),
-            $priority + 1
+            $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS,
+            WorkerEvent::EVENT_PROCESS_JOB,
             array($this, 'onJobProcess'),
             $priority
         );
@@ -36,12 +36,13 @@ class ProcessQueueStrategy extends AbstractStrategy
         $options = $e->getOptions();
         $job     = $queue->pop($options);
 
+        /** @var AbstractWorker $worker */
+        $worker       = $e->getTarget();
+        $eventManager = $worker->getEventManager();
+
         // The queue may return null, for instance if a timeout was set
         if (!$job instanceof JobInterface) {
-            /** @var AbstractWorker $worker */
-            $worker = $e->getTarget();
-
-            $worker->getEventManager()->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $e);
+            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $e);
 
             // make sure the event doesn't propagate or it will still process
             $e->stopPropagation();
@@ -50,6 +51,8 @@ class ProcessQueueStrategy extends AbstractStrategy
         }
 
         $e->setJob($job);
+
+        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB, $e);
     }
 
     /**
@@ -58,8 +61,9 @@ class ProcessQueueStrategy extends AbstractStrategy
      */
     public function onJobProcess(WorkerEvent $e)
     {
-        $job    = $e->getJob();
-        $queue  = $e->getQueue();
+        $job   = $e->getJob();
+        $queue = $e->getQueue();
+
         /** @var AbstractWorker $worker */
         $worker = $e->getTarget();
 
