@@ -1,5 +1,9 @@
 # 0.4.0-beta2
 
+- Segregate the `WorkerEvent::PROCESS` event into two different events for more granular control (`WorkerEvent::PROCESS_QUEUE`)
+and (`WorkerEvent::PROCESS_JOB`).
+- Show more precise memory consumption usage.
+
 # 0.4.0-beta1
 
 - Refactoring of dependency injection to use queue instead of queue name in worker
