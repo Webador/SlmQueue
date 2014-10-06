@@ -56,6 +56,11 @@ class MaxMemoryStrategy extends AbstractStrategy
      */
     public function onStopConditionCheck(WorkerEvent $event)
     {
+        // @see http://php.net/manual/en/features.gc.collecting-cycles.php
+        if (gc_enabled()) {
+            gc_collect_cycles();
+        }
+
         if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
             $event->exitWorkerLoop();
 
