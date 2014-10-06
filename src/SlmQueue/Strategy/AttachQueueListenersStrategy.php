@@ -48,14 +48,14 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     public function attachQueueListeners(WorkerEvent $e)
     {
         /** @var AbstractWorker $worker */
-        $worker = $e->getTarget();
-        $name = $e->getQueue()->getName();
+        $worker       = $e->getTarget();
+        $name         = $e->getQueue()->getName();
         $eventManager = $worker->getEventManager();
 
         $eventManager->detachAggregate($this);
 
         if (!isset($this->strategyConfig[$name])) {
-            return;
+            $name = 'default'; // We want to make sure the default process queue is always attached
         }
 
         $strategies = $this->strategyConfig[$name];
