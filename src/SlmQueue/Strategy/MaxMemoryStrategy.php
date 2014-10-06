@@ -61,16 +61,18 @@ class MaxMemoryStrategy extends AbstractStrategy
             gc_collect_cycles();
         }
 
-        if ($this->maxMemory && memory_get_usage() > $this->maxMemory) {
+        $usage = memory_get_usage();
+
+        if ($this->maxMemory && $usage > $this->maxMemory) {
             $event->exitWorkerLoop();
 
             $this->state = sprintf(
                 "memory threshold of %s exceeded (usage: %s)",
                 $this->humanFormat($this->maxMemory),
-                $this->humanFormat(memory_get_usage())
+                $this->humanFormat($usage)
             );
         } else {
-            $this->state = sprintf('%s memory usage', $this->humanFormat(memory_get_usage()));
+            $this->state = sprintf('%s memory usage', $this->humanFormat($usage));
         }
     }
 
