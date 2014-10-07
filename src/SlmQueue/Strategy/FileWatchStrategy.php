@@ -26,14 +26,14 @@ class FileWatchStrategy extends AbstractStrategy
      *
      * @var int defaults to 5 minutes
      */
-    protected $idle_throttle_time = 300;
+    protected $idleThrottleTime = 300;
 
     /**
      * Time the previous idle event occured and a check on the stop condition occured
      *
      * @var float
      */
-    protected $previous_idling_time;
+    protected $previousIdlingTime;
 
     /**
      * @param string $pattern
@@ -55,9 +55,9 @@ class FileWatchStrategy extends AbstractStrategy
     /**
      * @param int $idle_throttle_time
      */
-    public function setIdleThrottleTime($idle_throttle_time)
+    public function setIdleThrottleTime($idleThrottleTime)
     {
-        $this->idle_throttle_time = $idle_throttle_time;
+        $this->idleThrottleTime = $idleThrottleTime;
     }
 
     /**
@@ -99,10 +99,10 @@ class FileWatchStrategy extends AbstractStrategy
     public function onStopConditionCheck(WorkerEvent $event)
     {
         if ($event->getName() == WorkerEvent::EVENT_PROCESS_IDLE) {
-            if ($this->previous_idling_time + $this->idle_throttle_time > microtime(true)) {
+            if ($this->previousIdlingTime + $this->idleThrottleTime > microtime(true)) {
                 return;
             } else {
-                $this->previous_idling_time = microtime(true);
+                $this->previousIdlingTime = microtime(true);
             }
         }
 
