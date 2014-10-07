@@ -22,6 +22,20 @@ class FileWatchStrategy extends AbstractStrategy
     protected $files = array();
 
     /**
+     * Seconds between checks while idling
+     *
+     * @var int defaults to 5 minutes
+     */
+    protected $idleThrottleTime = 300;
+
+    /**
+     * Time the previous idle event occured and a check on the stop condition occured
+     *
+     * @var float
+     */
+    protected $previousIdlingTime;
+
+    /**
      * @param string $pattern
      */
     public function setPattern($pattern)
@@ -36,6 +50,14 @@ class FileWatchStrategy extends AbstractStrategy
     public function getPattern()
     {
         return $this->pattern;
+    }
+
+    /**
+     * @param int $idle_throttle_time
+     */
+    public function setIdleThrottleTime($idleThrottleTime)
+    {
+        $this->idleThrottleTime = $idleThrottleTime;
     }
 
     /**
@@ -76,6 +98,14 @@ class FileWatchStrategy extends AbstractStrategy
      */
     public function onStopConditionCheck(WorkerEvent $event)
     {
+        if ($event->getName() == WorkerEvent::EVENT_PROCESS_IDLE) {
+            if ($this->previousIdlingTime + $this->idleThrottleTime > microtime(true)) {
+                return;
+            } else {
+                $this->previousIdlingTime = microtime(true);
+            }
+        }
+
         if (!count($this->files)) {
             $this->constructFileList();
 

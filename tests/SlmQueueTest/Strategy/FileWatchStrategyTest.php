@@ -136,4 +136,31 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
         $this->assertTrue($this->event->shouldExitWorkerLoop());
     }
+
+    public function testStopConditionCheckIdlingThrottling()
+    {
+        // builds a file list
+        if (!is_dir('tests/build')) {
+            mkdir('tests/build', 0755, true);
+        }
+        file_put_contents('tests/build/filewatch.txt', 'hi');
+
+        $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
+        $this->listener->setIdleThrottleTime(1);
+
+        $this->event->setName(WorkerEvent::EVENT_PROCESS_IDLE);
+
+        // records last time based when idle event
+        $this->listener->onStopConditionCheck($this->event);
+
+        // file has changed
+        file_put_contents('tests/build/filewatch.txt', 'hello');
+
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        sleep(1);
+
+        $this->listener->onStopConditionCheck($this->event);
+        $this->assertTrue($this->event->shouldExitWorkerLoop());
+    }
 }
