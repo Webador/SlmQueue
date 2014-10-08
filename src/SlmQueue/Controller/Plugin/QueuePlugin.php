@@ -56,6 +56,12 @@ class QueuePlugin extends AbstractPlugin
     public function __invoke($name = null)
     {
         if (null !== $name) {
+            if (!$this->queuePluginManager->has($name)) {
+                throw new QueueNotFoundException(
+                    sprintf("Queue '%s' does not exist", $name)
+                );
+            }
+
             $this->queue = $this->queuePluginManager->get($name);
         }
 
