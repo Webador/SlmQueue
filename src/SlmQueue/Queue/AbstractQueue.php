@@ -60,8 +60,10 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function unserializeJob($string, array $metadata = array())
     {
+        // To keep compatibility with SlmQueue 0.3, will be removed in 0.5 in favour of __name__ only
+
         $data     =  json_decode($string, true);
-        $name     =  $data['name'];
+        $name     =  isset($data['__name__']) ? $data['__name__'] : $data['name'];
         $metadata += $data['metadata'];
         $content  =  unserialize($data['content']);
 
@@ -82,7 +84,7 @@ abstract class AbstractQueue implements QueueInterface
      * Serialize job to allow persistence
      *
      * The serialization format is a JSON object with keys "content",
-     * "metadata" and "name". When a job is fetched from the SL, a job name
+     * "metadata" and "__name__". When a job is fetched from the SL, a job name
      * will be set and be available as metadata. An invokable job has no service
      * name and therefore the FQCN will be used.
      *
@@ -91,9 +93,9 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function serializeJob(JobInterface $job)
     {
-        $name = $job->getMetadata('name');
+        $name = $job->getMetadata('__name__');
         $data = array(
-            'name'     => $name ?: get_class($job),
+            '__name__' => $name ?: get_class($job),
             'content'  => serialize($job->getContent()),
             'metadata' => $job->getMetadata()
         );
