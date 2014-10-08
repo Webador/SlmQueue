@@ -11,9 +11,10 @@ class QueueControllerPluginFactoryTest extends TestCase
 
     public function testCreateService()
     {
-        $sm      = ServiceManagerFactory::getServiceManager();
-        $factory = new QueueControllerPluginFactory();
-        $queueControllerPluginFactory  = $factory->createService($sm);
+        $serviceManager               = ServiceManagerFactory::getServiceManager();
+        $controllerPluginManager      = $serviceManager->get('ControllerPluginManager');
+        $factory                      = new QueueControllerPluginFactory();
+        $queueControllerPluginFactory = $factory->createService($controllerPluginManager);
 
         $this->assertInstanceOf('SlmQueue\Controller\Plugin\QueuePlugin', $queueControllerPluginFactory);
     }
