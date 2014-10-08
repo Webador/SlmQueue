@@ -55,10 +55,12 @@ class MaxRunsStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param  WorkerEvent $event
+     * @return void
+     */
     public function onStopConditionCheck(WorkerEvent $event)
     {
-        $this->runCount++;
-
         if ($this->maxRuns && $this->runCount >= $this->maxRuns) {
             $event->exitWorkerLoop();
 
@@ -66,5 +68,7 @@ class MaxRunsStrategy extends AbstractStrategy
         } else {
             $this->state = sprintf('%s jobs processed', $this->runCount);
         }
+
+        $this->runCount++;
     }
 }
