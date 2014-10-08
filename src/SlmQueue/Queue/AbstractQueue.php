@@ -60,10 +60,8 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function unserializeJob($string, array $metadata = array())
     {
-        // To keep compatibility with SlmQueue 0.3, will be removed in 0.5 in favour of __name__ only
-
         $data     =  json_decode($string, true);
-        $name     =  isset($data['__name__']) ? $data['__name__'] : $data['name'];
+        $name     =  $data['__name__'];
         $metadata += $data['metadata'];
         $content  =  unserialize($data['content']);
 

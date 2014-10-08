@@ -29,7 +29,6 @@ abstract class AbstractJob extends Message implements JobInterface
      */
     public function getId()
     {
-        // Allow to keep compatibility with SlmQueue 0.3 jobs, will be removed in 0.5
-        return $this->getMetadata('__id__', $this->getMetadata('id'));
+        return $this->getMetadata('__id__');
     }
 }
