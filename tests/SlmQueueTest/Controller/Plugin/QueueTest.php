@@ -18,10 +18,32 @@ class QueueTest extends TestCase
         $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
 
         $queue = new SimpleQueue('DefaultQueue', $jobPluginManager);
+
+        $queuePluginManager->expects($this->once())
+                           ->method('has')
+                           ->with('DefaultQueue')
+                           ->will($this->returnValue(true));
+
         $queuePluginManager->expects($this->once())
                            ->method('get')
                            ->with('DefaultQueue')
                            ->will($this->returnValue($queue));
+
+        $plugin = new QueuePlugin($queuePluginManager, $jobPluginManager);
+        $plugin->__invoke('DefaultQueue');
+    }
+
+    public function testPluginThrowsExceptionWhenQueueDoesNotExists()
+    {
+        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
+        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+
+        $queuePluginManager->expects($this->once())
+            ->method('has')
+            ->with('DefaultQueue')
+            ->will($this->returnValue(false));
+
+        $this->setExpectedException('SlmQueue\Controller\Exception\QueueNotFoundException');
 
         $plugin = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke('DefaultQueue');
