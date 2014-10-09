@@ -44,7 +44,7 @@ class JobPluginManagerTest extends TestCase
         $instance = $jobPluginManager->get('SimpleJob');
 
         $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $instance);
-        $this->assertEquals('SimpleJob', $instance->getMetadata('name'));
+        $this->assertEquals('SimpleJob', $instance->getMetadata('__name__'));
     }
 
     public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
