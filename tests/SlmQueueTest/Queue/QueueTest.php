@@ -77,7 +77,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
+        $expected = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -88,7 +88,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
+        $expected = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -100,7 +100,7 @@ class QueueTest extends TestCase
         $job->setContent('Foo');
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"Foo":"Bar"}}';
+        $expected = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":{"Foo":"Bar"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -109,9 +109,9 @@ class QueueTest extends TestCase
     public function testCorrectlySerializeJobServiceName()
     {
         $job = new SimpleJob();
-        $job->setMetadata('name', 'SimpleJob');
+        $job->setMetadata('__name__', 'SimpleJob');
 
-        $expected = '{"name":"SimpleJob","content":"N;","metadata":{"name":"SimpleJob"}}';
+        $expected = '{"__name__":"SimpleJob","content":"N;","metadata":{"__name__":"SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         $this->assertEquals($expected, $actual);
@@ -124,7 +124,7 @@ class QueueTest extends TestCase
                                ->with($this->jobName)
                                ->will($this->returnValue($this->job));
 
-        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":[]}';
+        $payload = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":[]}';
         $job     = $this->queue->unserializeJob($payload);
 
         $expected = spl_object_hash($this->job);
@@ -139,7 +139,7 @@ class QueueTest extends TestCase
                                ->with('SimpleJob')
                                ->will($this->returnValue($this->job));
 
-        $payload = '{"name":"SimpleJob","content":"N;","metadata":[]}';
+        $payload = '{"__name__":"SimpleJob","content":"N;","metadata":[]}';
         $job     = $this->queue->unserializeJob($payload);
 
         $expected = spl_object_hash($this->job);
@@ -154,7 +154,7 @@ class QueueTest extends TestCase
                                ->with($this->jobName)
                                ->will($this->returnValue($this->job));
 
-        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
+        $payload = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"s:3:\"Foo\";","metadata":[]}';
         $job     = $this->queue->unserializeJob($payload);
 
         $this->assertEquals('Foo', $job->getContent());
@@ -167,7 +167,7 @@ class QueueTest extends TestCase
                                ->with($this->jobName)
                                ->will($this->returnValue($this->job));
 
-        $payload = '{"name":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
+        $payload = '{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob","content":"N;","metadata":{"Foo":"Bar"}}';
         $job     = $this->queue->unserializeJob($payload);
 
         $this->assertEquals('Bar', $job->getMetadata('Foo'));
@@ -181,7 +181,7 @@ class QueueTest extends TestCase
                                ->with('QueueAwareJob')
                                ->will($this->returnValue($job));
 
-        $payload = '{"name":"QueueAwareJob","content":"N;","metadata":{"name":"QueueAwareJob"}}';
+        $payload = '{"__name__":"QueueAwareJob","content":"N;","metadata":{"__name__":"QueueAwareJob"}}';
         $this->queue->unserializeJob($payload);
 
         $this->assertSame($this->queue, $job->getQueue());

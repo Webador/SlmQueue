@@ -1,3 +1,10 @@
+# 0.4.0-beta3
+
+- BC: to avoid name clashes, the internal `id` and `name` metadata have been renamed `__id__` and `__name__`,
+respectively. As a consequence, existing jobs won't be able to be executed correctly. If you need to upgrade to SlmQueue 0.4,
+you should create a new queue with the new version (and keeping the old one with old SlmQueue) until all the jobs on the
+old system are finished.
+
 # 0.4.0-beta2
 
 - Segregate the `WorkerEvent::PROCESS` event into two different events for more granular control (`WorkerEvent::PROCESS_QUEUE`)

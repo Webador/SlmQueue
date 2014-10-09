@@ -20,7 +20,7 @@ abstract class AbstractJob extends Message implements JobInterface
      */
     public function setId($id)
     {
-        $this->setMetadata('id', $id);
+        $this->setMetadata('__id__', $id);
         return $this;
     }
 
@@ -29,6 +29,6 @@ abstract class AbstractJob extends Message implements JobInterface
      */
     public function getId()
     {
-        return $this->getMetadata('id');
+        return $this->getMetadata('__id__');
     }
 }
