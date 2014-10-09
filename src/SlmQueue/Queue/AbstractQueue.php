@@ -61,7 +61,7 @@ abstract class AbstractQueue implements QueueInterface
     public function unserializeJob($string, array $metadata = array())
     {
         $data     =  json_decode($string, true);
-        $name     =  $data['__name__'];
+        $name     =  $data['metadata']['__name__'];
         $metadata += $data['metadata'];
         $content  =  unserialize($data['content']);
 
@@ -91,9 +91,9 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function serializeJob(JobInterface $job)
     {
-        $name = $job->getMetadata('__name__');
+        $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
+
         $data = array(
-            '__name__' => $name ?: get_class($job),
             'content'  => serialize($job->getContent()),
             'metadata' => $job->getMetadata()
         );
