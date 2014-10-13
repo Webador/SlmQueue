@@ -1,3 +1,7 @@
+# 0.4.0
+
+- First stable release of SlmQueue 0.4.0
+
 # 0.4.0-beta3
 
 - BC: to avoid name clashes, the internal `id` and `name` metadata have been renamed `__id__` and `__name__`,
