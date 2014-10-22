@@ -65,6 +65,14 @@ abstract class AbstractQueue implements QueueInterface
         $metadata += $data['metadata'];
         $content  =  unserialize($data['content']);
 
+        if (isset($data['metadata']['__jobchain__'])) {
+            $self = $this; // needed for php5.3 (?)
+            $jobChain = array_map(function($chainedJob) use ($self) {
+                    return $self->unserializeJob($chainedJob);
+                }, $data['metadata']['__jobchain__']);
+            $metadata['__jobchain__'] = $jobChain;
+        }
+
         /** @var $job \SlmQueue\Job\JobInterface */
         $job = $this->getJobPluginManager()->get($name);
 
@@ -92,6 +100,14 @@ abstract class AbstractQueue implements QueueInterface
     public function serializeJob(JobInterface $job)
     {
         $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
+
+        $self = $this; // needed for php5.3 (?)
+        if ($jobChain = $job->getMetadata('__jobchain__', false)) {
+            $serializedJobChain = array_map(function($chainedJob) use ($self) {
+                    return $self->serializeJob($chainedJob);
+                }, $jobChain);
+            $job->setMetadata('__jobchain__', $serializedJobChain);
+        }
 
         $data = array(
             'content'  => serialize($job->getContent()),
