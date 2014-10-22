@@ -24,4 +24,15 @@ class JobTest extends TestCase
 
         $this->assertEquals('bar', $job->getMetadata('foo'));
     }
+
+    public function testJobsCanContainChainedJobs()
+    {
+        $mainJob = new SimpleJob();
+
+        $dependentJob = new SimpleJob();
+
+        $mainJob->chainJob($dependentJob);
+
+        $this->assertContains($dependentJob, $mainJob->getMetadata('__jobchain__', array()));
+    }
 }
