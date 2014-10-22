@@ -31,4 +31,14 @@ abstract class AbstractJob extends Message implements JobInterface
     {
         return $this->getMetadata('__id__');
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function chainJob(AbstractJob $job)
+    {
+        $chain   = $this->getMetadata('__jobchain__', array());
+        $chain[] = $job;
+        $this->setMetadata('__jobchain__', $chain);
+    }
 }
