@@ -92,11 +92,6 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             ));
         }
 
-        $e->stopPropagation();
-
-        $workerEvent  = new WorkerEvent($e->getTarget(), $e->getQueue());
-        $workerEvent->setOptions($e->getOptions());
-
-        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
+        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $e);
     }
 }
