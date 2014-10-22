@@ -33,4 +33,13 @@ interface JobInterface extends MessageInterface
      * @return void
      */
     public function execute();
+
+    /**
+     * Chain a job.
+     *
+     * When the job has finished these jobs will be added to the queue in the same order they where added.
+     *
+     * @param AbstractJob $job
+     */
+    public function chainJob(AbstractJob $job);
 }
