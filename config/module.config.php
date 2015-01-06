@@ -25,6 +25,7 @@ return array(
                 'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
                 'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
                 'SlmQueue\Strategy\InterruptStrategy',
+                'SlmQueue\Strategy\MaxPollingFrequencyStrategy' => array('max_frequency' => 0)
             ),
             'queues' => array( // per queue
                 'default' => array(
@@ -58,6 +59,7 @@ return array(
                 'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Strategy\MaxRunsStrategy',
                 'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Strategy\MaxMemoryStrategy',
                 'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Strategy\FileWatchStrategy',
+                'SlmQueue\Strategy\MaxPollingFrequencyStrategy' => 'SlmQueue\Strategy\MaxPollingFrequencyStrategy',
             ),
             'factories' => array(
                 'SlmQueue\Strategy\AttachQueueListenersStrategy' => 'SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory',
