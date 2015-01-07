@@ -41,7 +41,7 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
 
         $minTime = 1 / $this->maxFrequency;
 
-        if($time < $minTime) {
+        if ($time < $minTime) {
             $waitTime = $minTime - $time;
             usleep($waitTime * 1000000);
         }
