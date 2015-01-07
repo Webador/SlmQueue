@@ -40,11 +40,6 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
     }
 
-    public function testMaxPollingFrequencyDefault()
-    {
-        $this->assertTrue($this->listener->getMaxFrequency() == 0);
-    }
-
     public function testMaxPollingFrequencySetter()
     {
         $this->listener->setMaxFrequency(100);
@@ -60,19 +55,6 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
             ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onQueueProcessFinish'));
 
         $this->listener->attach($evm);
-    }
-
-    public function testNoDelayWhenFrequencyIsZero()
-    {
-        $this->listener->setMaxFrequency(0);
-
-        $startTime = microtime(true);
-        $this->listener->onQueueProcessFinish($this->event);
-        $this->listener->onQueueProcessFinish($this->event);
-        $endTime = microtime(true);
-        $delay = $endTime - $startTime;
-
-        $this->assertLessThan(10, $delay); // 10 ms
     }
 
     public function testDelayWhenFrequencyIsSet()
