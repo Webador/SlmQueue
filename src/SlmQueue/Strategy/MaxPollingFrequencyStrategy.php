@@ -26,10 +26,6 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
 
     public function onQueueProcessFinish(WorkerEvent $event)
     {
-        if($this->maxFrequency == 0) {
-            return;
-        }
-
         $startTime = microtime(true);
         $time = ($startTime - $this->lastTime);
 
