@@ -8,8 +8,14 @@ use SlmQueue\Strategy\AbstractStrategy;
 
 class MaxPollingFrequencyStrategy extends AbstractStrategy
 {
-    protected $maxFrequency = 0;
+    /**
+     * @var int
+     */
+    protected $maxFrequency;
 
+    /**
+     * @var int
+     */
     protected $lastTime = 0;
 
     /**
@@ -24,6 +30,10 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
         );
     }
 
+    /**
+     * @param WorkerEvent $event
+     * @return void
+     */
     public function onQueueProcessFinish(WorkerEvent $event)
     {
         $startTime  = microtime(true);
