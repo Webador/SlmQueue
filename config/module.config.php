@@ -22,8 +22,8 @@ return array(
         'worker_strategies' => array(
             'default' => array( // per worker
                 'SlmQueue\Strategy\AttachQueueListenersStrategy', // attaches strategies per queue
-                'SlmQueue\Strategy\MaxRunsStrategy' => array('max_runs' => 100000),
-                'SlmQueue\Strategy\MaxMemoryStrategy' => array('max_memory' => 100 * 1024 * 1024),
+                'SlmQueue\Strategy\MaxRunsStrategy'     => array('max_runs' => 100000),
+                'SlmQueue\Strategy\MaxMemoryStrategy'   => array('max_memory' => 100 * 1024 * 1024),
                 'SlmQueue\Strategy\InterruptStrategy',
             ),
             'queues' => array( // per queue
@@ -53,11 +53,11 @@ return array(
          */
         'strategy_manager' => array(
             'invokables' => array(
-                'SlmQueue\Strategy\ProcessQueueStrategy'    => 'SlmQueue\Strategy\ProcessQueueStrategy',
-                'SlmQueue\Strategy\InterruptStrategy'       => 'SlmQueue\Strategy\InterruptStrategy',
-                'SlmQueue\Strategy\MaxRunsStrategy'         => 'SlmQueue\Strategy\MaxRunsStrategy',
-                'SlmQueue\Strategy\MaxMemoryStrategy'       => 'SlmQueue\Strategy\MaxMemoryStrategy',
-                'SlmQueue\Strategy\FileWatchStrategy'       => 'SlmQueue\Strategy\FileWatchStrategy',
+                'SlmQueue\Strategy\ProcessQueueStrategy'        => 'SlmQueue\Strategy\ProcessQueueStrategy',
+                'SlmQueue\Strategy\InterruptStrategy'           => 'SlmQueue\Strategy\InterruptStrategy',
+                'SlmQueue\Strategy\MaxRunsStrategy'             => 'SlmQueue\Strategy\MaxRunsStrategy',
+                'SlmQueue\Strategy\MaxMemoryStrategy'           => 'SlmQueue\Strategy\MaxMemoryStrategy',
+                'SlmQueue\Strategy\FileWatchStrategy'           => 'SlmQueue\Strategy\FileWatchStrategy',
                 'SlmQueue\Strategy\MaxPollingFrequencyStrategy' => 'SlmQueue\Strategy\MaxPollingFrequencyStrategy',
             ),
             'factories' => array(
