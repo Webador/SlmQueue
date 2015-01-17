@@ -1,3 +1,7 @@
+# 0.4.1
+
+- Add a new `MaxPollingFrequencyStrategy` that allows you to limit the rate at which messages are polled.
+
 # 0.4.0
 
 - First stable release of SlmQueue 0.4.0
