@@ -19,7 +19,8 @@ class InterruptStrategy extends AbstractStrategy
     {
         parent::__construct($options);
 
-        if (function_exists('pcntl_signal')) { // Conditional because of lack of pcntl_signal on windows
+        // Conditional because of lack of pcntl_signal on windows
+        if (function_exists('pcntl_signal')) {
             declare(ticks = 1);
             pcntl_signal(SIGTERM, array($this, 'onPCNTLSignal'));
             pcntl_signal(SIGINT, array($this, 'onPCNTLSignal'));
