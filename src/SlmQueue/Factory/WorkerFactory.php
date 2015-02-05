@@ -48,7 +48,8 @@ class WorkerFactory implements FactoryInterface
         array $strategyConfig = array()
     ) {
         foreach ($strategyConfig as $strategy => $options) {
-            if (is_numeric($strategy) && is_string($options)) { // no options given, name stored as value
+            // no options given, name stored as value
+            if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
                 $options = array();
             }
