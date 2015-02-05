@@ -120,6 +120,17 @@ class QueueTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testCorrectlySerializeJobChain()
+    {
+        $job = new SimpleJob();
+        $job->chainJob(new SimpleJob());
+
+        $expected = '{"content":"N;","metadata":{"__jobchain__":["{\"content\":\"N;\",\"metadata\":{\"__name__\":\"SlmQueueTest\\\\\\\\Asset\\\\\\\\SimpleJob\"}}"],"__name__":"SlmQueueTest\\\\Asset\\\\SimpleJob"}}';
+        $actual   = $this->queue->serializeJob($job);
+
+        $this->assertEquals($expected, $actual);
+    }
+
     public function testCanCreateJobWithFQCN()
     {
         $this->jobPluginManager->expects($this->once())
@@ -144,6 +155,37 @@ class QueueTest extends TestCase
 
         $payload = '{"content":"N;","metadata":{"__name__":"SimpleJob"}}';
         $job     = $this->queue->unserializeJob($payload);
+
+        $expected = spl_object_hash($this->job);
+        $actual   = spl_object_hash($job);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCanCreateWithJobChain()
+    {
+        $chainedJob = new SimpleJob();
+        $chainedJob->setContent('foo');
+        $this->job->chainJob($chainedJob);
+
+        $this->jobPluginManager->expects($this->at(0))
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($chainedJob));
+        $this->jobPluginManager->expects($this->at(1))
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
+
+        $payload = '{"content":"N;","metadata":{"__jobchain__":["{\"content\":\"s:3:\\\\\\"foo\\\\\\";\",\"metadata\":{\"__name__\":\"SlmQueueTest\\\\\\\\Asset\\\\\\\\SimpleJob\"}}"],"__name__":"SlmQueueTest\\\\Asset\\\\SimpleJob"}}';
+        $job     = $this->queue->unserializeJob($payload);
+        $chain   = $job->getMetadata('__jobchain__');
+
+        $this->assertCount(1, $chain);
+        $this->assertCount(0, $chain[0]->getMetadata('__jobchain__', array()));
+
+        $expected = spl_object_hash($chainedJob);
+        $actual   = spl_object_hash($chain[0]);
+        $this->assertEquals($expected, $actual);
 
         $expected = spl_object_hash($this->job);
         $actual   = spl_object_hash($job);

@@ -68,6 +68,12 @@ class ProcessQueueStrategy extends AbstractStrategy
         $worker = $e->getTarget();
 
         $result = $worker->processJob($job, $queue);
+
         $e->setResult($result);
+
+        $jobChain  = $job->getMetadata('__jobchain__', array());
+        while ($chainedJob = array_shift($jobChain)) {
+            $this->queue->push($chainedJob);
+        }
     }
 }
