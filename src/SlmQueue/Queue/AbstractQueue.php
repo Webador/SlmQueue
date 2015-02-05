@@ -67,9 +67,9 @@ abstract class AbstractQueue implements QueueInterface
 
         if (isset($data['metadata']['__jobchain__'])) {
             $self = $this; // needed for php5.3 (?)
-            $jobChain = array_map(function($chainedJob) use ($self) {
-                    return $self->unserializeJob($chainedJob);
-                }, $data['metadata']['__jobchain__']);
+            $jobChain = array_map(function ($chainedJob) use ($self) {
+                return $self->unserializeJob($chainedJob);
+            }, $data['metadata']['__jobchain__']);
             $metadata['__jobchain__'] = $jobChain;
         }
 
@@ -103,9 +103,9 @@ abstract class AbstractQueue implements QueueInterface
 
         $self = $this; // needed for php5.3 (?)
         if ($jobChain = $job->getMetadata('__jobchain__', false)) {
-            $serializedJobChain = array_map(function($chainedJob) use ($self) {
-                    return $self->serializeJob($chainedJob);
-                }, $jobChain);
+            $serializedJobChain = array_map(function ($chainedJob) use ($self) {
+                return $self->serializeJob($chainedJob);
+            }, $jobChain);
             $job->setMetadata('__jobchain__', $serializedJobChain);
         }
 
