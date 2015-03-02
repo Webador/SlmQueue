@@ -105,6 +105,8 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->onJobPop($this->event);
 
         $this->assertTrue($called);
+        $this->assertNull($this->event->getJob());
+        $this->assertEquals(WorkerEvent::JOB_STATUS_UNKNOWN, $this->event->getResult());
         $this->assertTrue($this->event->propagationIsStopped());
     }
 

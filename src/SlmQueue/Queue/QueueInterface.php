@@ -36,7 +36,7 @@ interface QueueInterface
      * Pop a job from the queue
      *
      * @param  array $options
-     * @return JobInterface
+     * @return JobInterface|null
      */
     public function pop(array $options = array());
 
