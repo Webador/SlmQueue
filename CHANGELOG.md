@@ -1,3 +1,8 @@
+# 0.4.2
+
+- Jobs (and execution result) weren't removed from the (reused) WorkerEvent until a new job was processed. These
+ 'lingering' jobs are now cleared whenever 'pop' is called on the queue by the ProcessQueueStrategy. 
+
 # 0.4.1
 
 - Add a new `MaxPollingFrequencyStrategy` that allows you to limit the rate at which messages are polled.
