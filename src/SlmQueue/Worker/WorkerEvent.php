@@ -81,10 +81,10 @@ class WorkerEvent extends Event
     }
 
     /**
-     * @param  JobInterface $job
+     * @param  JobInterface|null $job
      * @return void
      */
-    public function setJob(JobInterface $job)
+    public function setJob(JobInterface $job = null)
     {
         $this->job = $job;
         $this->setResult(self::JOB_STATUS_UNKNOWN);
