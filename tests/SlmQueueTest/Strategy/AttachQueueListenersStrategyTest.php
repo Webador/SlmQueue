@@ -138,4 +138,27 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('SlmQueue\Exception\RunTimeException');
         $this->listener->attachQueueListeners($this->event);
     }
+
+    public function testAttachQueueListenersRetriggersBoostrapEvent()
+    {
+        $workerMock       = $this->event->getTarget();
+        $eventManagerMock = $workerMock->getEventManager();
+
+        $eventManagerMock->expects($this->once())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS_QUEUE)));
+        $eventManagerMock->expects($this->once())->method('trigger')->with(WorkerEvent::EVENT_BOOTSTRAP, $this->event);
+
+        $this->listener->attachQueueListeners($this->event);
+    }
+
+    public function testAttachQueueListenersDoesNotStopEventPropagation()
+    {
+        $workerMock       = $this->event->getTarget();
+        $eventManagerMock = $workerMock->getEventManager();
+
+        $eventManagerMock->expects($this->once())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS_QUEUE)));
+
+        $this->listener->attachQueueListeners($this->event);
+
+        $this->assertFalse($this->event->propagationIsStopped());
+    }
 }
