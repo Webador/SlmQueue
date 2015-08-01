@@ -71,7 +71,7 @@ class InterruptStrategy extends AbstractStrategy
      */
     public function onPCNTLSignal($signo)
     {
-        switch($signo) {
+        switch ($signo) {
             case SIGTERM:
             case SIGINT:
                 $this->interrupted = true;
