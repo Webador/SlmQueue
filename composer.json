@@ -43,10 +43,15 @@
     },
     "autoload": {
         "psr-4": {
-            "SlmQueue": "src/"
+            "SlmQueue\\": "src/"
         },
         "classmap": [
             "./Module.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SlmQueueTest\\": "tests/"
+        }
     }
 }
