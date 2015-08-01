@@ -21,11 +21,11 @@ abstract class AbstractWorker implements WorkerInterface
      */
     public function __construct(EventManagerInterface $eventManager)
     {
-        $eventManager->setIdentifiers(array(
+        $eventManager->setIdentifiers([
             __CLASS__,
             get_called_class(),
             'SlmQueue\Worker\WorkerInterface'
-        ));
+        ]);
 
         $this->eventManager = $eventManager;
     }
@@ -33,7 +33,7 @@ abstract class AbstractWorker implements WorkerInterface
     /**
      * {@inheritDoc}
      */
-    public function processQueue(QueueInterface $queue, array $options = array())
+    public function processQueue(QueueInterface $queue, array $options = [])
     {
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($this, $queue);

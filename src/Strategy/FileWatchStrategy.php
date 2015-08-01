@@ -19,7 +19,7 @@ class FileWatchStrategy extends AbstractStrategy
      *
      * @var array
      */
-    protected $files = array();
+    protected $files = [];
 
     /**
      * Seconds between checks while idling
@@ -41,7 +41,7 @@ class FileWatchStrategy extends AbstractStrategy
     public function setPattern($pattern)
     {
         $this->pattern = $pattern;
-        $this->files   = array();
+        $this->files   = [];
     }
 
     /**
@@ -77,17 +77,17 @@ class FileWatchStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_IDLE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_JOB,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,
-            array($this, 'onReportQueueState'),
+            [$this, 'onReportQueueState'],
             $priority
         );
     }

@@ -36,7 +36,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_BOOTSTRAP,
-            array($this, 'attachQueueListeners'),
+            [$this, 'attachQueueListeners'],
             PHP_INT_MAX
         );
     }
@@ -64,7 +64,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options = array();
+                $options = [];
             }
 
             if (!is_string($strategy) || !is_array($options)) {

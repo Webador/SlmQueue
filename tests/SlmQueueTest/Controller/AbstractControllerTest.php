@@ -33,12 +33,12 @@ class AbstractControllerTest extends TestCase
         $worker = new SimpleWorker();
 
         $worker->getEventManager()->attachAggregate(new ProcessQueueStrategy());
-        $worker->getEventManager()->attachAggregate(new MaxRunsStrategy(array('max_runs' => 1)));
-        $config = new Config(array(
-            'factories' => array(
+        $worker->getEventManager()->attachAggregate(new MaxRunsStrategy(['max_runs' => 1]));
+        $config = new Config([
+            'factories' => [
                 'knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
-            ),
-        ));
+            ],
+        ]);
 
         $this->queuePluginManager = new QueuePluginManager($config);
         $this->controller         = new SimpleController($worker, $this->queuePluginManager);
@@ -46,7 +46,7 @@ class AbstractControllerTest extends TestCase
 
     public function testThrowExceptionIfQueueIsUnknown()
     {
-        $routeMatch = new RouteMatch(array('queue' => 'unknownQueue'));
+        $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
@@ -59,7 +59,7 @@ class AbstractControllerTest extends TestCase
         $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new SimpleJob());
 
-        $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
+        $routeMatch = new RouteMatch(['queue' => 'knownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $result = $this->controller->processAction();
@@ -73,7 +73,7 @@ class AbstractControllerTest extends TestCase
         $queue = $this->queuePluginManager->get('knownQueue');
         $queue->push(new FailingJob());
 
-        $routeMatch = new RouteMatch(array('queue' => 'knownQueue'));
+        $routeMatch = new RouteMatch(['queue' => 'knownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $this->setExpectedException('SlmQueue\Controller\Exception\WorkerProcessException');

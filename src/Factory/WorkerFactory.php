@@ -45,13 +45,13 @@ class WorkerFactory implements FactoryInterface
     protected function attachWorkerListeners(
         EventManagerInterface $eventManager,
         StrategyPluginManager $listenerPluginManager,
-        array $strategyConfig = array()
+        array $strategyConfig = []
     ) {
         foreach ($strategyConfig as $strategy => $options) {
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options = array();
+                $options = [];
             }
 
             if (!is_string($strategy) || !is_array($options)) {

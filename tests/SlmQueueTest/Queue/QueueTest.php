@@ -69,7 +69,7 @@ class QueueTest extends TestCase
         $job = $this->queue->pop();
 
         // metadata will have reserved __name__ key with FQCN
-        $expected = array('Foo' => 'Bar') + array('__name__' => 'SlmQueueTest\Asset\SimpleJob');
+        $expected = ['Foo' => 'Bar'] + ['__name__' => 'SlmQueueTest\Asset\SimpleJob'];
 
         $this->assertEquals($expected, $job->getMetadata());
         $this->assertEquals('Bar', $job->getMetadata('Foo'));

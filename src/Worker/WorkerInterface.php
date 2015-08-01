@@ -19,7 +19,7 @@ interface WorkerInterface
      * @param  array          $options
      * @return array          description of exit states from strategies that report it
      */
-    public function processQueue(QueueInterface $queue, array $options = array());
+    public function processQueue(QueueInterface $queue, array $options = []);
 
     /**
      * Process a job that comes from the given queue

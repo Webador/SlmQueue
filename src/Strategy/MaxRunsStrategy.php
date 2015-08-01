@@ -45,12 +45,12 @@ class MaxRunsStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_QUEUE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,
-            array($this, 'onReportQueueState'),
+            [$this, 'onReportQueueState'],
             $priority
         );
     }

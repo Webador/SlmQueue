@@ -67,7 +67,7 @@ class WorkerEvent extends Event
      * Array of options
      * @var array
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
      * @param WorkerInterface $target

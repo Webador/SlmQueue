@@ -31,12 +31,12 @@ class LogJobStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_JOB,
-            array($this, 'onLogJobProcessStart'),
+            [$this, 'onLogJobProcessStart'],
             10000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_JOB,
-            array($this, 'onLogJobProcessDone'),
+            [$this, 'onLogJobProcessDone'],
             -1000
         );
     }

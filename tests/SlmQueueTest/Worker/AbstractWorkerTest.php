@@ -46,13 +46,13 @@ class AbstractWorkerTest extends TestCase
 
         $this->exitedBy     = $exitedBy;
         $this->exitAfter    = $exitAfter;
-        $this->actualCalled = array();
+        $this->actualCalled = [];
 
-        $eventManager->attach(WorkerEvent::EVENT_BOOTSTRAP, array($this, 'callbackWorkerLoopEvents'));
-        $eventManager->attach(WorkerEvent::EVENT_FINISH, array($this, 'callbackWorkerLoopEvents'));
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_IDLE, array($this, 'callbackWorkerLoopEvents'));
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_QUEUE, array($this, 'callbackWorkerLoopEvents'));
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_STATE, array($this, 'callbackWorkerLoopEvents'));
+        $eventManager->attach(WorkerEvent::EVENT_BOOTSTRAP, [$this, 'callbackWorkerLoopEvents']);
+        $eventManager->attach(WorkerEvent::EVENT_FINISH, [$this, 'callbackWorkerLoopEvents']);
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_IDLE, [$this, 'callbackWorkerLoopEvents']);
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_QUEUE, [$this, 'callbackWorkerLoopEvents']);
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_STATE, [$this, 'callbackWorkerLoopEvents']);
 
         $this->worker->processQueue($this->queue);
 
@@ -61,20 +61,20 @@ class AbstractWorkerTest extends TestCase
 
     public function providerWorkerLoopEvents()
     {
-        return array(
-            array(WorkerEvent::EVENT_BOOTSTRAP, 1, array(
+        return [
+            [WorkerEvent::EVENT_BOOTSTRAP, 1, [
                 WorkerEvent::EVENT_BOOTSTRAP     => 1,
                 WorkerEvent::EVENT_FINISH        => 1,
-                WorkerEvent::EVENT_PROCESS_STATE => 1)
-            ),
-            array(WorkerEvent::EVENT_PROCESS_QUEUE, 10, array(
+                WorkerEvent::EVENT_PROCESS_STATE => 1]
+            ],
+            [WorkerEvent::EVENT_PROCESS_QUEUE, 10, [
                 WorkerEvent::EVENT_BOOTSTRAP     => 1,
                 WorkerEvent::EVENT_PROCESS_QUEUE => 10,
                 WorkerEvent::EVENT_PROCESS_IDLE  => 5,
                 WorkerEvent::EVENT_FINISH        => 1,
-                WorkerEvent::EVENT_PROCESS_STATE => 1)
-            )
-        );
+                WorkerEvent::EVENT_PROCESS_STATE => 1]
+            ]
+        ];
     }
 
     /**
@@ -113,9 +113,9 @@ class AbstractWorkerTest extends TestCase
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();
 
-        $eventManager->attach(WorkerEvent::EVENT_PROCESS_QUEUE, array($this, 'callbackProcessQueueSetOptionsOnWorkerEvent'));
+        $eventManager->attach(WorkerEvent::EVENT_PROCESS_QUEUE, [$this, 'callbackProcessQueueSetOptionsOnWorkerEvent']);
 
-        $options = array('foo' => 'bar');
+        $options = ['foo' => 'bar'];
 
         $this->worker->processQueue($this->queue, $options);
 

@@ -22,8 +22,8 @@ class InterruptStrategy extends AbstractStrategy
         // Conditional because of lack of pcntl_signal on windows
         if (function_exists('pcntl_signal')) {
             declare(ticks = 1);
-            pcntl_signal(SIGTERM, array($this, 'onPCNTLSignal'));
-            pcntl_signal(SIGINT, array($this, 'onPCNTLSignal'));
+            pcntl_signal(SIGTERM, [$this, 'onPCNTLSignal']);
+            pcntl_signal(SIGINT, [$this, 'onPCNTLSignal']);
         }
     }
 
@@ -34,17 +34,17 @@ class InterruptStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_IDLE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_QUEUE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,
-            array($this, 'onReportQueueState'),
+            [$this, 'onReportQueueState'],
             $priority
         );
     }

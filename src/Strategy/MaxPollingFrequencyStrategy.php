@@ -25,7 +25,7 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_QUEUE,
-            array($this, 'onQueueProcessFinish'),
+            [$this, 'onQueueProcessFinish'],
             1000
         );
     }

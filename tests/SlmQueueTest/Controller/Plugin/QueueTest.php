@@ -66,7 +66,7 @@ class QueueTest extends TestCase
         $jobPluginManager   = new JobPluginManager;
 
         $name  = 'DefaultQueue';
-        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', array('push'), array($name, $jobPluginManager));
+        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', ['push'], [$name, $jobPluginManager]);
         $job   = new SimpleJob;
 
         $queue->expects($this->once())
@@ -89,7 +89,7 @@ class QueueTest extends TestCase
         $jobPluginManager   = new JobPluginManager;
 
         $name  = 'DefaultQueue';
-        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', array('push'), array($name, $jobPluginManager));
+        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', ['push'], [$name, $jobPluginManager]);
         $job   = new SimpleJob;
 
         $queue->expects($this->once())
@@ -102,7 +102,7 @@ class QueueTest extends TestCase
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
 
-        $payload = array('foo' => 'bar');
+        $payload = ['foo' => 'bar'];
         $result  = $plugin->push('SimpleJob', $payload);
 
         $this->assertSame($payload, $result->getContent());

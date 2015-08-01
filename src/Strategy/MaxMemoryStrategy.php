@@ -35,17 +35,17 @@ class MaxMemoryStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_IDLE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_QUEUE,
-            array($this, 'onStopConditionCheck'),
+            [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_STATE,
-            array($this, 'onReportQueueState'),
+            [$this, 'onReportQueueState'],
             $priority
         );
     }
@@ -82,7 +82,7 @@ class MaxMemoryStrategy extends AbstractStrategy
      */
     private function humanFormat($bytes)
     {
-        $units = array('b','kB','MB','GB','TB','PB');
+        $units = ['b','kB','MB','GB','TB','PB'];
         return @round($bytes/pow(1024, ($i=floor(log($bytes, 1024)))), 2) . $units[$i];
     }
 }

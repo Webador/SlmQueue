@@ -16,12 +16,12 @@ class ProcessQueueStrategy extends AbstractStrategy
     {
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_QUEUE,
-            array($this, 'onJobPop'),
+            [$this, 'onJobPop'],
             $priority
         );
         $this->listeners[] = $events->attach(
             WorkerEvent::EVENT_PROCESS_JOB,
-            array($this, 'onJobProcess'),
+            [$this, 'onJobProcess'],
             $priority
         );
     }

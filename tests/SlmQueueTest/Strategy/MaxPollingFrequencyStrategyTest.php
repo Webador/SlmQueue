@@ -52,7 +52,7 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onQueueProcessFinish'));
+            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onQueueProcessFinish']);
 
         $this->listener->attach($evm);
     }

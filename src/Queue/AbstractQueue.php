@@ -58,7 +58,7 @@ abstract class AbstractQueue implements QueueInterface
      * @param  array  $metadata
      * @return \SlmQueue\Job\JobInterface
      */
-    public function unserializeJob($string, array $metadata = array())
+    public function unserializeJob($string, array $metadata = [])
     {
         $data     =  json_decode($string, true);
         $name     =  $data['metadata']['__name__'];
@@ -93,10 +93,10 @@ abstract class AbstractQueue implements QueueInterface
     {
         $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
 
-        $data = array(
+        $data = [
             'content'  => serialize($job->getContent()),
             'metadata' => $job->getMetadata()
-        );
+        ];
 
         return json_encode($data);
     }

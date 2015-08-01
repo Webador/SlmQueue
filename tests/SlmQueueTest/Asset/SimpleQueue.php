@@ -16,7 +16,7 @@ class SimpleQueue extends AbstractQueue
     /**
      * {@inheritDoc}
      */
-    public function push(JobInterface $job, array $options = array())
+    public function push(JobInterface $job, array $options = [])
     {
         $this->jobs[] = $this->serializeJob($job);
     }
@@ -24,7 +24,7 @@ class SimpleQueue extends AbstractQueue
     /**
      * {@inheritDoc}
      */
-    public function pop(array $options = array())
+    public function pop(array $options = [])
     {
         $payload = array_pop($this->jobs);
         if (!$payload) {

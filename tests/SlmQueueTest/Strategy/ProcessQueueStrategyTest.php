@@ -30,7 +30,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $event    = new WorkerEvent($worker, $queue);
         $this->job   = new SimpleJob();
-        $event->setOptions(array('foo' => 'bar'));
+        $event->setOptions(['foo' => 'bar']);
         $event->setJob($this->job);
 
         $this->listener = new ProcessQueueStrategy();
@@ -50,10 +50,10 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $evm->expects($this->at(0))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onJobPop'), $priority);
+            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onJobPop'], $priority);
         $evm->expects($this->at(1))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, array($this->listener, 'onJobProcess'), $priority);
+            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onJobProcess'], $priority);
 
         $this->listener->attach($evm, $priority);
     }
@@ -69,7 +69,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $this->event->getQueue()
             ->expects($this->once())
             ->method('pop')
-            ->with(array('foo' => 'bar'))
+            ->with(['foo' => 'bar'])
             ->will($this->returnValue($this->job));
 
         $called = false;

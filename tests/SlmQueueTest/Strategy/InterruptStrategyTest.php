@@ -45,11 +45,11 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
         $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, array($this->listener, 'onStopConditionCheck'));
+            ->with(WorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck']);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, array($this->listener, 'onStopConditionCheck'));
+            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck']);
         $evm->expects($this->at(2))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_STATE, array($this->listener, 'onReportQueueState'));
+            ->with(WorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState']);
 
         $this->listener->attach($evm);
     }

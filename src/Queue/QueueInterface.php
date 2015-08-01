@@ -30,7 +30,7 @@ interface QueueInterface
      * @param  array        $options
      * @return void
      */
-    public function push(JobInterface $job, array $options = array());
+    public function push(JobInterface $job, array $options = []);
 
     /**
      * Pop a job from the queue
@@ -38,7 +38,7 @@ interface QueueInterface
      * @param  array $options
      * @return JobInterface|null
      */
-    public function pop(array $options = array());
+    public function pop(array $options = []);
 
     /**
      * Delete a job from the queue

@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5",
         "zendframework/zend-servicemanager": "~2.2",
         "zendframework/zend-stdlib": "~2.2"
     },
@@ -42,7 +42,7 @@
         }
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "SlmQueue": "src/"
         },
         "classmap": [
