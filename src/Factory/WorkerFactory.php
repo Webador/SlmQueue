@@ -28,7 +28,7 @@ class WorkerFactory implements FactoryInterface
         $strategies            = $config['slm_queue']['worker_strategies']['default'];
 
         $eventManager          = $serviceLocator->get('EventManager');
-        $listenerPluginManager = $serviceLocator->get('SlmQueue\Listener\StrategyPluginManager');
+        $listenerPluginManager = $serviceLocator->get(StrategyPluginManager::class);
         $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
         /** @var WorkerInterface $worker */

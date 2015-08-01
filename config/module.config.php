@@ -1,17 +1,35 @@
 <?php
 
+use SlmQueue\Factory\JobPluginManagerFactory;
+use SlmQueue\Factory\QueueControllerPluginFactory;
+use SlmQueue\Factory\QueuePluginManagerFactory;
+use SlmQueue\Factory\StrategyPluginManagerFactory;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\AttachQueueListenersStrategy;
+use SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory;
+use SlmQueue\Strategy\Factory\LogJobStrategyFactory;
+use SlmQueue\Strategy\FileWatchStrategy;
+use SlmQueue\Strategy\InterruptStrategy;
+use SlmQueue\Strategy\LogJobStrategy;
+use SlmQueue\Strategy\MaxMemoryStrategy;
+use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
+use SlmQueue\Strategy\StrategyPluginManager;
+
 return [
     'service_manager' => [
         'factories' => [
-            'SlmQueue\Job\JobPluginManager'             => 'SlmQueue\Factory\JobPluginManagerFactory',
-            'SlmQueue\Listener\StrategyPluginManager'   => 'SlmQueue\Factory\StrategyPluginManagerFactory',
-            'SlmQueue\Queue\QueuePluginManager'         => 'SlmQueue\Factory\QueuePluginManagerFactory'
+            JobPluginManager::class      => JobPluginManagerFactory::class,
+            StrategyPluginManager::class => StrategyPluginManagerFactory::class,
+            QueuePluginManager::class    => QueuePluginManagerFactory::class
         ],
     ],
 
     'controller_plugins' => [
         'factories' => [
-            'queue' => 'SlmQueue\Factory\QueueControllerPluginFactory'
+            'queue' => QueueControllerPluginFactory::class
         ],
     ],
 
@@ -21,14 +39,14 @@ return [
          */
         'worker_strategies' => [
             'default' => [ // per worker
-                'SlmQueue\Strategy\AttachQueueListenersStrategy', // attaches strategies per queue
-                'SlmQueue\Strategy\MaxRunsStrategy'     => ['max_runs' => 100000],
-                'SlmQueue\Strategy\MaxMemoryStrategy'   => ['max_memory' => 100 * 1024 * 1024],
-                'SlmQueue\Strategy\InterruptStrategy',
+                AttachQueueListenersStrategy::class, // attaches strategies per queue
+                MaxRunsStrategy::class   => ['max_runs' => 100000],
+                MaxMemoryStrategy::class => ['max_memory' => 100 * 1024 * 1024],
+                InterruptStrategy::class,
             ],
             'queues' => [ // per queue
                 'default' => [
-                    'SlmQueue\Strategy\ProcessQueueStrategy',
+                    ProcessQueueStrategy::class,
                 ]
             ],
         ],
@@ -53,16 +71,16 @@ return [
          */
         'strategy_manager' => [
             'invokables' => [
-                'SlmQueue\Strategy\ProcessQueueStrategy'        => 'SlmQueue\Strategy\ProcessQueueStrategy',
-                'SlmQueue\Strategy\InterruptStrategy'           => 'SlmQueue\Strategy\InterruptStrategy',
-                'SlmQueue\Strategy\MaxRunsStrategy'             => 'SlmQueue\Strategy\MaxRunsStrategy',
-                'SlmQueue\Strategy\MaxMemoryStrategy'           => 'SlmQueue\Strategy\MaxMemoryStrategy',
-                'SlmQueue\Strategy\FileWatchStrategy'           => 'SlmQueue\Strategy\FileWatchStrategy',
-                'SlmQueue\Strategy\MaxPollingFrequencyStrategy' => 'SlmQueue\Strategy\MaxPollingFrequencyStrategy',
+                ProcessQueueStrategy::class        => ProcessQueueStrategy::class,
+                InterruptStrategy::class           => InterruptStrategy::class,
+                MaxRunsStrategy::class             => MaxRunsStrategy::class,
+                MaxMemoryStrategy::class           => MaxMemoryStrategy::class,
+                FileWatchStrategy::class           => FileWatchStrategy::class,
+                MaxPollingFrequencyStrategy::class => MaxPollingFrequencyStrategy::class,
             ],
             'factories' => [
-                'SlmQueue\Strategy\AttachQueueListenersStrategy' => 'SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory',
-                'SlmQueue\Strategy\LogJobStrategy'               => 'SlmQueue\Strategy\Factory\LogJobStrategyFactory',
+                AttachQueueListenersStrategy::class => AttachQueueListenersStrategyFactory::class,
+                LogJobStrategy::class               => LogJobStrategyFactory::class,
             ]
         ],
     ]

@@ -3,6 +3,8 @@
 namespace SlmQueue\Factory;
 
 use SlmQueue\Controller\Plugin\QueuePlugin;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueuePluginManager;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -17,8 +19,8 @@ class QueueControllerPluginFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $serviceLocator     = $serviceLocator->getServiceLocator();
-        $queuePluginManager = $serviceLocator->get('SlmQueue\Queue\QueuePluginManager');
-        $jobPluginManager   = $serviceLocator->get('SlmQueue\Job\JobPluginManager');
+        $queuePluginManager = $serviceLocator->get(QueuePluginManager::class);
+        $jobPluginManager   = $serviceLocator->get(JobPluginManager::class);
 
         return new QueuePlugin($queuePluginManager, $jobPluginManager);
     }
