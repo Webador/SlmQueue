@@ -16,25 +16,25 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-return array(
-    'service_manager' => array(
-        'factories' => array(
+return [
+    'service_manager' => [
+        'factories' => [
             'SlmQueueTest\Asset\SimpleWorker'    => 'SlmQueue\Factory\WorkerFactory',
-        )
-    ),
-    'slm_queue' => array(
+        ]
+    ],
+    'slm_queue' => [
         /**
          * Queues config
          */
-        'queue_manager' => array(
-            'factories' => array(
+        'queue_manager' => [
+            'factories' => [
                 'basic-queue' => function ($locator) {
                     $parentLocator    = $locator->getServiceLocator();
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
                     return new \SlmQueueTest\Asset\SimpleQueue('basic-queue', $jobPluginManager);
                 }
-            )
-        )
-    ),
-);
+            ]
+        ]
+    ],
+];

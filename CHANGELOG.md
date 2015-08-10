@@ -1,3 +1,8 @@
+# 0.5.0
+
+- [BC] Minimum dependency has been raised to PHP 5.5
+- Project has been migrated to PSR-4
+
 # 0.4.2
 
 - Jobs (and execution result) weren't removed from the (reused) WorkerEvent until a new job was processed. These
