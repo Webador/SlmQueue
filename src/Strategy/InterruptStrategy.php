@@ -21,7 +21,6 @@ class InterruptStrategy extends AbstractStrategy
 
         // Conditional because of lack of pcntl_signal on windows
         if (function_exists('pcntl_signal')) {
-            declare(ticks = 1);
             pcntl_signal(SIGTERM, [$this, 'onPCNTLSignal']);
             pcntl_signal(SIGINT, [$this, 'onPCNTLSignal']);
         }
@@ -57,6 +56,8 @@ class InterruptStrategy extends AbstractStrategy
      */
     public function onStopConditionCheck(WorkerEvent $event)
     {
+        declare(ticks = 1);
+
         if ($this->interrupted) {
             $event->exitWorkerLoop();
 
