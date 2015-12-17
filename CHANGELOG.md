@@ -1,3 +1,7 @@
+# 0.5.1
+
+- Improve PHP7 compatibility
+
 # 0.5.0
 
 - [BC] Minimum dependency has been raised to PHP 5.5
