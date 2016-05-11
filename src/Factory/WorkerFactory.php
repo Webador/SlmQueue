@@ -8,12 +8,30 @@ use SlmQueue\Worker\WorkerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * WorkerFactory
  */
 class WorkerFactory implements FactoryInterface
 {
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $config                = $container->get('config');
+        $strategies            = $config['slm_queue']['worker_strategies']['default'];
+
+        $eventManager          = $container->get('EventManager');
+        $listenerPluginManager = $container->get(StrategyPluginManager::class);
+        $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
+
+        /** @var WorkerInterface $worker */
+        $worker = new $requestedName($eventManager);
+        return $worker;
+    }
+
     /**
      * Create service
      *
@@ -24,16 +42,7 @@ class WorkerFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        $config                = $serviceLocator->get('Config');
-        $strategies            = $config['slm_queue']['worker_strategies']['default'];
-
-        $eventManager          = $serviceLocator->get('EventManager');
-        $listenerPluginManager = $serviceLocator->get(StrategyPluginManager::class);
-        $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
-
-        /** @var WorkerInterface $worker */
-        $worker = new $requestedName($eventManager);
-        return $worker;
+        return $this($serviceLocator, $requestedName);
     }
 
     /**
