@@ -12,15 +12,23 @@ class QueuePluginManager extends AbstractPluginManager
     /**
      * {@inheritDoc}
      */
-    public function validatePlugin($plugin)
+    public function validate($instance)
     {
-        if ($plugin instanceof QueueInterface) {
+        if ($instance instanceof QueueInterface) {
             return; // we're okay!
         }
 
         throw new Exception\RuntimeException(sprintf(
             'Plugin of type %s is invalid; must implement SlmQueue\Queue\QueueInterface',
-            (is_object($plugin) ? get_class($plugin) : gettype($plugin))
+            (is_object($instance) ? get_class($instance) : gettype($instance))
         ));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function validatePlugin($plugin)
+    {
+        return $this->validate($plugin);
     }
 }

@@ -16,19 +16,26 @@ class StrategyPluginManager extends AbstractPluginManager
     protected $shareByDefault = false;
 
     /**
-     * @param  mixed $plugin
-     * @throws RuntimeException
-     * @return void
+     * {@inheritDoc}
      */
-    public function validatePlugin($plugin)
+    public function validate($instance)
     {
-        if ($plugin instanceof AbstractStrategy) {
+        if ($instance instanceof AbstractStrategy) {
             return; // we're okay
         }
 
         throw new RuntimeException(sprintf(
             'Plugin of type %s is invalid; must extend SlmQueue\Strategy\AbstractStrategy',
-            (is_object($plugin) ? get_class($plugin) : gettype($plugin))
+            (is_object($instance) ? get_class($instance) : gettype($instance))
         ));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function validatePlugin($plugin)
+    {
+        return $this->validate($plugin);
+    }
 }
+
