@@ -30,4 +30,3 @@ class StrategyPluginManager extends AbstractPluginManager
         ));
     }
 }
-

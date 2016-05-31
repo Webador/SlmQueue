@@ -13,7 +13,7 @@ abstract class AbstractPluginManager extends ZendAbstractPluginManager implement
 {
     /**
      *
-     * @var Dispatchable 
+     * @var Dispatchable
      */
     protected $controller;
 
