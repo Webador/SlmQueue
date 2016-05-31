@@ -20,11 +20,6 @@ class StrategyPluginManagerFactory implements FactoryInterface
     {
         $config = $container->get('config');
         $config = $config['slm_queue']['strategy_manager'];
-        $config = new Config($config);
-        /*
-         * For SM2 compatible
-         */
-        $config = method_exists($config, 'toArray')?$config->toArray():$config;
         $listenerPluginManager = new StrategyPluginManager($container, $config);
 
         return $listenerPluginManager;

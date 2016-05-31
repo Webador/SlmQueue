@@ -33,6 +33,6 @@ class AttachQueueListenersStrategyFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return $this($serviceLocator, AttachQueueListenersStrategy::class);
+        return $this($serviceLocator->getServiceLocator(), AttachQueueListenersStrategy::class);
     }
 }

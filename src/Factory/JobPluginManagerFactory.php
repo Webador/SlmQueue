@@ -22,11 +22,6 @@ class JobPluginManagerFactory implements FactoryInterface
         // adds invokables if the job name is not known, which will be sufficient most of the time
         $config = $container->get('config');
         $config = $config['slm_queue']['job_manager'];
-        $config = new Config($config);
-        /*
-         * For SM2 compatible
-         */
-        $config = method_exists($config, 'toArray')?$config->toArray():$config;
         $jobPluginManager = new JobPluginManager($container, $config);
 
         return $jobPluginManager;

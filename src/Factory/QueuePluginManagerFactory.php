@@ -20,11 +20,6 @@ class QueuePluginManagerFactory implements FactoryInterface
     {
         $config = $container->get('config');
         $config = $config['slm_queue']['queue_manager'];
-        $config = new Config($config);
-        /*
-         * For SM2 compatible
-         */
-        $config = method_exists($config, 'toArray')?$config->toArray():$config;
         $queuePluginManager = new QueuePluginManager($container, $config);
 
         return $queuePluginManager;

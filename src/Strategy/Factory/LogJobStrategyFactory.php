@@ -36,6 +36,6 @@ class LogJobStrategyFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return $this($serviceLocator, LogJobStrategy::class);
+        return $this($serviceLocator->getServiceLocator(), LogJobStrategy::class);
     }
 }
