@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Queue;
 
-use Zend\ServiceManager\AbstractPluginManager;
+use SlmQueue\ServiceManager\AbstractPluginManager;
 
 /**
  * QueuePluginManager
@@ -22,13 +22,5 @@ class QueuePluginManager extends AbstractPluginManager
             'Plugin of type %s is invalid; must implement SlmQueue\Queue\QueueInterface',
             (is_object($instance) ? get_class($instance) : gettype($instance))
         ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePlugin($plugin)
-    {
-        return $this->validate($plugin);
     }
 }

@@ -3,7 +3,7 @@
 namespace SlmQueue\Strategy;
 
 use SlmQueue\Exception\RuntimeException;
-use Zend\ServiceManager\AbstractPluginManager;
+use SlmQueue\ServiceManager\AbstractPluginManager;
 
 /**
  * StrategyPluginManager
@@ -28,14 +28,6 @@ class StrategyPluginManager extends AbstractPluginManager
             'Plugin of type %s is invalid; must extend SlmQueue\Strategy\AbstractStrategy',
             (is_object($instance) ? get_class($instance) : gettype($instance))
         ));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePlugin($plugin)
-    {
-        return $this->validate($plugin);
     }
 }
 
