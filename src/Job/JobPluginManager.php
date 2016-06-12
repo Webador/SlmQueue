@@ -10,9 +10,16 @@ use SlmQueue\ServiceManager\AbstractPluginManager;
 class JobPluginManager extends AbstractPluginManager
 {
     /**
+     * SM2
      * @var bool
      */
     protected $shareByDefault = false;
+
+    /**
+     * SM3
+     * @var bool
+     */
+    protected $sharedByDefault = false;
 
     /**
      * @inheritdoc
