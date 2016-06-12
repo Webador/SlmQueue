@@ -49,9 +49,17 @@ class ServiceManagerFactory
      */
     public static function getServiceManager()
     {
-        $serviceManager = new ServiceManager(new ServiceManagerConfig(
+        $serviceManagerConfig = new ServiceManagerConfig(
             isset(static::$config['service_manager']) ? static::$config['service_manager'] : []
-        ));
+        );
+        /*
+         * get array for new ServiceManager
+         */
+        $config = (method_exists($serviceManagerConfig, 'toArray')
+            && method_exists(ServiceManager::class, 'configure')) ?
+            $serviceManagerConfig->toArray() : $serviceManagerConfig;
+
+        $serviceManager = new ServiceManager($config);
         $serviceManager->setService('ApplicationConfig', static::$config);
         $serviceManager->setAllowOverride(true);
         $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
@@ -60,7 +68,6 @@ class ServiceManagerFactory
         /** @var $moduleManager \Zend\ModuleManager\ModuleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
-        //$serviceManager->setAllowOverride(true);
         return $serviceManager;
     }
 }
