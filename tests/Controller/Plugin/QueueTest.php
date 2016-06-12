@@ -3,19 +3,22 @@
 namespace SlmQueueTest\Controller\Plugin;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Controller\Plugin\QueuePlugin;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\QueueAwareJob;
-use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\SimpleQueue;
+use SlmQueue\Controller\Exception\QueueNotFoundException;
+use SlmQueue\Controller\Plugin\QueuePlugin;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueuePluginManager;
+use Zend\ServiceManager\ServiceManager;
 
 class QueueTest extends TestCase
 {
     public function testPluginCreatesQueueFromPluginManager()
     {
-        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = $this->getMock(QueuePluginManager::class, [], [$serviceManager]);
+        $jobPluginManager   = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
 
         $queue = new SimpleQueue('DefaultQueue', $jobPluginManager);
 
@@ -35,15 +38,16 @@ class QueueTest extends TestCase
 
     public function testPluginThrowsExceptionWhenQueueDoesNotExists()
     {
-        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = $this->getMock(QueuePluginManager::class, [], [$serviceManager]);
+        $jobPluginManager   = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
 
         $queuePluginManager->expects($this->once())
             ->method('has')
             ->with('DefaultQueue')
             ->will($this->returnValue(false));
 
-        $this->setExpectedException('SlmQueue\Controller\Exception\QueueNotFoundException');
+        $this->setExpectedException(QueueNotFoundException::class);
 
         $plugin = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke('DefaultQueue');
@@ -51,22 +55,24 @@ class QueueTest extends TestCase
 
     public function testPluginThrowsExceptionWhenNoQueueIsSet()
     {
-        $queuePluginManager = $this->getMock('SlmQueue\Queue\QueuePluginManager');
-        $jobPluginManager   = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = $this->getMock(QueuePluginManager::class, [], [$serviceManager]);
+        $jobPluginManager   = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
         $plugin             = new QueuePlugin($queuePluginManager, $jobPluginManager);
 
-        $this->setExpectedException('SlmQueue\Controller\Exception\QueueNotFoundException');
+        $this->setExpectedException(QueueNotFoundException::class);
         $plugin->push('TestJob');
 
     }
 
     public function testPluginPushesJobIntoQueue()
     {
-        $queuePluginManager = new QueuePluginManager;
-        $jobPluginManager   = new JobPluginManager;
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = new QueuePluginManager($serviceManager);
+        $jobPluginManager   = new JobPluginManager($serviceManager);
 
         $name  = 'DefaultQueue';
-        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', ['push'], [$name, $jobPluginManager]);
+        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
         $job   = new SimpleJob;
 
         $queue->expects($this->once())
@@ -85,11 +91,12 @@ class QueueTest extends TestCase
 
     public function testPayloadCanBeInjectedViaPlugin()
     {
-        $queuePluginManager = new QueuePluginManager;
-        $jobPluginManager   = new JobPluginManager;
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = new QueuePluginManager($serviceManager);
+        $jobPluginManager   = new JobPluginManager($serviceManager);
 
         $name  = 'DefaultQueue';
-        $queue = $this->getMock('SlmQueueTest\Asset\SimpleQueue', ['push'], [$name, $jobPluginManager]);
+        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
         $job   = new SimpleJob;
 
         $queue->expects($this->once())
