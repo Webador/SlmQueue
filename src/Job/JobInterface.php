@@ -30,7 +30,7 @@ interface JobInterface extends MessageInterface
     /**
      * Execute the job
      *
-     * @return void
+     * @return void|int
      */
     public function execute();
 }
