@@ -37,7 +37,7 @@
         "zendframework/zend-console": "^2.6",
         "zendframework/zend-config": "^2.6",
         "squizlabs/php_codesniffer": "^2.0",
-        "phpunit/phpunit": "^4.3"
+        "phpunit/phpunit": "^4.8"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",

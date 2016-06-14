@@ -76,7 +76,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $this->event->getTarget()->getEventManager()->attach(
             WorkerEvent::EVENT_PROCESS_JOB,
-            function(WorkerEvent $e) use (&$called) {
+            function($e) use (&$called) {
                 $called = true;
             }
         );
@@ -97,7 +97,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $called = false;
         $this->event->getTarget()->getEventManager()->attach(
             WorkerEvent::EVENT_PROCESS_IDLE,
-            function(WorkerEvent $e) use (&$called) {
+            function($e) use (&$called) {
                 $called = true;
             }
         );
