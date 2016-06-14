@@ -1,3 +1,11 @@
+# 0.6.0
+
+- Provide ServiceManager 3 compatibility
+- Provide EventManager 3 compatibility
+- [BC] Refactored event flow, concrete classes where introduced for each event. Listeners should now return a result class when they want to exit the loop or report there internal state. Only an issue if you have your written custom strategies.
+- [BC] The EM deprecated the `getEvents` method. No RuntimeException will be thrown when a queue doesn't listen to the Bootstrap event. Probably no one was relying on this, but a potential BC.
+- Exiting a worker reported state. The last line now states the reason for exiting.
+
 # 0.5.1
 
 - Improve PHP7 compatibility

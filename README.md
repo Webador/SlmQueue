@@ -39,7 +39,7 @@ SlmQueue works with [Composer](http://getcomposer.org). Make sure you have the c
 
 ```json
 "require": {
-    "slm/queue": "0.4.*"
+    "slm/queue": "^0.6"
 }
 ```
 
@@ -57,7 +57,9 @@ or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 Requirements
 ------------
-* [Zend Framework >= 2.2](https://github.com/zendframework/zf2)
+* PHP5.5+
+* [zend-servicemanager 2.7 || 3.0](https://github.com/zendframework/zend-servicemanager)
+
 
 Code samples
 ------------
