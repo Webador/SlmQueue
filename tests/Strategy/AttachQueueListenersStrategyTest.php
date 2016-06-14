@@ -6,6 +6,7 @@ use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
 use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\SimpleJob;
+use Zend\ServiceManager\ServiceManager;
 
 class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 {
@@ -21,13 +22,14 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $jobPluginManager      = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $serviceManager = new ServiceManager();
+        $jobPluginManager      = $this->getMock('SlmQueue\Job\JobPluginManager', [], [$serviceManager]);
         $queue                 = $this->getMock(
             'SlmQueue\Queue\AbstractQueue',
             [],
             ['queueName', $jobPluginManager]
         );
-        $strategyPluginManager = $this->getMock('SlmQueue\Strategy\StrategyPluginManager');
+        $strategyPluginManager = $this->getMock('SlmQueue\Strategy\StrategyPluginManager', [], [$serviceManager]);
         $eventManager          = $this->getMock('Zend\EventManager\EventManager');
         $worker                = $this->getMock('SlmQueue\Worker\AbstractWorker', [], [$eventManager]);
         $strategyMock          = $this->getMock('SlmQueue\Strategy\AbstractStrategy');

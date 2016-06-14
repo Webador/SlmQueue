@@ -6,6 +6,7 @@ use SlmQueue\Strategy\StrategyPluginManager;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * StrategyPluginManagerFactory
@@ -15,14 +16,20 @@ class StrategyPluginManagerFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('config');
         $config = $config['slm_queue']['strategy_manager'];
-
-        $listenerPluginManager = new StrategyPluginManager(new Config($config));
-        $listenerPluginManager->setServiceLocator($serviceLocator);
+        $listenerPluginManager = new StrategyPluginManager($container, $config);
 
         return $listenerPluginManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        return $this($serviceLocator, StrategyPluginManager::class);
     }
 }

@@ -5,8 +5,10 @@ namespace SlmQueueTest\Queue;
 use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareJob;
-use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\SimpleQueue;
+use SlmQueue\Job\JobPluginManager;
+use Zend\ServiceManager\ServiceManager;
 
 class QueueTest extends TestCase
 {
@@ -18,9 +20,10 @@ class QueueTest extends TestCase
     public function setUp()
     {
         $this->job     = new SimpleJob;
-        $this->jobName = 'SlmQueueTest\Asset\SimpleJob';
+        $this->jobName = SimpleJob::class;
+        $serviceManager = new ServiceManager();
 
-        $this->jobPluginManager = $this->getMock('SlmQueue\Job\JobPluginManager');
+        $this->jobPluginManager = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
         $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
     }
 

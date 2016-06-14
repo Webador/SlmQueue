@@ -29,7 +29,14 @@ return [
         'queue_manager' => [
             'factories' => [
                 'basic-queue' => function ($locator) {
-                    $parentLocator    = $locator->getServiceLocator();
+                    /*
+                     * avoid calling deprecated ServiceLocator on SM3
+                     */
+                    if ($locator->has('SlmQueue\Job\JobPluginManager')) {
+                        $parentLocator    = $locator;
+                    } else {
+                        $parentLocator    = $locator->getServiceLocator();
+                    }
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
                     return new \SlmQueueTest\Asset\SimpleQueue('basic-queue', $jobPluginManager);

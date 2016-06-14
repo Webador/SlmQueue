@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Job;
 
-use Zend\ServiceManager\AbstractPluginManager;
+use SlmQueue\ServiceManager\AbstractPluginManager;
 
 /**
  * JobPluginManager
@@ -10,9 +10,16 @@ use Zend\ServiceManager\AbstractPluginManager;
 class JobPluginManager extends AbstractPluginManager
 {
     /**
+     * SM2
      * @var bool
      */
     protected $shareByDefault = false;
+
+    /**
+     * SM3
+     * @var bool
+     */
+    protected $sharedByDefault = false;
 
     /**
      * @inheritdoc
@@ -27,24 +34,22 @@ class JobPluginManager extends AbstractPluginManager
         // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
         $instance = parent::get($name, $options, $usePeeringServiceManagers);
         $instance->setMetadata('__name__', $name);
-        
+
         return $instance;
     }
 
     /**
-     * @param  mixed $plugin
-     * @throws Exception\RuntimeException
-     * @return void
+     * {@inheritDoc}
      */
-    public function validatePlugin($plugin)
+    public function validate($instance)
     {
-        if ($plugin instanceof JobInterface) {
+        if ($instance instanceof JobInterface) {
             return; // we're okay
         }
 
         throw new Exception\RuntimeException(sprintf(
             'Plugin of type %s is invalid; must implement SlmQueue\Job\JobInterface',
-            (is_object($plugin) ? get_class($plugin) : gettype($plugin))
+            (is_object($instance) ? get_class($instance) : gettype($instance))
         ));
     }
 }

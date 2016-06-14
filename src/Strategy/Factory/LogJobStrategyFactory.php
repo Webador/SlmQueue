@@ -4,6 +4,7 @@ namespace SlmQueue\Strategy\Factory;
 use SlmQueue\Strategy\LogJobStrategy;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * LogJobStrategyFactory
@@ -16,6 +17,17 @@ class LogJobStrategyFactory implements FactoryInterface
     {
         $this->options = $options;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $strategy = new LogJobStrategy($container->get('console'), $this->options);
+
+        return $strategy;
+    }
+
     /**
      * Create service
      *
@@ -24,8 +36,6 @@ class LogJobStrategyFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $strategy = new LogJobStrategy($serviceLocator->getServiceLocator()->get('Console'), $this->options);
-
-        return $strategy;
+        return $this($serviceLocator->getServiceLocator(), LogJobStrategy::class);
     }
 }

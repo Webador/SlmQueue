@@ -3,17 +3,19 @@
 namespace SlmQueueTest\Controller;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\ProcessQueueStrategy;
-use SlmQueue\Worker\WorkerEvent;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleQueue;
+use SlmQueueTest\Asset\SimpleQueueFactory;
 use SlmQueueTest\Asset\SimpleWorker;
+use SlmQueue\Controller\Exception\WorkerProcessException;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use Zend\Mvc\Router\RouteMatch;
-use Zend\ServiceManager\Config;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\ServiceManager;
 
 class AbstractControllerTest extends TestCase
 {
@@ -32,15 +34,17 @@ class AbstractControllerTest extends TestCase
     {
         $worker = new SimpleWorker();
 
-        $worker->getEventManager()->attachAggregate(new ProcessQueueStrategy());
-        $worker->getEventManager()->attachAggregate(new MaxRunsStrategy(['max_runs' => 1]));
-        $config = new Config([
+        $eventManager = $worker->getEventManager();
+        (new ProcessQueueStrategy())->attach($eventManager);
+        (new MaxRunsStrategy(['max_runs' => 1]))->attach($eventManager);
+        $serviceManager = new ServiceManager();
+        $config = [
             'factories' => [
-                'knownQueue' => 'SlmQueueTest\Asset\SimpleQueueFactory'
+                'knownQueue' => SimpleQueueFactory::class,
             ],
-        ]);
+        ];
 
-        $this->queuePluginManager = new QueuePluginManager($config);
+        $this->queuePluginManager = new QueuePluginManager($serviceManager, $config);
         $this->controller         = new SimpleController($worker, $this->queuePluginManager);
     }
 
@@ -49,7 +53,7 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+        $this->setExpectedException(ServiceNotFoundException::class);
         $this->controller->processAction();
     }
 
@@ -76,7 +80,7 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(['queue' => 'knownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException('SlmQueue\Controller\Exception\WorkerProcessException');
+        $this->setExpectedException(WorkerProcessException::class);
         $this->controller->processAction();
     }
 }
