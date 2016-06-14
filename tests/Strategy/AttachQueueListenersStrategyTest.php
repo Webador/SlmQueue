@@ -140,4 +140,14 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('SlmQueue\Exception\RunTimeException');
         $this->listener->attachQueueListeners($this->event);
     }
+
+    public function testAttachQueueListenersBootstrapEventIsTriggeredOnlyOnce()
+    {
+        $workerMock       = $this->event->getTarget();
+        $eventManagerMock = $workerMock->getEventManager();
+        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue(array(WorkerEvent::EVENT_PROCESS_QUEUE)));
+
+        $eventManagerMock->expects($this->once())->method('trigger')->with(WorkerEvent::EVENT_BOOTSTRAP, $this->logicalNot($this->identicalTo($this->event)));
+        $this->listener->attachQueueListeners($this->event);
+    }
 }
