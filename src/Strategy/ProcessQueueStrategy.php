@@ -44,15 +44,16 @@ class ProcessQueueStrategy extends AbstractStrategy
 
         // The queue may return null, for instance if a timeout was set
         if (!$job instanceof JobInterface) {
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_IDLE, $e);
+            $e->setName(WorkerEvent::EVENT_PROCESS_IDLE);
+            $eventManager->triggerEvent($e);
 
             // make sure the event doesn't propagate or it will still process
             $e->stopPropagation();
-
-            return;
+            return $e;
         }
 
-        $eventManager->trigger(WorkerEvent::EVENT_PROCESS_JOB, $e);
+        $e->setName(WorkerEvent::EVENT_PROCESS_JOB);
+        $eventManager->triggerEvent($e);
     }
 
     /**

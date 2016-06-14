@@ -37,18 +37,35 @@ abstract class AbstractWorker implements WorkerInterface
     {
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($this, $queue);
+        // zend-eventmanager 2.7
+        if (method_exists($eventManager, 'setEventClass')) {
+            $eventManager->setEventClass($workerEvent);
+        }
+
+        // zend-eventmanager 3.0
+        if (method_exists($eventManager, 'setEventPrototype')) {
+            $eventManager->setEventPrototype($workerEvent);
+        }
+
 
         $workerEvent->setOptions($options);
 
-        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
+        $workerEvent->setName(WorkerEvent::EVENT_BOOTSTRAP);
+        $eventManager->triggerEvent($workerEvent);
 
         while (!$workerEvent->shouldExitWorkerLoop()) {
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE, $workerEvent);
+            $workerEvent->setName(WorkerEvent::EVENT_PROCESS_QUEUE);
+            $results = $eventManager->triggerEvent($workerEvent);
+            if ($results->stopped()) {
+                $workerEvent = $results->last();
+            };
         }
 
-        $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
+        $workerEvent->setName(WorkerEvent::EVENT_FINISH);
+        $eventManager->triggerEvent($workerEvent);
 
-        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
+        $workerEvent->setName(WorkerEvent::EVENT_PROCESS_STATE);
+        $queueState = $eventManager->triggerEvent($workerEvent);
 
         $queueState = array_filter(ArrayUtils::iteratorToArray($queueState));
 
