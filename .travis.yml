@@ -23,7 +23,7 @@ before_script:
   - mkdir -p tests/build/logs
 
 script:
-  - vendor/bin/phpunit -c ./phpunit.xml
+  - vendor/bin/phpunit -c ./phpunit.xml.dist
   - vendor/bin/phpcs --standard=PSR2 src
 
 after_script:
