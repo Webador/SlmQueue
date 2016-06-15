@@ -62,6 +62,8 @@ class InterruptStrategy extends AbstractStrategy
             $event->exitWorkerLoop();
 
             $this->state = sprintf("interrupt by an external signal on '%s'", $event->getName());
+
+            return $event;
         }
     }
 

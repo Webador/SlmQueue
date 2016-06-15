@@ -71,6 +71,8 @@ class MaxMemoryStrategy extends AbstractStrategy
                 $this->humanFormat($this->maxMemory),
                 $this->humanFormat($usage)
             );
+
+            return $event;
         } else {
             $this->state = sprintf('%s memory usage', $this->humanFormat($usage));
         }

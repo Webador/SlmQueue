@@ -63,6 +63,8 @@ class MaxRunsStrategy extends AbstractStrategy
             $event->exitWorkerLoop();
 
             $this->state = sprintf('maximum of %s jobs processed', $this->runCount);
+
+            return $event;
         } else {
             $this->state = sprintf('%s jobs processed', $this->runCount);
         }

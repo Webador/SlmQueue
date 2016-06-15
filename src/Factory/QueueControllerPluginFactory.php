@@ -30,6 +30,6 @@ class QueueControllerPluginFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return $this($serviceLocator, QueuePlugin::class);
+        return $this($serviceLocator->getServiceLocator(), QueuePlugin::class);
     }
 }

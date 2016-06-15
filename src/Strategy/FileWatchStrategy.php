@@ -117,6 +117,8 @@ class FileWatchStrategy extends AbstractStrategy
                 $event->exitWorkerLoop();
 
                 $this->state = sprintf("file modification detected for '%s'", $file);
+
+                return $event;
             }
         }
     }
