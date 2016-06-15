@@ -36,25 +36,33 @@ abstract class AbstractWorker implements WorkerInterface
     public function processQueue(QueueInterface $queue, array $options = [])
     {
         $eventManager = $this->eventManager;
-        $workerEvent  = new WorkerEvent($this, $queue);
 
-        $workerEvent->setOptions($options);
-
+        $workerEvent = new WorkerEvent($this, $queue);
         $workerEvent->setName(WorkerEvent::EVENT_BOOTSTRAP);
+        $workerEvent->setOptions($options);
         $eventManager->triggerEvent($workerEvent);
 
-        while (!$workerEvent->shouldExitWorkerLoop()) {
+        $shouldExitWorkerLoop = false;
+        while (!$shouldExitWorkerLoop) {
+            $workerEvent = new WorkerEvent($this, $queue);
             $workerEvent->setName(WorkerEvent::EVENT_PROCESS_QUEUE);
+            $workerEvent->setOptions($options);
+
             $results = $eventManager->triggerEvent($workerEvent);
-            if ($results->stopped()) {
-                $workerEvent = $results->last();
-            };
+            foreach($results as $returnedWorkerEvent) {
+                if ($returnedWorkerEvent instanceof WorkerEvent && $returnedWorkerEvent->shouldExitWorkerLoop()) {
+                    $shouldExitWorkerLoop = true;                }
+            }
         }
 
+        $workerEvent = new WorkerEvent($this, $queue);
         $workerEvent->setName(WorkerEvent::EVENT_FINISH);
+        $workerEvent->setOptions($options);
         $eventManager->triggerEvent($workerEvent);
 
+        $workerEvent = new WorkerEvent($this, $queue);
         $workerEvent->setName(WorkerEvent::EVENT_PROCESS_STATE);
+        $workerEvent->setOptions($options);
         $queueState = $eventManager->triggerEvent($workerEvent);
 
         $queueState = array_filter(ArrayUtils::iteratorToArray($queueState));

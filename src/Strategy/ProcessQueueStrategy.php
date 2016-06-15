@@ -40,20 +40,34 @@ class ProcessQueueStrategy extends AbstractStrategy
         $worker       = $e->getTarget();
         $eventManager = $worker->getEventManager();
 
-        $e->setJob($job);
-
         // The queue may return null, for instance if a timeout was set
         if (!$job instanceof JobInterface) {
-            $e->setName(WorkerEvent::EVENT_PROCESS_IDLE);
-            $eventManager->triggerEvent($e);
+            $idleEvent = new WorkerEvent($e->getTarget(), $queue);
+            $idleEvent->setName(WorkerEvent::EVENT_PROCESS_IDLE);
+            $idleEvent->setOptions($options);
 
-            // make sure the event doesn't propagate or it will still process
+            $results = $eventManager->trigger($idleEvent);
+
+            foreach ($results as $returnedWorkerEvent) {
+                if ($returnedWorkerEvent instanceof WorkerEvent && $returnedWorkerEvent->shouldExitWorkerLoop()) {
+                    $e->exitWorkerLoop();
+                    $e->stopPropagation();
+
+                    return $e;
+                }
+            }
+
             $e->stopPropagation();
-            return $e;
+
+            return;
         }
 
-        $e->setName(WorkerEvent::EVENT_PROCESS_JOB);
-        $eventManager->triggerEvent($e);
+        $processJobEvent = new WorkerEvent($e->getTarget(), $queue);
+        $processJobEvent->setName(WorkerEvent::EVENT_PROCESS_JOB);
+        $processJobEvent->setOptions($options);
+        $processJobEvent->setJob($job);
+
+        $eventManager->triggerEvent($processJobEvent);
     }
 
     /**
@@ -70,5 +84,7 @@ class ProcessQueueStrategy extends AbstractStrategy
 
         $result = $worker->processJob($job, $queue);
         $e->setResult($result);
+
+        return $e;
     }
 }
