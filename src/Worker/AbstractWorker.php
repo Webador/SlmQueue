@@ -37,16 +37,6 @@ abstract class AbstractWorker implements WorkerInterface
     {
         $eventManager = $this->eventManager;
         $workerEvent  = new WorkerEvent($this, $queue);
-        // zend-eventmanager 2.7
-        if (method_exists($eventManager, 'setEventClass')) {
-            $eventManager->setEventClass($workerEvent);
-        }
-
-        // zend-eventmanager 3.0
-        if (method_exists($eventManager, 'setEventPrototype')) {
-            $eventManager->setEventPrototype($workerEvent);
-        }
-
 
         $workerEvent->setOptions($options);
 
