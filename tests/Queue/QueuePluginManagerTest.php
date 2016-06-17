@@ -24,7 +24,7 @@ class QueuePluginManagerTest extends TestCase
     public function testCanRetrievePluginManagerWithServiceManager()
     {
         $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
-        $this->assertInstanceOf(QueuePluginManager::class, $queuePluginManager);
+        static::assertInstanceOf(QueuePluginManager::class, $queuePluginManager);
     }
 
     public function testAskingTwiceTheSameQueueReturnsTheSameInstance()
@@ -34,7 +34,7 @@ class QueuePluginManagerTest extends TestCase
         $firstInstance  = $queuePluginManager->get('basic-queue');
         $secondInstance = $queuePluginManager->get('basic-queue');
 
-        $this->assertSame($firstInstance, $secondInstance);
+        static::assertSame($firstInstance, $secondInstance);
     }
 
     public function testPluginValidation()

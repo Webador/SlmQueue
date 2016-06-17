@@ -4,86 +4,77 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\MaxMemoryStrategy;
-use SlmQueue\Worker\WorkerEvent;
-use SlmQueueTest\Asset\SimpleJob;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var MaxMemoryStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var MaxMemoryStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new MaxMemoryStrategy();
-        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
     public function testMaxMemoryDefault()
     {
-        $this->assertTrue($this->listener->getMaxMemory() == 0);
+        static::assertTrue($this->listener->getMaxMemory() == 0);
     }
 
     public function testMaxMemorySetter()
     {
-        $this->listener->setMaxMemory(1024*25);
+        $this->listener->setMaxMemory(1024 * 25);
 
-        $this->assertTrue($this->listener->getMaxMemory() == 1024*25);
+        static::assertTrue($this->listener->getMaxMemory() == 1024 * 25);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck']);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck']);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], -1000);
         $evm->expects($this->at(2))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState']);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], $priority);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
-    public function testContinueWhileThresholdNotExceeded()
+    public function testOnStopConditionCheckHandler()
     {
-        $this->listener->setMaxMemory(1024*1024*1000);
+        $this->listener->setMaxMemory(1024 * 1024 * 1000);
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('memory usage', $this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
-    }
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNull($result);
 
-    public function testRequestStopWhileThresholdExceeded()
-    {
+        $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
+        static::assertContains(' memory usage', $stateResult->getState());
+
+
         $this->listener->setMaxMemory(1024);
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains(
-            'memory threshold of 1kB exceeded (usage: ',
-            $this->listener->onReportQueueState($this->event)
-        );
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNotNull($result);
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
+        static::assertContains('memory threshold of 1kB exceeded (usage: ', $result->getReason());
+
+        $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
+        static::assertContains(' memory usage', $stateResult->getState());
     }
 }

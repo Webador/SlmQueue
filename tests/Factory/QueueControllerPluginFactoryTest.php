@@ -16,6 +16,6 @@ class QueueControllerPluginFactoryTest extends TestCase
         $factory                      = new QueueControllerPluginFactory();
 
         $queueControllerPluginFactory = $factory($serviceManager, QueuePlugin::class);
-        $this->assertInstanceOf(QueuePlugin::class, $queueControllerPluginFactory);
+        static::assertInstanceOf(QueuePlugin::class, $queueControllerPluginFactory);
     }
 }

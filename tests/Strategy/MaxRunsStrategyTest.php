@@ -4,80 +4,79 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class MaxRunsStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var MaxRunsStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var MaxRunsStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new MaxRunsStrategy();
-        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
     public function testMaxRunsDefault()
     {
-        $this->assertTrue($this->listener->getMaxRuns() == 0);
+        static::assertEquals(0, $this->listener->getMaxRuns());
     }
 
     public function testMaxRunsSetter()
     {
         $this->listener->setMaxRuns(2);
 
-        $this->assertTrue($this->listener->getMaxRuns() == 2);
+        static::assertEquals(2, $this->listener->getMaxRuns());
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck']);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], -1000);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState']);
+            ->with(AbstractWorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], 1);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testOnStopConditionCheckHandler()
     {
         $this->listener->setMaxRuns(3);
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('1 jobs processed', $this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNull($result);
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('2 jobs processed', $this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
+        static::assertContains('1 jobs processed', $stateResult->getState());
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('maximum of 3 jobs processed', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNull($result);
+
+        $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
+        static::assertContains('2 jobs processed', $stateResult->getState());
+
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNotNull($result);
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
+        static::assertContains('maximum of 3 jobs processed', $result->getReason());
+
+        $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
+        static::assertContains('3 jobs processed', $stateResult->getState());
     }
 }

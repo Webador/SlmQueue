@@ -25,7 +25,7 @@ class JobPluginManagerTest extends TestCase
     public function testCanRetrievePluginManagerWithServiceManager()
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
-        $this->assertInstanceOf(JobPluginManager::class, $jobPluginManager);
+        static::assertInstanceOf(JobPluginManager::class, $jobPluginManager);
     }
 
     public function testAskingTwiceForTheSameJobReturnsDifferentInstances()
@@ -35,7 +35,7 @@ class JobPluginManagerTest extends TestCase
         $firstInstance  = $jobPluginManager->get(SimpleJob::class);
         $secondInstance = $jobPluginManager->get(SimpleJob::class);
 
-        $this->assertNotSame($firstInstance, $secondInstance);
+        static::assertNotSame($firstInstance, $secondInstance);
     }
 
     public function testPluginManagerSetsServiceNameAsMetadata()
@@ -46,8 +46,8 @@ class JobPluginManagerTest extends TestCase
 
         $instance = $jobPluginManager->get('SimpleJob');
 
-        $this->assertInstanceOf(SimpleJob::class, $instance);
-        $this->assertEquals('SimpleJob', $instance->getMetadata('__name__'));
+        static::assertInstanceOf(SimpleJob::class, $instance);
+        static::assertEquals('SimpleJob', $instance->getMetadata('__name__'));
     }
 
     public function testPluginManagerThrowsExceptionOnInvalidJobClasses()

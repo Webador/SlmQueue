@@ -67,8 +67,8 @@ class AbstractControllerTest extends TestCase
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $result = $this->controller->processAction();
-        $this->assertContains("Finished worker for queue 'knownQueue'", $result);
-        $this->assertContains("maximum of 1 jobs processed", $result);
+        static::assertContains("Finished worker for queue 'knownQueue'", $result);
+        static::assertContains("maximum of 1 jobs processed", $result);
     }
 
     public function testFailingJobThrowException()

@@ -12,6 +12,6 @@ class SimpleStrategy extends AbstractStrategy
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        print '-';
+        die();
     }
 }

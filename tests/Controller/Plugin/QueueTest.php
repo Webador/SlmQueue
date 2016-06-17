@@ -86,7 +86,7 @@ class QueueTest extends TestCase
         $plugin->__invoke($name);
 
         $result = $plugin->push('SimpleJob');
-        $this->assertSame($job, $result);
+        static::assertSame($job, $result);
     }
 
     public function testPayloadCanBeInjectedViaPlugin()
@@ -112,6 +112,6 @@ class QueueTest extends TestCase
         $payload = ['foo' => 'bar'];
         $result  = $plugin->push('SimpleJob', $payload);
 
-        $this->assertSame($payload, $result->getContent());
+        static::assertSame($payload, $result->getContent());
     }
 }
