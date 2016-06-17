@@ -36,7 +36,7 @@ return [
          * ],
          *
          * As queue processing is handled by strategies it is important that for each queue a ProcessQueueStrategy
-         * (a strategy that listens to WorkerEvent::EVENT_PROCESS) is registered. By default SlmQueue does handles that
+         * (a strategy that listens to AbstractWorkerEvent::EVENT_PROCESS) is registered. By default SlmQueue does handles that
          * for the queue called 'default'.
          *
          * 'worker_strategies' => [

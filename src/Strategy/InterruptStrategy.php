@@ -2,7 +2,8 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
 class InterruptStrategy extends AbstractStrategy
@@ -32,17 +33,17 @@ class InterruptStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_IDLE,
+            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
             [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_QUEUE,
+            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_STATE,
+            AbstractWorkerEvent::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
@@ -51,19 +52,17 @@ class InterruptStrategy extends AbstractStrategy
     /**
      * Checks for the stop condition of this strategy
      *
-     * @param WorkerEvent $event
-     * @return string
+     * @param AbstractWorkerEvent $event
+     * @return ExitWorkerLoopResult|void
      */
-    public function onStopConditionCheck(WorkerEvent $event)
+    public function onStopConditionCheck(AbstractWorkerEvent $event)
     {
         declare(ticks = 1);
 
         if ($this->interrupted) {
-            $event->exitWorkerLoop();
+            $reason = sprintf("interrupt by an external signal on '%s'", $event->getName());
 
-            $this->state = sprintf("interrupt by an external signal on '%s'", $event->getName());
-
-            return $event;
+            return ExitWorkerLoopResult::withReason($reason);
         }
     }
 

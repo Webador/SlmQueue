@@ -3,7 +3,14 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Worker\Event\BootstrapEvent;
+use SlmQueue\Worker\Event\FinishEvent;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
+use SlmQueue\Worker\Result\ExitWorkerLoopResults;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ResponseCollection;
 use Zend\Stdlib\ArrayUtils;
 
 /**
@@ -35,37 +42,34 @@ abstract class AbstractWorker implements WorkerInterface
      */
     public function processQueue(QueueInterface $queue, array $options = [])
     {
-        $eventManager = $this->eventManager;
-
-        $workerEvent = new WorkerEvent($this, $queue);
-        $workerEvent->setName(WorkerEvent::EVENT_BOOTSTRAP);
-        $workerEvent->setOptions($options);
-        $eventManager->triggerEvent($workerEvent);
+        $this->eventManager->triggerEvent(new BootstrapEvent($this, $queue));
 
         $shouldExitWorkerLoop = false;
         while (!$shouldExitWorkerLoop) {
-            $workerEvent = new WorkerEvent($this, $queue);
-            $workerEvent->setName(WorkerEvent::EVENT_PROCESS_QUEUE);
-            $workerEvent->setOptions($options);
+            /** @var ResponseCollection $exitReasons */
+            $exitReasons = $this->eventManager->triggerEventUntil(
+                function ($response) {
+                    return $response instanceof ExitWorkerLoopResult;
+                },
+                new ProcessQueueEvent($this, $queue, $options)
+            );
 
-            $results = $eventManager->triggerEvent($workerEvent);
-            foreach($results as $returnedWorkerEvent) {
-                if ($returnedWorkerEvent instanceof WorkerEvent && $returnedWorkerEvent->shouldExitWorkerLoop()) {
-                    $shouldExitWorkerLoop = true;                }
+            if ($exitReasons->stopped() && $exitReasons->last()) {
+                $shouldExitWorkerLoop = true;
             }
         }
 
-        $workerEvent = new WorkerEvent($this, $queue);
-        $workerEvent->setName(WorkerEvent::EVENT_FINISH);
-        $workerEvent->setOptions($options);
-        $eventManager->triggerEvent($workerEvent);
+        $this->eventManager->triggerEvent(new FinishEvent($this, $queue));
 
-        $workerEvent = new WorkerEvent($this, $queue);
-        $workerEvent->setName(WorkerEvent::EVENT_PROCESS_STATE);
-        $workerEvent->setOptions($options);
-        $queueState = $eventManager->triggerEvent($workerEvent);
+        $queueState = $this->eventManager->triggerEvent(new ProcessStateEvent($this));
+        $queueState = array_filter(iterator_to_array($queueState));
 
-        $queueState = array_filter(ArrayUtils::iteratorToArray($queueState));
+        if ($exitReasons->last()) {
+            $queueState[] = $exitReasons->last();
+        }
+
+        // cast to string
+        $queueState = array_map('strval', $queueState);
 
         return $queueState;
     }
