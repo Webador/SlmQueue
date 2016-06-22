@@ -9,7 +9,6 @@ use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use SlmQueue\Worker\Result\ExitWorkerLoopResults;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ResponseCollection;
 
@@ -34,7 +33,7 @@ class ProcessQueueStrategy extends AbstractStrategy
 
     /**
      * @param ProcessQueueEvent $processQueueEvent
-     * @return ExitWorkerLoopResults
+     * @return ExitWorkerLoopResult|void
      */
     public function onJobPop(ProcessQueueEvent $processQueueEvent)
     {
