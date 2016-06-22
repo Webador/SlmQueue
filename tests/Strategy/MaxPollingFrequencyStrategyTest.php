@@ -4,7 +4,7 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueueTest\Asset\SimpleWorker;
 
@@ -40,7 +40,7 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onQueueProcessFinish'], 1000);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onQueueProcessFinish'], 1000);
 
         $this->listener->attach($evm, $priority);
     }

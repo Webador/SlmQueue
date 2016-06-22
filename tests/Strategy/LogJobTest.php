@@ -4,7 +4,7 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\LogJobStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueueTest\Asset\SimpleJob;
@@ -37,9 +37,9 @@ class LogJobTest extends PHPUnit_Framework_TestCase
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessStart'], 1000);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessStart'], 1000);
         $evm->expects($this->at(1))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessDone'], -1000);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessDone'], -1000);
 
         $this->listener->attach($evm, $priority);
     }

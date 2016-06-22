@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
@@ -33,17 +33,17 @@ class InterruptStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_STATE,
+            WorkerEventInterface::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
@@ -52,10 +52,10 @@ class InterruptStrategy extends AbstractStrategy
     /**
      * Checks for the stop condition of this strategy
      *
-     * @param AbstractWorkerEvent $event
+     * @param WorkerEventInterface $event
      * @return ExitWorkerLoopResult|void
      */
-    public function onStopConditionCheck(AbstractWorkerEvent $event)
+    public function onStopConditionCheck(WorkerEventInterface $event)
     {
         declare(ticks = 1);
 

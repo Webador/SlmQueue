@@ -4,7 +4,7 @@ namespace SlmQueue\Strategy;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
@@ -21,12 +21,12 @@ class ProcessQueueStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
             [$this, 'onJobPop'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_JOB,
+            WorkerEventInterface::EVENT_PROCESS_JOB,
             [$this, 'onJobProcess'],
             $priority
         );
@@ -39,7 +39,7 @@ class ProcessQueueStrategy extends AbstractStrategy
     public function onJobPop(ProcessQueueEvent $processQueueEvent)
     {
         /** @var AbstractWorker $worker */
-        $worker       = $processQueueEvent->getTarget();
+        $worker       = $processQueueEvent->getWorker();
         $queue        = $processQueueEvent->getQueue();
         $options      = $processQueueEvent->getOptions();
         $eventManager = $worker->getEventManager();
@@ -69,7 +69,7 @@ class ProcessQueueStrategy extends AbstractStrategy
     }
 
     /**
-     * @param  AbstractWorkerEvent $processJobEvent
+     * @param  ProcessJobEvent $processJobEvent
      * @return void
      */
     public function onJobProcess(ProcessJobEvent $processJobEvent)
@@ -78,7 +78,7 @@ class ProcessQueueStrategy extends AbstractStrategy
         $queue = $processJobEvent->getQueue();
 
         /** @var AbstractWorker $worker */
-        $worker = $processJobEvent->getTarget();
+        $worker = $processJobEvent->getWorker();
 
         $result = $worker->processJob($job, $queue);
         $processJobEvent->setResult($result);

@@ -4,7 +4,7 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueueTest\Asset\SimpleWorker;
 use Zend\EventManager\ListenerAggregateInterface;
@@ -43,7 +43,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'], PHP_INT_MAX);
+            ->with(WorkerEventInterface::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'], PHP_INT_MAX);
 
         $this->listener->attach($evm, $priority);
     }
@@ -54,7 +54,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $this->worker = new SimpleWorker($eventManager);
 
         $eventManager->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'])
+            ->with(WorkerEventInterface::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'])
             ->willReturn([$this->listener, 'attachQueueListeners']);
 
         $eventManager->expects($this->once())->method('detach')
@@ -65,10 +65,10 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
         $strategyMock = $this->getMock('SlmQueueTest\Asset\SimpleStrategy');
         $this->strategyManager->expects($this->once())->method('get')->willReturn($strategyMock);
 
-        // will attach AbstractWorkerEvent::EVENT_BOOTSTRAP callback to listener
+        // will attach WorkerEventInterface::EVENT_BOOTSTRAP callback to listener
         $this->listener->attach($eventManager);
 
-        // should detach AbstractWorkerEvent::EVENT_BOOTSTRAP
+        // should detach WorkerEventInterface::EVENT_BOOTSTRAP
         $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 

@@ -3,7 +3,7 @@
 namespace SlmQueue\Strategy;
 
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
@@ -36,7 +36,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_BOOTSTRAP,
+            WorkerEventInterface::EVENT_BOOTSTRAP,
             [$this, 'attachQueueListeners'],
             PHP_INT_MAX
         );
@@ -48,7 +48,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     public function attachQueueListeners(BootstrapEvent $bootstrapEvent)
     {
         /** @var AbstractWorker $worker */
-        $worker       = $bootstrapEvent->getTarget();
+        $worker       = $bootstrapEvent->getWorker();
         $name         = $bootstrapEvent->getQueue()->getName();
         $eventManager = $worker->getEventManager();
 

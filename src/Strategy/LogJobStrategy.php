@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use Zend\Console\Adapter\AdapterInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -31,12 +31,12 @@ class LogJobStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_JOB,
+            WorkerEventInterface::EVENT_PROCESS_JOB,
             [$this, 'onLogJobProcessStart'],
             1000
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_JOB,
+            WorkerEventInterface::EVENT_PROCESS_JOB,
             [$this, 'onLogJobProcessDone'],
             -1000
         );
