@@ -13,7 +13,7 @@ class AbstractWorkerTest extends TestCase
         $sm      = ServiceManagerFactory::getServiceManager();
         $worker  = $sm->get('SlmQueueTest\Asset\SimpleWorker');
 
-        $this->assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
+        static::assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
     }
 
     public function testCreateService()
@@ -22,7 +22,7 @@ class AbstractWorkerTest extends TestCase
         $factory = new WorkerFactory();
         $worker  = $factory->createService($sm, 'slmqueuetestassetsimpleworker', 'SlmQueueTest\Asset\SimpleWorker');
 
-        $this->assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
+        static::assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
     }
 
 }

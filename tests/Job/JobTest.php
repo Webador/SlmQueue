@@ -12,8 +12,8 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->setId(3);
 
-        $this->assertEquals(3, $job->getId());
-        $this->assertEquals(3, $job->getMetadata('__id__'));
+        static::assertEquals(3, $job->getId());
+        static::assertEquals(3, $job->getMetadata('__id__'));
     }
 
     public function testJobCanBeExecuted()
@@ -22,6 +22,6 @@ class JobTest extends TestCase
         $job = new SimpleJob();
         $job->execute();
 
-        $this->assertEquals('bar', $job->getMetadata('foo'));
+        static::assertEquals('bar', $job->getMetadata('foo'));
     }
 }

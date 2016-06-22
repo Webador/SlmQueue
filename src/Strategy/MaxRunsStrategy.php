@@ -2,7 +2,8 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
 class MaxRunsStrategy extends AbstractStrategy
@@ -44,27 +45,31 @@ class MaxRunsStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_QUEUE,
+            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_STATE,
+            AbstractWorkerEvent::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
     }
 
-    public function onStopConditionCheck(WorkerEvent $event)
+    /**
+     * @param AbstractWorkerEvent $event
+     * @return ExitWorkerLoopResult|void
+     */
+    public function onStopConditionCheck(AbstractWorkerEvent $event)
     {
         $this->runCount++;
 
-        if ($this->maxRuns && $this->runCount >= $this->maxRuns) {
-            $event->exitWorkerLoop();
+        $this->state = sprintf('%s jobs processed', $this->runCount);
 
-            $this->state = sprintf('maximum of %s jobs processed', $this->runCount);
-        } else {
-            $this->state = sprintf('%s jobs processed', $this->runCount);
+        if ($this->maxRuns && $this->runCount >= $this->maxRuns) {
+            $reason = sprintf('maximum of %s jobs processed', $this->runCount);
+
+            return ExitWorkerLoopResult::withReason($reason);
         }
     }
 }

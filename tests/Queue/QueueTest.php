@@ -37,11 +37,11 @@ class QueueTest extends TestCase
         $this->queue->push($this->job);
         $job = $this->queue->pop();
 
-        $this->assertInstanceOf($this->jobName, $job);
+        static::assertInstanceOf($this->jobName, $job);
 
         $expected = spl_object_hash($this->job);
         $actual   = spl_object_hash($job);
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCanPushThenPopWithJobContent()
@@ -56,7 +56,7 @@ class QueueTest extends TestCase
         $this->queue->push($this->job);
         $job = $this->queue->pop();
 
-        $this->assertEquals('Foo', $job->getContent());
+        static::assertEquals('Foo', $job->getContent());
     }
 
     public function testCanPushThenPopWithJobMetadata()
@@ -74,8 +74,8 @@ class QueueTest extends TestCase
         // metadata will have reserved __name__ key with FQCN
         $expected = ['Foo' => 'Bar'] + ['__name__' => 'SlmQueueTest\Asset\SimpleJob'];
 
-        $this->assertEquals($expected, $job->getMetadata());
-        $this->assertEquals('Bar', $job->getMetadata('Foo'));
+        static::assertEquals($expected, $job->getMetadata());
+        static::assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
     public function testCorrectlySerializeJobContent()
@@ -86,7 +86,7 @@ class QueueTest extends TestCase
         $expected = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCorrectlySerializeJobMetadata()
@@ -97,7 +97,7 @@ class QueueTest extends TestCase
         $expected = '{"content":"N;","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCorrectlySerializeJobContentAndMetadata()
@@ -109,7 +109,7 @@ class QueueTest extends TestCase
         $expected = '{"content":"s:3:\"Foo\";","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCorrectlySerializeJobServiceName()
@@ -120,7 +120,7 @@ class QueueTest extends TestCase
         $expected = '{"content":"N;","metadata":{"__name__":"SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithFQCN()
@@ -135,7 +135,7 @@ class QueueTest extends TestCase
 
         $expected = spl_object_hash($this->job);
         $actual   = spl_object_hash($job);
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithStringName()
@@ -150,7 +150,7 @@ class QueueTest extends TestCase
 
         $expected = spl_object_hash($this->job);
         $actual   = spl_object_hash($job);
-        $this->assertEquals($expected, $actual);
+        static::assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithContent()
@@ -163,7 +163,7 @@ class QueueTest extends TestCase
         $payload = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $job     = $this->queue->unserializeJob($payload);
 
-        $this->assertEquals('Foo', $job->getContent());
+        static::assertEquals('Foo', $job->getContent());
     }
 
     public function testCanCreateJobWithMetadata()
@@ -176,7 +176,7 @@ class QueueTest extends TestCase
         $payload = '{"content":"N;","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $job     = $this->queue->unserializeJob($payload);
 
-        $this->assertEquals('Bar', $job->getMetadata('Foo'));
+        static::assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
     public function testCreateQueueAwareJob()
@@ -190,6 +190,6 @@ class QueueTest extends TestCase
         $payload = '{"__name__":"QueueAwareJob","content":"N;","metadata":{"__name__":"QueueAwareJob"}}';
         $this->queue->unserializeJob($payload);
 
-        $this->assertSame($this->queue, $job->getQueue());
+        static::assertSame($this->queue, $job->getQueue());
     }
 }

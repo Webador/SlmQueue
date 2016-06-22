@@ -23,6 +23,7 @@
     ],
     "require": {
         "php": ">=5.5",
+        "zendframework/zend-eventmanager": "^2.6 || ^3.0",
         "zendframework/zend-servicemanager": "^2.7 || ^3.0",
         "zendframework/zend-stdlib": "^2.7 || ^3.0"
     },
@@ -34,10 +35,9 @@
         "zendframework/zend-log": "^2.7",
         "zendframework/zend-i18n": "^2.6",
         "zendframework/zend-console": "^2.6",
-        "zendframework/zend-eventmanager": "^2.6",
         "zendframework/zend-config": "^2.6",
         "squizlabs/php_codesniffer": "^2.0",
-        "phpunit/phpunit": "^4.3"
+        "phpunit/phpunit": "^4.8"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",

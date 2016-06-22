@@ -29,7 +29,7 @@ class QueueAwareTraitTest extends TestCase
 
     public function testDefaultGetter()
     {
-        $this->assertNull($this->job->getQueue());
+        static::assertNull($this->job->getQueue());
     }
 
     public function testSetter()
@@ -39,7 +39,7 @@ class QueueAwareTraitTest extends TestCase
         $queue = new SimpleQueue('name', $jobPluginManager);
         $this->job->setQueue($queue);
 
-        $this->assertNotNull($this->job->getQueue());
-        $this->assertEquals($queue, $this->job->getQueue());
+        static::assertNotNull($this->job->getQueue());
+        static::assertEquals($queue, $this->job->getQueue());
     }
 }

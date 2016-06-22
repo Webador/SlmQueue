@@ -2,7 +2,8 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
 class MaxMemoryStrategy extends AbstractStrategy
@@ -34,45 +35,44 @@ class MaxMemoryStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_IDLE,
+            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
             [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_QUEUE,
+            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             -1000
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_STATE,
+            AbstractWorkerEvent::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
     }
 
     /**
-     * @param  WorkerEvent $event
-     * @return void
+     * @param AbstractWorkerEvent $event
+     * @return ExitWorkerLoopResult|void
      */
-    public function onStopConditionCheck(WorkerEvent $event)
+    public function onStopConditionCheck(AbstractWorkerEvent $event)
     {
         // @see http://php.net/manual/en/features.gc.collecting-cycles.php
         if (gc_enabled()) {
             gc_collect_cycles();
         }
 
-        $usage = memory_get_usage();
+        $usage       = memory_get_usage();
+        $this->state = sprintf('%s memory usage', $this->humanFormat($usage));
 
         if ($this->maxMemory && $usage > $this->maxMemory) {
-            $event->exitWorkerLoop();
-
-            $this->state = sprintf(
+            $reason = sprintf(
                 "memory threshold of %s exceeded (usage: %s)",
                 $this->humanFormat($this->maxMemory),
                 $this->humanFormat($usage)
             );
-        } else {
-            $this->state = sprintf('%s memory usage', $this->humanFormat($usage));
+
+            return ExitWorkerLoopResult::withReason($reason);
         }
     }
 
@@ -82,7 +82,8 @@ class MaxMemoryStrategy extends AbstractStrategy
      */
     private function humanFormat($bytes)
     {
-        $units = ['b','kB','MB','GB','TB','PB'];
-        return @round($bytes/pow(1024, ($i=floor(log($bytes, 1024)))), 2) . $units[$i];
+        $units = ['b', 'kB', 'MB', 'GB', 'TB', 'PB'];
+
+        return @round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), 2) . $units[$i];
     }
 }

@@ -2,10 +2,11 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Exception\RuntimeException;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\BootstrapEvent;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 
 class AttachQueueListenersStrategy extends AbstractStrategy
 {
@@ -32,27 +33,26 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_BOOTSTRAP,
+            AbstractWorkerEvent::EVENT_BOOTSTRAP,
             [$this, 'attachQueueListeners'],
             PHP_INT_MAX
         );
     }
 
     /**
-     * @param WorkerEvent $e
-     * @throws \SlmQueue\Exception\RuntimeException
+     * @param BootstrapEvent $bootstrapEvent
      */
-    public function attachQueueListeners(WorkerEvent $e)
+    public function attachQueueListeners(BootstrapEvent $bootstrapEvent)
     {
         /** @var AbstractWorker $worker */
-        $worker       = $e->getTarget();
-        $name         = $e->getQueue()->getName();
+        $worker       = $bootstrapEvent->getTarget();
+        $name         = $bootstrapEvent->getQueue()->getName();
         $eventManager = $worker->getEventManager();
 
-        $eventManager->detachAggregate($this);
+        $this->detach($eventManager);
 
         if (!isset($this->strategyConfig[$name])) {
             $name = 'default'; // We want to make sure the default process queue is always attached
@@ -64,7 +64,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options = [];
+                $options  = [];
             }
 
             if (!is_string($strategy) || !is_array($options)) {
@@ -77,23 +77,17 @@ class AttachQueueListenersStrategy extends AbstractStrategy
                 unset($options['priority']);
             }
 
+            /** @var ListenerAggregateInterface $listener */
             $listener = $this->pluginManager->get($strategy, $options);
 
             if (!is_null($priority)) {
-                $eventManager->attachAggregate($listener, $priority);
+                $listener->attach($eventManager, $priority);
             } else {
-                $eventManager->attachAggregate($listener);
+                $listener->attach($eventManager);
             }
         }
 
-        if (!in_array(WorkerEvent::EVENT_PROCESS_QUEUE, $eventManager->getEvents())) {
-            throw new RuntimeException(sprintf(
-                "No worker strategy has been registered to respond to the '%s' event.",
-                WorkerEvent::EVENT_PROCESS_QUEUE
-            ));
-        }
-
-        $e->stopPropagation();
-        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, clone $e);
+        $bootstrapEvent->stopPropagation();
+        $eventManager->triggerEvent(new BootstrapEvent($worker, $bootstrapEvent->getQueue()));
     }
 }
