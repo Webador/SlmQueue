@@ -8,18 +8,8 @@ use Zend\EventManager\Event;
 /**
  * AbstractWorkerEvent
  */
-abstract class AbstractWorkerEvent extends Event
+abstract class AbstractWorkerEvent extends Event implements WorkerEventInterface
 {
-    /**
-     * Various events you can subscribe to
-     */
-    const EVENT_BOOTSTRAP     = 'bootstrap';
-    const EVENT_FINISH        = 'finish';
-    const EVENT_PROCESS_QUEUE = 'process.queue';
-    const EVENT_PROCESS_JOB   = 'process.job';
-    const EVENT_PROCESS_IDLE  = 'process.idle';
-    const EVENT_PROCESS_STATE = 'process.state';
-
     /**
      * @param string          $name
      * @param WorkerInterface $target
@@ -27,5 +17,13 @@ abstract class AbstractWorkerEvent extends Event
     public function __construct($name, WorkerInterface $target)
     {
         parent::__construct($name, $target);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getWorker()
+    {
+        return $this->getTarget();
     }
 }

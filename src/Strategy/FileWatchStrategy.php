@@ -4,7 +4,7 @@ namespace SlmQueue\Strategy;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
@@ -77,29 +77,29 @@ class FileWatchStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_IDLE,
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             1000
         );
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_STATE,
+            WorkerEventInterface::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
     }
 
     /**
-     * @param  AbstractWorkerEvent $event
+     * @param  WorkerEventInterface $event
      * @return ExitWorkerLoopResult|void
      */
-    public function onStopConditionCheck(AbstractWorkerEvent $event)
+    public function onStopConditionCheck(WorkerEventInterface $event)
     {
-        if ($event->getName() == AbstractWorkerEvent::EVENT_PROCESS_IDLE) {
+        if ($event->getName() == WorkerEventInterface::EVENT_PROCESS_IDLE) {
             if ($this->previousIdlingTime + $this->idleThrottleTime > microtime(true)) {
                 return;
             } else {

@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use Zend\EventManager\EventManagerInterface;
 
@@ -24,7 +24,7 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            AbstractWorkerEvent::EVENT_PROCESS_QUEUE,
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
             [$this, 'onQueueProcessFinish'],
             1000
         );

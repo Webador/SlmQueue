@@ -20,7 +20,7 @@ class WorkerEventTest extends TestCase
 
     public function testSetsWorkerAsTarget()
     {
-        static::assertEquals($this->worker, $this->event->getTarget());
+        static::assertEquals($this->worker, $this->event->getWorker());
     }
 
     public function testWorkerEventGetsQueue()

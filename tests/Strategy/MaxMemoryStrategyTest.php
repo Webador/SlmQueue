@@ -4,7 +4,7 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\MaxMemoryStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
@@ -47,11 +47,11 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], -1000);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], -1000);
         $evm->expects($this->at(2))->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], $priority);
 
         $this->listener->attach($evm, $priority);
     }

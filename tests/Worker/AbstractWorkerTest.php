@@ -4,7 +4,7 @@ namespace SlmQueueTest\Worker;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\FinishEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
@@ -91,7 +91,7 @@ class AbstractWorkerTest extends TestCase
 
         $options = ['foo' => 'bar'];
 
-        $eventManager->attach(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, function (ProcessQueueEvent $e) use ($options) {
+        $eventManager->attach(WorkerEventInterface::EVENT_PROCESS_QUEUE, function (ProcessQueueEvent $e) use ($options) {
             static::assertEquals($options, $e->getOptions());
         });
 

@@ -4,7 +4,7 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\ProcessQueueStrategy;
-use SlmQueue\Worker\Event\AbstractWorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
@@ -37,10 +37,10 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 
         $evm->expects($this->at(0))
             ->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onJobPop'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onJobPop'], $priority);
         $evm->expects($this->at(1))
             ->method('attach')
-            ->with(AbstractWorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onJobProcess'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onJobProcess'], $priority);
 
         $this->listener->attach($evm, $priority);
     }
@@ -56,7 +56,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredIdle = false;
-        $this->worker->getEventManager()->attach(AbstractWorkerEvent::EVENT_PROCESS_IDLE,
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
             function ($e) use (&$triggeredIdle) {
                 $triggeredIdle = true;
             });
@@ -79,7 +79,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredIdle = false;
-        $this->worker->getEventManager()->attach(AbstractWorkerEvent::EVENT_PROCESS_IDLE,
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
             function ($e) use (&$triggeredIdle) {
                 $triggeredIdle = true;
 
@@ -105,7 +105,7 @@ class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredProcessJobEvent = false;
-        $this->worker->getEventManager()->attach(AbstractWorkerEvent::EVENT_PROCESS_JOB,
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_JOB,
             function ($e) use (&$triggeredProcessJobEvent) {
                 $triggeredProcessJobEvent = true;
             });
