@@ -1,4 +1,2 @@
-vendor/
-tests/build
+vendor
 composer.lock
-.idea/
