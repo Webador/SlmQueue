@@ -3,7 +3,8 @@
 namespace SlmQueue\Strategy;
 
 use SlmQueue\Exception;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Result\ProcessStateResult;
 use Zend\EventManager\AbstractListenerAggregate;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
@@ -51,11 +52,11 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     /**
      * Event listener which returns the state of the queue
      *
-     * @param WorkerEvent $event
+     * @param ProcessStateEvent $event
      * @return bool|string
      */
-    public function onReportQueueState(WorkerEvent $event)
+    public function onReportQueueState(ProcessStateEvent $event)
     {
-        return is_string($this->state) ? $this->state : false;
+        return is_string($this->state) ? ProcessStateResult::withState($this->state) : false;
     }
 }

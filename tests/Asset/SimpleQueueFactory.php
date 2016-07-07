@@ -1,6 +1,8 @@
 <?php
 
 namespace SlmQueueTest\Asset;
+
+use Interop\Container\ContainerInterface;
 use SlmQueue\Job\JobPluginManager;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -13,12 +15,18 @@ class SimpleQueueFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $jobPluginManager = new JobPluginManager($container);
+
+        return new SimpleQueue($requestedName, $jobPluginManager);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function createService(ServiceLocatorInterface $serviceLocator, $name = '', $requestedName = '')
     {
-        $jobPluginManager = new JobPluginManager();
-
-        $queue = new SimpleQueue($requestedName, $jobPluginManager);
-
-        return $queue;
+        return $this($serviceLocator, $requestedName);
     }
 }

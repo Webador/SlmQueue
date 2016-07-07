@@ -4,77 +4,62 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\InterruptStrategy;
-use SlmQueue\Worker\WorkerEvent;
-use SlmQueueTest\Asset\SimpleJob;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var InterruptStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var InterruptStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new InterruptStrategy();
-        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
-
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
+        
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], -1000);
         $evm->expects($this->at(2))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], $priority);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testOnStopConditionCheckHandler_NoSignal()
     {
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertFalse($this->listener->onReportQueueState($this->event));
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
-
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertNull($result);
     }
 
     public function testOnStopConditionCheckHandler_SIGTERM()
     {
         $this->listener->onPCNTLSignal(SIGTERM);
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 
     public function testOnStopConditionCheckHandler_SIGINT()
     {
         $this->listener->onPCNTLSignal(SIGTERM);
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('interrupt by an external signal', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 }

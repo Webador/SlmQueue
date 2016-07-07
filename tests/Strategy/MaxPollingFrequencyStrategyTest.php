@@ -4,57 +4,45 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
-use SlmQueue\Worker\WorkerEvent;
-use SlmQueueTest\Asset\SimpleJob;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var MaxPollingFrequencyStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var MaxPollingFrequencyStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new MaxPollingFrequencyStrategy();
-        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
     public function testMaxPollingFrequencySetter()
     {
         $this->listener->setMaxFrequency(100);
 
-        $this->assertTrue($this->listener->getMaxFrequency() == 100);
+        static::assertEquals(100, $this->listener->getMaxFrequency());
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onQueueProcessFinish']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onQueueProcessFinish'], 1000);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testDelayWhenFrequencyIsSet()
@@ -62,11 +50,11 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->setMaxFrequency(1);
 
         $startTime = microtime(true);
-        $this->listener->onQueueProcessFinish($this->event);
-        $this->listener->onQueueProcessFinish($this->event);
+        $this->listener->onQueueProcessFinish(new ProcessQueueEvent($this->worker, $this->queue));
+        $this->listener->onQueueProcessFinish(new ProcessQueueEvent($this->worker, $this->queue));
         $endTime = microtime(true);
-        $delay = round($endTime - $startTime);
+        $delay   = round($endTime - $startTime);
 
-        $this->assertEquals(1, $delay);
+        static::assertEquals(1, $delay);
     }
 }

@@ -3,9 +3,10 @@
 namespace SlmQueueTest\Queue;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
+use SlmQueue\Job\JobPluginManager;
+use Zend\ServiceManager\ServiceManager;
 
 class QueueAwareTraitTest extends TestCase
 {
@@ -28,15 +29,17 @@ class QueueAwareTraitTest extends TestCase
 
     public function testDefaultGetter()
     {
-        $this->assertNull($this->job->getQueue());
+        static::assertNull($this->job->getQueue());
     }
 
     public function testSetter()
     {
-        $queue = new SimpleQueue('name', new JobPluginManager());
+        $serviceManager = new ServiceManager();
+        $jobPluginManager = new JobPluginManager($serviceManager);
+        $queue = new SimpleQueue('name', $jobPluginManager);
         $this->job->setQueue($queue);
 
-        $this->assertNotNull($this->job->getQueue());
-        $this->assertEquals($queue, $this->job->getQueue());
+        static::assertNotNull($this->job->getQueue());
+        static::assertEquals($queue, $this->job->getQueue());
     }
 }

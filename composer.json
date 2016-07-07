@@ -23,13 +23,21 @@
     ],
     "require": {
         "php": ">=5.5",
-        "zendframework/zend-servicemanager": "~2.2",
-        "zendframework/zend-stdlib": "~2.2"
+        "zendframework/zend-eventmanager": "^2.6 || ^3.0",
+        "zendframework/zend-servicemanager": "^2.7 || ^3.0",
+        "zendframework/zend-stdlib": "^2.7 || ^3.0"
     },
     "require-dev": {
-        "zendframework/zendframework": "~2.2",
-        "squizlabs/php_codesniffer": "~2.0",
-        "phpunit/phpunit": "~4.1"
+        "zendframework/zend-mvc": "^2.5",
+        "zendframework/zend-modulemanager": "^2.5",
+        "zendframework/zend-view": "^2.7",
+        "zendframework/zend-serializer": "^2.6",
+        "zendframework/zend-log": "^2.7",
+        "zendframework/zend-i18n": "^2.6",
+        "zendframework/zend-console": "^2.6",
+        "zendframework/zend-config": "^2.6",
+        "squizlabs/php_codesniffer": "^2.0",
+        "phpunit/phpunit": "^4.8"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
@@ -38,7 +46,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.5.x-dev"
+            "dev-master": "0.6.x-dev"
         }
     },
     "autoload": {

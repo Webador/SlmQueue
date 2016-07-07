@@ -4,84 +4,75 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\FileWatchStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\ProcessIdleEvent;
+use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var FileWatchStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var FileWatchStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new FileWatchStrategy();
-        $this->event    = $ev;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onStopConditionCheck']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onStopConditionCheck'], 1000);
         $evm->expects($this->at(2))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_STATE, [$this->listener, 'onReportQueueState'], $priority);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testPatternDefault()
     {
         // standard zf2 application php and phtml files
-        $this->assertTrue($this->listener->getPattern() == '/^\.\/(config|module).*\.(php|phtml)$/');
+        static::assertEquals('/^\.\/(config|module).*\.(php|phtml)$/', $this->listener->getPattern());
     }
 
     public function testFilesGetterReturnEmptyArrayByDefault()
     {
         // standard zf2 application php and phtml files
-        $this->assertEmpty($this->listener->getFiles());
+        static::assertEmpty($this->listener->getFiles());
     }
 
     public function testSettingAPatternWillResetFilesToEmpty()
     {
         $this->listener->setPattern('/^anything$/');
-        $this->assertEmpty($this->listener->getFiles());
+        static::assertEmpty($this->listener->getFiles());
     }
 
     public function testSettingPatternNullifiesCurrentListOfFilesToWatch()
     {
         // builds a file list
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertNotEmpty($this->listener->getFiles());
+        $this->listener->onStopConditionCheck(new ProcessIdleEvent($this->worker, $this->queue));
+        static::assertNotEmpty($this->listener->getFiles());
 
         $this->listener->setPattern('/^$/');
 
-        $this->assertTrue($this->listener->getPattern() == '/^$/');
-        $this->assertCount(0, $this->listener->getFiles());
+        static::assertEquals('/^$/', $this->listener->getPattern());
+        static::assertCount(0, $this->listener->getFiles());
     }
 
     public function testCanFileFilesByPattern()
@@ -93,9 +84,9 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $this->listener->onStopConditionCheck($this->event);
+        $this->listener->onStopConditionCheck(new ProcessIdleEvent($this->worker, $this->queue));
 
-        $this->assertCount(1, $this->listener->getFiles());
+        static::assertCount(1, $this->listener->getFiles());
     }
 
     public function testWatchedFileChangeStopsPropagation()
@@ -107,15 +98,20 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $this->listener->onStopConditionCheck($this->event);
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
+        static::assertNull($result);
 
-        $this->assertCount(1, $this->listener->getFiles());
+        static::assertCount(1, $this->listener->getFiles());
 
+        // change the file
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
+        static::assertNotNull($result);
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
+        static::assertContains('file modification detected for', $result->getReason());
     }
 
     public function testWatchedFileRemovedStopsPropagation()
@@ -127,14 +123,20 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $this->listener->onStopConditionCheck($this->event);
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
+        static::assertNull($result);
 
+        static::assertCount(1, $this->listener->getFiles());
+
+        // remove the file
         unlink('tests/build/filewatch.txt');
 
-        $this->listener->onStopConditionCheck($this->event);
-
-        $this->assertContains('file modification detected for', $this->listener->onReportQueueState($this->event));
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
+        static::assertNotNull($result);
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
+        static::assertContains('file modification detected for', $result->getReason());
     }
 
     public function testStopConditionCheckIdlingThrottling()
@@ -148,19 +150,18 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
         $this->listener->setIdleThrottleTime(1);
 
-        $this->event->setName(WorkerEvent::EVENT_PROCESS_IDLE);
-
         // records last time based when idle event
-        $this->listener->onStopConditionCheck($this->event);
+        $this->listener->onStopConditionCheck(new ProcessIdleEvent($this->worker, $this->queue));
 
         // file has changed
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessIdleEvent($this->worker, $this->queue));
+        static::assertNull($result);
+
         sleep(1);
 
-        $this->listener->onStopConditionCheck($this->event);
-        $this->assertTrue($this->event->shouldExitWorkerLoop());
+        $result = $this->listener->onStopConditionCheck(new ProcessIdleEvent($this->worker, $this->queue));
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 }

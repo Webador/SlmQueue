@@ -4,7 +4,8 @@ namespace SlmQueue\Strategy;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
 class FileWatchStrategy extends AbstractStrategy
@@ -76,29 +77,29 @@ class FileWatchStrategy extends AbstractStrategy
     public function attach(EventManagerInterface $events, $priority = 1)
     {
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_IDLE,
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             [$this, 'onStopConditionCheck'],
             $priority
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_JOB,
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
             [$this, 'onStopConditionCheck'],
             1000
         );
         $this->listeners[] = $events->attach(
-            WorkerEvent::EVENT_PROCESS_STATE,
+            WorkerEventInterface::EVENT_PROCESS_STATE,
             [$this, 'onReportQueueState'],
             $priority
         );
     }
 
     /**
-     * @param  WorkerEvent $event
-     * @return void
+     * @param  WorkerEventInterface $event
+     * @return ExitWorkerLoopResult|void
      */
-    public function onStopConditionCheck(WorkerEvent $event)
+    public function onStopConditionCheck(WorkerEventInterface $event)
     {
-        if ($event->getName() == WorkerEvent::EVENT_PROCESS_IDLE) {
+        if ($event->getName() == WorkerEventInterface::EVENT_PROCESS_IDLE) {
             if ($this->previousIdlingTime + $this->idleThrottleTime > microtime(true)) {
                 return;
             } else {
@@ -114,9 +115,9 @@ class FileWatchStrategy extends AbstractStrategy
 
         foreach ($this->files as $checksum => $file) {
             if (!file_exists($file) || !is_readable($file) || (string) $checksum !== hash_file('crc32', $file)) {
-                $event->exitWorkerLoop();
+                $reason = sprintf("file modification detected for '%s'", $file);
 
-                $this->state = sprintf("file modification detected for '%s'", $file);
+                return ExitWorkerLoopResult::withReason($reason);
             }
         }
     }

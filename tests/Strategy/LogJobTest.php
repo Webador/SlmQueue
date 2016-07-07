@@ -4,63 +4,44 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\LogJobStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\SimpleWorker;
 
 class LogJobTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var LogJobStrategy
-     */
-    protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
-
-    /**
-     * @var \Zend\Console\Adapter\AdapterInterface
-     */
+    protected $queue;
+    protected $worker;
     protected $console;
+    /** @var LogJobStrategy */
+    protected $listener;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $worker = $this->getMock('SlmQueue\Worker\WorkerInterface');
-
-        $ev    = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $ev->setJob($job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->console  = $this->getMock('Zend\Console\Adapter\AdapterInterface');
         $this->listener = new LogJobStrategy($this->console);
-        $this->event    = $ev;
-    }
-
-    public function tearDown()
-    {
-
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessStart']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessStart'], 1000);
         $evm->expects($this->at(1))->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessDone']);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onLogJobProcessDone'], -1000);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testOnLogJobProcessStart_SendsOutputToConsole()
@@ -68,19 +49,22 @@ class LogJobTest extends PHPUnit_Framework_TestCase
         $this->console->expects($this->once())->method('write')
             ->with('Processing job SlmQueueTest\Asset\SimpleJob...');
 
-        $this->listener->onLogJobProcessStart($this->event);
+        $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
     }
+
     public function testOnLogJobProcessStart_DoesNotGenerateState()
     {
-        $this->listener->onLogJobProcessStart($this->event);
+        $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
 
-        $this->assertFalse($this->listener->onReportQueueState($this->event));
+        static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
+
     public function testOnLogJobProcessStart_DoesNotHaltPropagation()
     {
-        $this->listener->onLogJobProcessStart($this->event);
+        $result = $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
 
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        static::assertNull($result);
     }
 
     public function testOnLogJobProcessDone_SendsOutputToConsole()
@@ -88,18 +72,21 @@ class LogJobTest extends PHPUnit_Framework_TestCase
         $this->console->expects($this->once())->method('writeLine')
             ->with('Done!');
 
-        $this->listener->onLogJobProcessDone($this->event);
+        $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
     }
+
     public function testOnLogJobProcessDone_DoesNotGenerateState()
     {
-        $this->listener->onLogJobProcessDone($this->event);
+        $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
 
-        $this->assertFalse($this->listener->onReportQueueState($this->event));
+        static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
+
     public function testOnLogJobProcessDone_DoesNotHaltPropagation()
     {
-        $this->listener->onLogJobProcessDone($this->event);
+        $result = $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker,
+            $this->queue));
 
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
+        static::assertNull($result);
     }
 }

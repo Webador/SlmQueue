@@ -27,8 +27,8 @@ class AbstractQueueTest extends TestCase
 
         $queue = new SimpleQueue('name', $jobPluginManager);
 
-        $this->assertSame('name', $queue->getName());
-        $this->assertSame($jobPluginManager, $queue->getJobPluginManager());
+        static::assertSame('name', $queue->getName());
+        static::assertSame($jobPluginManager, $queue->getJobPluginManager());
     }
 
 }

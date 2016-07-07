@@ -3,8 +3,10 @@
 namespace SlmQueueTest\Job;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Job\JobPluginManager;
+use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Util\ServiceManagerFactory;
+use SlmQueue\Job\Exception\RuntimeException;
+use SlmQueue\Job\JobPluginManager;
 use Zend\ServiceManager\ServiceManager;
 
 class JobPluginManagerTest extends TestCase
@@ -22,37 +24,39 @@ class JobPluginManagerTest extends TestCase
 
     public function testCanRetrievePluginManagerWithServiceManager()
     {
-        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
-        $this->assertInstanceOf('SlmQueue\Job\JobPluginManager', $jobPluginManager);
+        $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
+        static::assertInstanceOf(JobPluginManager::class, $jobPluginManager);
     }
 
     public function testAskingTwiceForTheSameJobReturnsDifferentInstances()
     {
-        $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
+        $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
 
-        $firstInstance  = $jobPluginManager->get('SlmQueueTest\Asset\SimpleJob');
-        $secondInstance = $jobPluginManager->get('SlmQueueTest\Asset\SimpleJob');
+        $firstInstance  = $jobPluginManager->get(SimpleJob::class);
+        $secondInstance = $jobPluginManager->get(SimpleJob::class);
 
-        $this->assertNotSame($firstInstance, $secondInstance);
+        static::assertNotSame($firstInstance, $secondInstance);
     }
 
     public function testPluginManagerSetsServiceNameAsMetadata()
     {
-        $jobPluginManager = new JobPluginManager;
-        $jobPluginManager->setInvokableClass('SimpleJob', 'SlmQueueTest\Asset\SimpleJob');
+        $serviceManager = new ServiceManager();
+        $jobPluginManager = new JobPluginManager($serviceManager);
+        $jobPluginManager->setInvokableClass('SimpleJob', SimpleJob::class);
 
         $instance = $jobPluginManager->get('SimpleJob');
 
-        $this->assertInstanceOf('SlmQueueTest\Asset\SimpleJob', $instance);
-        $this->assertEquals('SimpleJob', $instance->getMetadata('__name__'));
+        static::assertInstanceOf(SimpleJob::class, $instance);
+        static::assertEquals('SimpleJob', $instance->getMetadata('__name__'));
     }
 
     public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
     {
-        $jobPluginManager = new JobPluginManager;
+        $serviceManager = new ServiceManager();
+        $jobPluginManager = new JobPluginManager($serviceManager);
         $jobPluginManager->setInvokableClass('InvalidJob', 'stdClass');
 
-        $this->setExpectedException('SlmQueue\Job\Exception\RuntimeException');
+        $this->setExpectedException(RuntimeException::class);
 
         $instance = $jobPluginManager->get('InvalidJob');
     }

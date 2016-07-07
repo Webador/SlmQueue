@@ -4,116 +4,130 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\ProcessQueueStrategy;
-use SlmQueue\Worker\WorkerEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
 
 class ProcessQueueStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var ProcessQueueStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var ProcessQueueStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
 
     public function setUp()
     {
-        $queue = $this->getMockBuilder('SlmQueue\Queue\AbstractQueue')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $worker = new SimpleWorker();
-
-        $event    = new WorkerEvent($worker, $queue);
-        $this->job   = new SimpleJob();
-        $event->setOptions(['foo' => 'bar']);
-        $event->setJob($this->job);
-
+        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker   = new SimpleWorker();
         $this->listener = new ProcessQueueStrategy();
-        $this->event    = $event;
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
-
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_QUEUE, [$this->listener, 'onJobPop'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_QUEUE, [$this->listener, 'onJobPop'], $priority);
         $evm->expects($this->at(1))
             ->method('attach')
-            ->with(WorkerEvent::EVENT_PROCESS_JOB, [$this->listener, 'onJobProcess'], $priority);
+            ->with(WorkerEventInterface::EVENT_PROCESS_JOB, [$this->listener, 'onJobProcess'], $priority);
 
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnJobPopHandler()
+    public function testJobPopWithEmptyQueueTriggersIdleAndNoExitResultIsReturned()
     {
-        $this->listener->onJobPop($this->event);
-        $this->assertFalse($this->event->shouldExitWorkerLoop());
-    }
-
-    public function testOnJobPopPopsFromQueueWithOptions()
-    {
-        $this->event->getQueue()
-            ->expects($this->once())
+        $popOptions = [];
+        $this->queue->expects($this->at(0))
             ->method('pop')
-            ->with(['foo' => 'bar'])
-            ->will($this->returnValue($this->job));
+            ->with($popOptions)
+            ->willReturn(null);
 
-        $called = false;
+        $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
-        $this->event->getTarget()->getEventManager()->attach(
-            WorkerEvent::EVENT_PROCESS_JOB,
-            function(WorkerEvent $e) use (&$called) {
-                $called = true;
-            }
-        );
+        $triggeredIdle = false;
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
+            function ($e) use (&$triggeredIdle) {
+                $triggeredIdle = true;
+            });
 
-        $this->listener->onJobPop($this->event);
+        $result = $this->listener->onJobPop($event);
 
-        $this->assertTrue($called);
-        $this->assertSame($this->job, $this->event->getJob());
+        static::assertNull($result);
+        static::assertTrue($triggeredIdle);
+        static::assertTrue($event->propagationIsStopped(), "EventPropagation should be stopped");
     }
 
-    public function testOnJobPopPopsTriggersIdleAndStopPropagation()
+    public function testJobPopWithEmptyQueueTriggersIdleAndExitResultIsReturned()
     {
-        $this->event->getQueue()
-            ->expects($this->once())
+        $popOptions = [];
+        $this->queue->expects($this->at(0))
             ->method('pop')
-            ->will($this->returnValue(null));
+            ->with($popOptions)
+            ->willReturn(null);
 
-        $called = false;
-        $this->event->getTarget()->getEventManager()->attach(
-            WorkerEvent::EVENT_PROCESS_IDLE,
-            function(WorkerEvent $e) use (&$called) {
-                $called = true;
-            }
-        );
+        $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
-        $this->listener->onJobPop($this->event);
+        $triggeredIdle = false;
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
+            function ($e) use (&$triggeredIdle) {
+                $triggeredIdle = true;
 
-        $this->assertTrue($called);
-        $this->assertNull($this->event->getJob());
-        $this->assertEquals(WorkerEvent::JOB_STATUS_UNKNOWN, $this->event->getResult());
-        $this->assertTrue($this->event->propagationIsStopped());
+                return ExitWorkerLoopResult::withReason('some reason');
+            });
+
+        $result = $this->listener->onJobPop($event);
+
+        static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
+        static::assertTrue($triggeredIdle);
+        static::assertTrue($event->propagationIsStopped(), "EventPropagation should be stopped");
     }
 
-    public function testOnJobProcessHandlerEventGetsJobResult()
+    public function testJobPopWithJobTriggersProcessJobEvent()
     {
-        $this->listener->onJobProcess($this->event);
-        $this->assertTrue($this->event->getResult() == 'result');
+        $job        = new SimpleJob();
+        $popOptions = [];
+        $this->queue->expects($this->at(0))
+            ->method('pop')
+            ->with($popOptions)
+            ->willReturn($job);
+
+        $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
+
+        $triggeredProcessJobEvent = false;
+        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_JOB,
+            function ($e) use (&$triggeredProcessJobEvent) {
+                $triggeredProcessJobEvent = true;
+            });
+
+        $result = $this->listener->onJobPop($event);
+
+        static::assertNull($result);
+        static::assertTrue($triggeredProcessJobEvent);
+        static::assertFalse($event->propagationIsStopped(), "EventPropagation should not be stopped");
+    }
+
+    public function testOnJobProcess()
+    {
+        $job   = new SimpleJob();
+        $event = new ProcessJobEvent($job, $this->worker, $this->queue);
+
+        $result = $this->listener->onJobProcess($event);
+
+        static::assertNull($result);
+        static::assertSame('result', $event->getResult());
+        static::assertEquals($job, $event->getJob());
+        static::assertSame('bar', $event->getJob()->getMetadata('foo'));
     }
 
 }

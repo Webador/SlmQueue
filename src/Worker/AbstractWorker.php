@@ -3,7 +3,13 @@
 namespace SlmQueue\Worker;
 
 use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Worker\Event\BootstrapEvent;
+use SlmQueue\Worker\Event\FinishEvent;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ResponseCollection;
 use Zend\Stdlib\ArrayUtils;
 
 /**
@@ -35,22 +41,34 @@ abstract class AbstractWorker implements WorkerInterface
      */
     public function processQueue(QueueInterface $queue, array $options = [])
     {
-        $eventManager = $this->eventManager;
-        $workerEvent  = new WorkerEvent($this, $queue);
+        $this->eventManager->triggerEvent(new BootstrapEvent($this, $queue));
 
-        $workerEvent->setOptions($options);
+        $shouldExitWorkerLoop = false;
+        while (!$shouldExitWorkerLoop) {
+            /** @var ResponseCollection $exitReasons */
+            $exitReasons = $this->eventManager->triggerEventUntil(
+                function ($response) {
+                    return $response instanceof ExitWorkerLoopResult;
+                },
+                new ProcessQueueEvent($this, $queue, $options)
+            );
 
-        $eventManager->trigger(WorkerEvent::EVENT_BOOTSTRAP, $workerEvent);
-
-        while (!$workerEvent->shouldExitWorkerLoop()) {
-            $eventManager->trigger(WorkerEvent::EVENT_PROCESS_QUEUE, $workerEvent);
+            if ($exitReasons->stopped() && $exitReasons->last()) {
+                $shouldExitWorkerLoop = true;
+            }
         }
 
-        $eventManager->trigger(WorkerEvent::EVENT_FINISH, $workerEvent);
+        $this->eventManager->triggerEvent(new FinishEvent($this, $queue));
 
-        $queueState = $eventManager->trigger(WorkerEvent::EVENT_PROCESS_STATE, $workerEvent);
+        $queueState = $this->eventManager->triggerEvent(new ProcessStateEvent($this));
+        $queueState = array_filter(iterator_to_array($queueState));
 
-        $queueState = array_filter(ArrayUtils::iteratorToArray($queueState));
+        if ($exitReasons->last()) {
+            $queueState[] = $exitReasons->last();
+        }
+
+        // cast to string
+        $queueState = array_map('strval', $queueState);
 
         return $queueState;
     }

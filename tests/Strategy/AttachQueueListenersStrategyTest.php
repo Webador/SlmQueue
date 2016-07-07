@@ -4,138 +4,143 @@ namespace SlmQueueTest\Strategy;
 
 use PHPUnit_Framework_TestCase;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
-use SlmQueue\Worker\WorkerEvent;
-use SlmQueueTest\Asset\SimpleJob;
+use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\Event\BootstrapEvent;
+use SlmQueueTest\Asset\SimpleWorker;
+use Zend\EventManager\ListenerAggregateInterface;
 
 class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var AttachQueueListenersStrategy
-     */
+    protected $queue;
+    protected $worker;
+    /** @var AttachQueueListenersStrategy */
     protected $listener;
-
-    /**
-     * @var WorkerEvent
-     */
-    protected $event;
+    protected $strategyManager;
 
     public function setUp()
     {
-        $jobPluginManager      = $this->getMock('SlmQueue\Job\JobPluginManager');
-        $queue                 = $this->getMock(
-            'SlmQueue\Queue\AbstractQueue',
-            [],
-            ['queueName', $jobPluginManager]
-        );
-        $strategyPluginManager = $this->getMock('SlmQueue\Strategy\StrategyPluginManager');
-        $eventManager          = $this->getMock('Zend\EventManager\EventManager');
-        $worker                = $this->getMock('SlmQueue\Worker\AbstractWorker', [], [$eventManager]);
-        $strategyMock          = $this->getMock('SlmQueue\Strategy\AbstractStrategy');
-
-        $queue->expects($this->any())->method('getName')->will($this->returnValue('queueName'));
-        $worker->expects($this->any())->method('getEventManager')->will($this->returnValue($eventManager));
-        $strategyPluginManager->expects($this->any())->method('get')->will($this->returnValue($strategyMock));
-
-        $event = new WorkerEvent($worker, $queue);
-        $job   = new SimpleJob();
-
-        $event->setJob($job);
-
-        $this->listener = new AttachQueueListenersStrategy($strategyPluginManager, ['queueName' => [
-            'SlmQueue\Strategy\SomeStrategy',
-        ]]);
-
-        $this->event    = $event;
+        $this->queue           = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker          = new SimpleWorker();
+        $this->strategyManager = $this
+            ->getMockBuilder('SlmQueue\Strategy\StrategyPluginManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->listener        = new AttachQueueListenersStrategy($this->strategyManager, [
+            'queueName' => [
+                'SlmQueue\Strategy\SomeStrategy',
+            ]
+        ]);
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        $this->assertInstanceOf('SlmQueue\Strategy\AbstractStrategy', $this->listener);
+        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEvents()
+    public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
-            ->with(WorkerEvent::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners']);
+            ->with(WorkerEventInterface::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'], PHP_INT_MAX);
 
-        $this->listener->attach($evm);
+        $this->listener->attach($evm, $priority);
     }
 
     public function testAttachQueueListenersDetachedSelfFromEventManager()
     {
-        $workerMock       = $this->event->getTarget();
-        $eventManagerMock = $workerMock->getEventManager();
-        $eventManagerMock->expects($this->once())->method('detachAggregate')->with($this->listener);
+        $eventManager = $this->getMock('Zend\EventManager\EventManager');
+        $this->worker = new SimpleWorker($eventManager);
 
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue([WorkerEvent::EVENT_PROCESS_QUEUE]));
-        $eventManagerMock->expects($this->once())->method('trigger');
+        $eventManager->expects($this->at(0))->method('attach')
+            ->with(WorkerEventInterface::EVENT_BOOTSTRAP, [$this->listener, 'attachQueueListeners'])
+            ->willReturn([$this->listener, 'attachQueueListeners']);
 
-        $this->listener->attachQueueListeners($this->event);
+        $eventManager->expects($this->once())->method('detach')
+            ->with([$this->listener, 'attachQueueListeners'])
+            ->willReturn(true);
+
+        $this->queue->expects($this->once())->method('getName')->will($this->returnValue('queueName'));
+        $strategyMock = $this->getMock('SlmQueueTest\Asset\SimpleStrategy');
+        $this->strategyManager->expects($this->once())->method('get')->willReturn($strategyMock);
+
+        // will attach WorkerEventInterface::EVENT_BOOTSTRAP callback to listener
+        $this->listener->attach($eventManager);
+
+        // should detach WorkerEventInterface::EVENT_BOOTSTRAP
+        $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
     public function testAttachQueueListenerFallbackToDefaultIfQueueNameIsNotMatched()
     {
-        $workerMock       = $this->event->getTarget();
-        $eventManagerMock = $workerMock->getEventManager();
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue([WorkerEvent::EVENT_PROCESS_QUEUE]));
-
-        $class = new \ReflectionClass('SlmQueue\Strategy\AttachQueueListenersStrategy');
-        $property = $class->getProperty('strategyConfig');
-        $property->setAccessible(true);
-
-        $property->setValue($this->listener, [
+        // let's change the config setup
+        $class          = new \ReflectionClass(\SlmQueue\Strategy\AttachQueueListenersStrategy::class);
+        $strategyConfig = $class->getProperty('strategyConfig');
+        $strategyConfig->setAccessible(true);
+        $strategyConfig->setValue($this->listener, [
             'default' => [
-                'SlmQueue\Strategy\SomeStrategy',
+                \SlmQueueTest\Asset\SimpleStrategy::class,
             ]
         ]);
 
-        $this->listener->attachQueueListeners($this->event);
+        $this->queue->expects($this->once())->method('getName')->willreturn('nonConfiguredQueueName');
+        $strategyMock = $this->getMock(\SlmQueueTest\Asset\SimpleStrategy::class);
+        $strategyMock->expects($this->exactly(1))->method('attach');
+        $this->strategyManager->expects($this->at(0))->method('get')->with(\SlmQueueTest\Asset\SimpleStrategy::class,
+            [])->willReturn($strategyMock);
+
+        $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
     public function testAttachQueueListenersStrategyConfig()
     {
-        $workerMock       = $this->event->getTarget();
-        $eventManagerMock = $workerMock->getEventManager();
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue([WorkerEvent::EVENT_PROCESS_QUEUE]));
-
-        $class = new \ReflectionClass('SlmQueue\Strategy\AttachQueueListenersStrategy');
-        $property = $class->getProperty('strategyConfig');
-        $property->setAccessible(true);
-
-        $property->setValue($this->listener, ['queueName' => [
+        // let's change the config setup
+        $class          = new \ReflectionClass(\SlmQueue\Strategy\AttachQueueListenersStrategy::class);
+        $strategyConfig = $class->getProperty('strategyConfig');
+        $strategyConfig->setAccessible(true);
+        $strategyConfig->setValue($this->listener, [
+            'queueName' => [
                 'SlmQueue\Strategy\SomeStrategy',
                 'SlmQueue\Strategy\OtherStrategy' => ['priority' => 3],
                 'SlmQueue\Strategy\FinalStrategy' => ['foo' => 'bar'],
-                'SlmQueue\Strategy\SomeStrategy' => 'not_an_array',
-            ]]);
+                'SlmQueue\Strategy\SomeStrategy'  => 'not_an_array',
+            ]
+        ]);
 
-        $property = $class->getProperty('pluginManager');
-        $property->setAccessible(true);
+        $eventManager = $this->worker->getEventManager();
+        $this->queue->expects($this->once())->method('getName')->willreturn('queueName');
 
-        $pluginManagerMock = $property->getValue($this->listener);
+        $strategyMock = $this->getMock(ListenerAggregateInterface::class);
+        $strategyMock->expects($this->exactly(1))->method('attach')->with($eventManager);
+        $this->strategyManager->expects($this->at(0))->method('get')->with('SlmQueue\Strategy\SomeStrategy',
+            [])->willReturn($strategyMock);
 
-        $pluginManagerMock->expects($this->at(0))->method('get')->with('SlmQueue\Strategy\SomeStrategy', []);
-        $pluginManagerMock->expects($this->at(1))->method('get')->with('SlmQueue\Strategy\OtherStrategy', []); // priority is removed
-        $pluginManagerMock->expects($this->at(2))->method('get')->with('SlmQueue\Strategy\FinalStrategy', ['foo' => 'bar']);
+        $strategyMock = $this->getMock(ListenerAggregateInterface::class);
+        $strategyMock->expects($this->exactly(1))->method('attach')->with($eventManager, 3);
+        $this->strategyManager->expects($this->at(1))->method('get')->with('SlmQueue\Strategy\OtherStrategy',
+            [])->willReturn($strategyMock);
 
-        $strategyMock          = $this->getMock('SlmQueue\Strategy\AbstractStrategy');
+        $strategyMock = $this->getMock(ListenerAggregateInterface::class);
+        $strategyMock->expects($this->exactly(1))->method('attach')->with($eventManager);
+        $this->strategyManager->expects($this->at(2))->method('get')->with('SlmQueue\Strategy\FinalStrategy',
+            ['foo' => 'bar'])->willReturn($strategyMock);
 
-        $eventManagerMock->expects($this->at(1))->method('attachAggregate')->with($strategyMock);
-        $eventManagerMock->expects($this->at(2))->method('attachAggregate')->with($strategyMock, 3);
-        $eventManagerMock->expects($this->at(3))->method('attachAggregate')->with($strategyMock);
-
-        $this->listener->attachQueueListeners($this->event);
+        $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
-    public function testAttachQueueListenersThrowsExceptionWhenNoListenersHaveBeenAttachedListeningToWorkerEventProcess()
+    public function testAttachQueueListenersBootstrapEventIsTriggeredOnlyOnce()
     {
-        $workerMock       = $this->event->getTarget();
-        $eventManagerMock = $workerMock->getEventManager();
-        $eventManagerMock->expects($this->any())->method('getEvents')->will($this->returnValue([WorkerEvent::EVENT_PROCESS_IDLE]));
+        $eventManager = $this->getMock(\Zend\EventManager\EventManager::class);
+        $this->worker = new SimpleWorker($eventManager);
+        $this->queue->expects($this->once())->method('getName')->willreturn('queueName');
 
-        $this->setExpectedException('SlmQueue\Exception\RunTimeException');
-        $this->listener->attachQueueListeners($this->event);
+        $strategyMock = $this->getMock(ListenerAggregateInterface::class);
+        $strategyMock->expects($this->exactly(1))->method('attach')->with($eventManager);
+        $this->strategyManager->expects($this->at(0))->method('get')->with('SlmQueue\Strategy\SomeStrategy',
+            [])->willReturn($strategyMock);
+
+        $eventManager->expects($this->once())->method('triggerEvent');
+        $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 }

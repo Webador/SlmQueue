@@ -4,6 +4,7 @@ namespace SlmQueueTest\Queue;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Queue\Exception\RuntimeException;
 use SlmQueueTest\Util\ServiceManagerFactory;
 use Zend\ServiceManager\ServiceManager;
 
@@ -22,26 +23,27 @@ class QueuePluginManagerTest extends TestCase
 
     public function testCanRetrievePluginManagerWithServiceManager()
     {
-        $queuePluginManager = $this->serviceManager->get('SlmQueue\Queue\QueuePluginManager');
-        $this->assertInstanceOf('SlmQueue\Queue\QueuePluginManager', $queuePluginManager);
+        $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
+        static::assertInstanceOf(QueuePluginManager::class, $queuePluginManager);
     }
 
     public function testAskingTwiceTheSameQueueReturnsTheSameInstance()
     {
-        $queuePluginManager = $this->serviceManager->get('SlmQueue\Queue\QueuePluginManager');
+        $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
 
         $firstInstance  = $queuePluginManager->get('basic-queue');
         $secondInstance = $queuePluginManager->get('basic-queue');
 
-        $this->assertSame($firstInstance, $secondInstance);
+        static::assertSame($firstInstance, $secondInstance);
     }
 
     public function testPluginValidation()
     {
-        $manager = new QueuePluginManager();
+        $serviceManager = new ServiceManager();
+        $manager = new QueuePluginManager($serviceManager);
         $queue   = new \stdClass();
 
-        $this->setExpectedException('SlmQueue\Queue\Exception\RuntimeException');
+        $this->setExpectedException(RuntimeException::class);
         $manager->validatePlugin($queue);
     }
 }

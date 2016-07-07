@@ -1,9 +1,9 @@
 <?php
 namespace SlmQueue\Factory;
 
+use Interop\Container\ContainerInterface;
 use SlmQueue\Exception\RuntimeException;
 use SlmQueue\Strategy\StrategyPluginManager;
-use SlmQueue\Worker\WorkerEvent;
 use SlmQueue\Worker\WorkerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -15,31 +15,40 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class WorkerFactory implements FactoryInterface
 {
     /**
-     * Create service
-     *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @param  null $canonicalName
-     * @param  null $requestedName
-     * @return WorkerInterface
+     * {@inheritDoc}
      */
-    public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config                = $serviceLocator->get('Config');
-        $strategies            = $config['slm_queue']['worker_strategies']['default'];
+        $config     = $container->get('config');
+        $strategies = $config['slm_queue']['worker_strategies']['default'];
 
-        $eventManager          = $serviceLocator->get('EventManager');
-        $listenerPluginManager = $serviceLocator->get(StrategyPluginManager::class);
+        $eventManager          = $container->get('EventManager');
+        $listenerPluginManager = $container->get(StrategyPluginManager::class);
         $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
         /** @var WorkerInterface $worker */
         $worker = new $requestedName($eventManager);
+
         return $worker;
+    }
+
+    /**
+     * Create service
+     *
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @param  null                    $canonicalName
+     * @param  null                    $requestedName
+     * @return WorkerInterface
+     */
+    public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
+    {
+        return $this($serviceLocator, $requestedName);
     }
 
     /**
      * @param EventManagerInterface $eventManager
      * @param StrategyPluginManager $listenerPluginManager
-     * @param array $strategyConfig
+     * @param array                 $strategyConfig
      * @throws RuntimeException
      */
     protected function attachWorkerListeners(
@@ -51,7 +60,7 @@ class WorkerFactory implements FactoryInterface
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options = [];
+                $options  = [];
             }
 
             if (!is_string($strategy) || !is_array($options)) {
@@ -67,17 +76,10 @@ class WorkerFactory implements FactoryInterface
             $listener = $listenerPluginManager->get($strategy, $options);
 
             if (!is_null($priority)) {
-                $eventManager->attachAggregate($listener, $priority);
+                $listener->attach($eventManager, $priority);
             } else {
-                $eventManager->attachAggregate($listener);
+                $listener->attach($eventManager);
             }
-        }
-
-        if (!in_array(WorkerEvent::EVENT_BOOTSTRAP, $eventManager->getEvents())) {
-            throw new RuntimeException(sprintf(
-                "No worker strategy has been registered to respond to the '%s' event.",
-                WorkerEvent::EVENT_BOOTSTRAP
-            ));
         }
     }
 }

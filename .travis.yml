@@ -7,21 +7,24 @@ cache:
     - $HOME/.composer/cache
     - vendor
 
-matrix:
-  fast_finish: true
-  include:
-    - php: 5.5
-    - php: 5.6
-    - php: 7
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+
+env:
+  matrix:
+    - PREFER_LOWEST="--prefer-lowest"
+    - PREFER_LOWEST=""
 
 before_script:
   - composer self-update
-  - composer install --dev --prefer-source
+  - composer update --prefer-source $PREFER_LOWEST
   - mkdir -p tests/build/logs
 
 script:
-  - vendor/bin/phpunit -c ./phpunit.xml
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.3' ]; then ./vendor/bin/phpcs --standard=PSR2 ./src/; fi"
+  - vendor/bin/phpunit -c ./phpunit.xml.dist
+  - vendor/bin/phpcs --standard=PSR2 src
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
