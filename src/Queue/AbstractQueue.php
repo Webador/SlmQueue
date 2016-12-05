@@ -63,10 +63,16 @@ abstract class AbstractQueue implements QueueInterface
         $data     =  json_decode($string, true);
         $name     =  $data['metadata']['__name__'];
         $metadata += $data['metadata'];
-        $content  =  unserialize(base64_decode($data['content']));
+        $content  =  $data['content'];
 
         /** @var $job \SlmQueue\Job\JobInterface */
         $job = $this->getJobPluginManager()->get($name);
+
+        if ($job instanceof BinaryMessageInterface) {
+            $content = base64_decode($content);
+        }
+
+        $content = unserialize($content);
 
         $job->setContent($content);
         $job->setMetadata($metadata);
@@ -94,9 +100,13 @@ abstract class AbstractQueue implements QueueInterface
         $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
 
         $data = [
-            'content'  => base64_encode(serialize($job->getContent())),
+            'content'  => serialize($job->getContent()),
             'metadata' => $job->getMetadata()
         ];
+
+        if ($job instanceof BinaryMessageInterface) {
+            $data['content'] = base64_encode($data['content']);
+        }
 
         return json_encode($data);
     }
