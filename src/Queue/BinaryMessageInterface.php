@@ -1,6 +1,6 @@
 <?php
 
-namespace SlmQueue\Job;
+namespace SlmQueue\Queue;
 
 /**
  * A message that will be treated as binary content.

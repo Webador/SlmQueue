@@ -6,6 +6,7 @@ use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueue\Job\JobPluginManager;
 use Zend\ServiceManager\ServiceManager;
@@ -22,6 +23,9 @@ class QueueTest extends TestCase
         $this->job     = new SimpleJob;
         $this->jobName = SimpleJob::class;
         $serviceManager = new ServiceManager();
+
+        $this->binaryJob     = new BinaryJob;
+        $this->binaryJobName = BinaryJob::class;
 
         $this->jobPluginManager = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
         $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
@@ -83,7 +87,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setContent('Foo');
 
-        $expected = '{"content":"czozOiJGb28iOw==","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
+        $expected = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
@@ -94,7 +98,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"content":"Tjs=","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
+        $expected = '{"content":"N;","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
@@ -106,7 +110,7 @@ class QueueTest extends TestCase
         $job->setContent('Foo');
         $job->setMetadata('Foo', 'Bar');
 
-        $expected = '{"content":"czozOiJGb28iOw==","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
+        $expected = '{"content":"s:3:\"Foo\";","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
@@ -117,7 +121,7 @@ class QueueTest extends TestCase
         $job = new SimpleJob();
         $job->setMetadata('__name__', 'SimpleJob');
 
-        $expected = '{"content":"Tjs=","metadata":{"__name__":"SimpleJob"}}';
+        $expected = '{"content":"N;","metadata":{"__name__":"SimpleJob"}}';
         $actual   = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
@@ -160,7 +164,7 @@ class QueueTest extends TestCase
                                ->with($this->jobName)
                                ->will($this->returnValue($this->job));
 
-        $payload = '{"content":"czozOiJGb28iOw==","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
+        $payload = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
         $job     = $this->queue->unserializeJob($payload);
 
         static::assertEquals('Foo', $job->getContent());
@@ -170,13 +174,13 @@ class QueueTest extends TestCase
     {
         $this->jobPluginManager->expects($this->once())
                                ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+                               ->with($this->binaryJobName)
+                               ->will($this->returnValue($this->binaryJob));
 
         // 1x1px image
         $image = file_get_contents(dirname(__DIR__) . '/Asset/1x1px.png');
 
-        $payload = '{"content":"' . base64_encode(serialize($image)) . '","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
+        $payload = '{"content":"' . base64_encode(serialize($image)) . '","metadata":{"__name__":"SlmQueueTest\\\Asset\\\BinaryJob"}}';
         $job     = $this->queue->unserializeJob($payload);
 
         static::assertEquals($image, $job->getContent());
