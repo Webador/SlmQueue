@@ -6,6 +6,7 @@ use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueue\Job\JobPluginManager;
 use Zend\ServiceManager\ServiceManager;
@@ -22,6 +23,9 @@ class QueueTest extends TestCase
         $this->job     = new SimpleJob;
         $this->jobName = SimpleJob::class;
         $serviceManager = new ServiceManager();
+
+        $this->binaryJob     = new BinaryJob;
+        $this->binaryJobName = BinaryJob::class;
 
         $this->jobPluginManager = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
         $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
@@ -164,6 +168,22 @@ class QueueTest extends TestCase
         $job     = $this->queue->unserializeJob($payload);
 
         static::assertEquals('Foo', $job->getContent());
+    }
+
+    public function testCanCreateJobWithBinaryContent()
+    {
+        $this->jobPluginManager->expects($this->once())
+                               ->method('get')
+                               ->with($this->binaryJobName)
+                               ->will($this->returnValue($this->binaryJob));
+
+        // 1x1px image
+        $image = file_get_contents(dirname(__DIR__) . '/Asset/1x1px.png');
+
+        $payload = '{"content":"' . base64_encode(serialize($image)) . '","metadata":{"__name__":"SlmQueueTest\\\Asset\\\BinaryJob"}}';
+        $job     = $this->queue->unserializeJob($payload);
+
+        static::assertEquals($image, $job->getContent());
     }
 
     public function testCanCreateJobWithMetadata()
