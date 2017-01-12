@@ -1,3 +1,7 @@
+# 0.7.0
+
+- Adds the ability to store binary data in job content
+
 # 0.6.0
 
 - Provide ServiceManager 3 compatibility
