@@ -58,7 +58,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testOnStopConditionCheckHandler_SIGINT()
     {
-        $this->listener->onPCNTLSignal(SIGTERM);
+        $this->listener->onPCNTLSignal(SIGINT);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
