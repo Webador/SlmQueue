@@ -73,10 +73,11 @@ class QueuePlugin extends AbstractPlugin
      *
      * @param  string $name    Name of the job to create
      * @param  mixed $payload  Payload of the job set as content
+     * @param  array $options  Push action options, ie. scheduled, delay
      * @throws QueueNotFoundException If the method is called without a queue set
      * @return JobInterface    Created job by the job plugin manager
      */
-    public function push($name, $payload = null)
+    public function push($name, $payload = null, array $options = [])
     {
         if (null === $this->queue) {
             throw new QueueNotFoundException(
@@ -89,6 +90,6 @@ class QueuePlugin extends AbstractPlugin
             $job->setContent($payload);
         }
 
-        return $this->queue->push($job);
+        return $this->queue->push($job, $options);
     }
 }
