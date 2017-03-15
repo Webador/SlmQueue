@@ -73,7 +73,7 @@ class QueuePlugin extends AbstractPlugin
      *
      * @param  string $name    Name of the job to create
      * @param  mixed $payload  Payload of the job set as content
-     * @param  array $options  Push job options, ie. scheduled, delay
+     * @param  array $options  Push job options
      * @throws QueueNotFoundException If the method is called without a queue set
      * @return JobInterface    Created job by the job plugin manager
      */

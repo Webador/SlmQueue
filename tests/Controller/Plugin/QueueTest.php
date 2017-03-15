@@ -115,55 +115,46 @@ class QueueTest extends TestCase
         static::assertSame($payload, $result->getContent());
     }
     
-    public function testPluginPushesJobIntoQueueWithScheduledOption()
+    public function testPluginPushesJobIntoQueueWithPushOptions()
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager   = new JobPluginManager($serviceManager);
 
         $name  = 'DefaultQueue';
-        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
+        $queue = new SimpleQueue('queue', $jobPluginManager);
         $job   = new SimpleJob;
 
-        $queue->expects($this->once())
-              ->method('push')
-              ->with($job)
-              ->will($this->returnValue($job));
         $queuePluginManager->setService($name, $queue);
         $jobPluginManager->setService('SimpleJob', $job);
 
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
     
-        $options = ['scheduled' => new \DateTime('+ 1 day')];
+        $options = ['foo' => 'bar'];
         $result = $plugin->push('SimpleJob', null, $options);
         
-        static::assertSame($job, $result);
+        static::assertSame($queue->getUsedOptions(), $options);
     }
     
-    public function testPluginPushesJobIntoQueueWithDelayOption()
+    public function testPluginPushesJobIntoQueueWithoutPushOptions()
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager   = new JobPluginManager($serviceManager);
     
         $name  = 'DefaultQueue';
-        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
+        $queue = new SimpleQueue('queue', $jobPluginManager);
         $job   = new SimpleJob;
     
-        $queue->expects($this->once())
-        ->method('push')
-        ->with($job)
-        ->will($this->returnValue($job));
         $queuePluginManager->setService($name, $queue);
         $jobPluginManager->setService('SimpleJob', $job);
     
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
     
-        $options = ['delay' => 300];
-        $result = $plugin->push('SimpleJob', null, $options);
+        $result = $plugin->push('SimpleJob');
     
-        static::assertSame($job, $result);
+        static::assertSame($queue->getUsedOptions(), []);
     }
 }
