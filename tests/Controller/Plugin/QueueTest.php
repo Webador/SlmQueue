@@ -114,4 +114,56 @@ class QueueTest extends TestCase
 
         static::assertSame($payload, $result->getContent());
     }
+    
+    public function testPluginPushesJobIntoQueueWithScheduledOption()
+    {
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = new QueuePluginManager($serviceManager);
+        $jobPluginManager   = new JobPluginManager($serviceManager);
+
+        $name  = 'DefaultQueue';
+        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
+        $job   = new SimpleJob;
+
+        $queue->expects($this->once())
+              ->method('push')
+              ->with($job)
+              ->will($this->returnValue($job));
+        $queuePluginManager->setService($name, $queue);
+        $jobPluginManager->setService('SimpleJob', $job);
+
+        $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
+        $plugin->__invoke($name);
+    
+        $options = ['scheduled' => new \DateTime('+ 1 day')];
+        $result = $plugin->push('SimpleJob', null, $options);
+        
+        static::assertSame($job, $result);
+    }
+    
+    public function testPluginPushesJobIntoQueueWithDelayOption()
+    {
+        $serviceManager = new ServiceManager();
+        $queuePluginManager = new QueuePluginManager($serviceManager);
+        $jobPluginManager   = new JobPluginManager($serviceManager);
+    
+        $name  = 'DefaultQueue';
+        $queue = $this->getMock(SimpleQueue::class, ['push'], [$name, $jobPluginManager]);
+        $job   = new SimpleJob;
+    
+        $queue->expects($this->once())
+        ->method('push')
+        ->with($job)
+        ->will($this->returnValue($job));
+        $queuePluginManager->setService($name, $queue);
+        $jobPluginManager->setService('SimpleJob', $job);
+    
+        $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
+        $plugin->__invoke($name);
+    
+        $options = ['delay' => new \DateTime('+ 1 day')];
+        $result = $plugin->push('SimpleJob', null, $options);
+    
+        static::assertSame($job, $result);
+    }
 }
