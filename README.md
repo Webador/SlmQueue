@@ -39,7 +39,7 @@ SlmQueue works with [Composer](http://getcomposer.org). Make sure you have the c
 
 ```json
 "require": {
-    "slm/queue": "^0.6"
+    "slm/queue": "^0.8"
 }
 ```
 
@@ -90,6 +90,8 @@ class EmailJob extends AbstractJob
 
 If you want to inject this job into a queue, you can do this for instance in your controller:
 
+Since v0.8.0 you can also add additional options (in the example the job will be delay by a minute)
+
 ```php
 namespace MyModule\Controller;
 
@@ -117,7 +119,7 @@ class MyController extends AbstractActionController
             'message' => 'Hi, I want to say hi!'
         ));
 
-        $this->queue->push($job);
+        $this->queue->push($job, ['delay' => 60]);
     }
 }
 ```
