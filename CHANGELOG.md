@@ -1,3 +1,7 @@
+# 0.8.0
+
+- Adds the ability to add job options to the controller plugin
+
 # 0.7.0
 
 - Adds the ability to store binary data in job content
