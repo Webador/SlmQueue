@@ -161,7 +161,7 @@ class QueueTest extends TestCase
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
     
-        $options = ['delay' => new \DateTime('+ 1 day')];
+        $options = ['delay' => 300];
         $result = $plugin->push('SimpleJob', null, $options);
     
         static::assertSame($job, $result);
