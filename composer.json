@@ -22,8 +22,7 @@
         },
         {
             "name": "Bas Kamer",
-            "email": "baskamer@gmail.com",
-            "homepage": "http://baskamer.nl"
+            "email": "baskamer@gmail.com"
         }
     ],
     "require": {
@@ -51,7 +50,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.9.x-dev"
+            "dev-master": "1.1.x-dev"
         }
     },
     "autoload": {

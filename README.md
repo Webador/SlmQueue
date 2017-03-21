@@ -39,7 +39,7 @@ SlmQueue works with [Composer](http://getcomposer.org). Make sure you have the c
 
 ```json
 "require": {
-    "slm/queue": "^0.8"
+    "slm/queue": "^1.0"
 }
 ```
 
