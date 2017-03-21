@@ -1,3 +1,7 @@
+# 1.0.0
+
+- Identical to 0.8.0 
+
 # 0.8.0
 
 - Adds the ability to add job options to the controller plugin
