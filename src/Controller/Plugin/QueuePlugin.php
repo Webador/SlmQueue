@@ -90,6 +90,8 @@ class QueuePlugin extends AbstractPlugin
             $job->setContent($payload);
         }
 
-        return $this->queue->push($job, $options);
+        $this->queue->push($job, $options);
+        
+        return $job;
     }
 }
