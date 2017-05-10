@@ -78,7 +78,7 @@ class QueueTest extends TestCase
         $queue->expects($this->once())
               ->method('push')
               ->with($job)
-              ->will($this->returnValue($job));
+              ->will($this->returnValue(null));
         $queuePluginManager->setService($name, $queue);
         $jobPluginManager->setService('SimpleJob', $job);
 
@@ -102,7 +102,7 @@ class QueueTest extends TestCase
         $queue->expects($this->once())
               ->method('push')
               ->with($job)
-              ->will($this->returnValue($job));
+              ->will($this->returnValue(null));
         $queuePluginManager->setService($name, $queue);
         $jobPluginManager->setService('SimpleJob', $job);
 
