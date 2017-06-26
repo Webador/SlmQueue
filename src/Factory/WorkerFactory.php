@@ -5,6 +5,7 @@ use Interop\Container\ContainerInterface;
 use SlmQueue\Exception\RuntimeException;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerInterface;
+use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -22,7 +23,7 @@ class WorkerFactory implements FactoryInterface
         $config     = $container->get('config');
         $strategies = $config['slm_queue']['worker_strategies']['default'];
 
-        $eventManager          = $container->get('EventManager');
+        $eventManager          = $container->has('EventManager') ? $container->get('EventManager') : new EventManager;
         $listenerPluginManager = $container->get(StrategyPluginManager::class);
         $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
