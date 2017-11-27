@@ -31,7 +31,7 @@ class MaxTimeStrategy extends AbstractStrategy
     /**
      * @param int $maxTime
      */
-    public function setMaxTime(int $maxTime)
+    public function setMaxTime($maxTime)
     {
         $this->maxTime = $maxTime;
     }
@@ -39,7 +39,7 @@ class MaxTimeStrategy extends AbstractStrategy
     /**
      * @return int
      */
-    public function getMaxTime(): int
+    public function getMaxTime()
     {
         return $this->maxTime;
     }
@@ -87,7 +87,7 @@ class MaxTimeStrategy extends AbstractStrategy
      *
      * @return ExitWorkerLoopResult|null
      */
-    public function checkRuntime(WorkerEventInterface $event): ?ExitWorkerLoopResult
+    public function checkRuntime(WorkerEventInterface $event)
     {
         $now         = time();
         $diff        = $now - $this->startTime;
