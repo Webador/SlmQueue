@@ -79,11 +79,7 @@ class QueuePlugin extends AbstractPlugin
      */
     public function push($name, $payload = null, array $options = [])
     {
-        if (null === $this->queue) {
-            throw new QueueNotFoundException(
-                'You cannot push a job without a queue selected'
-            );
-        }
+        $this->assertQueueIsSet();
 
         $job = $this->jobPluginManager->get($name);
         if (null !== $payload) {
@@ -93,5 +89,32 @@ class QueuePlugin extends AbstractPlugin
         $this->queue->push($job, $options);
         
         return $job;
+    }
+
+    /**
+     * Push a job on the selected queue
+     *
+     * @param JobInterface $job
+     * @param array $options Push job options
+      * @throws QueueNotFoundException If the method is called without a queue set
+     */
+    public function pushJob(JobInterface $job, array $options = [])
+    {
+        $this->assertQueueIsSet();
+
+        $this->queue->push($job, $options);
+    }
+
+    /**
+     * @throws QueueNotFoundException
+     */
+    protected function assertQueueIsSet()
+    {
+        if (null === $this->queue) {
+            throw new QueueNotFoundException(
+                'You cannot push a job without a queue selected'
+            );
+        }
+
     }
 }
