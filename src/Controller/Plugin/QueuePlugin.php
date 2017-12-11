@@ -115,6 +115,5 @@ class QueuePlugin extends AbstractPlugin
                 'You cannot push a job without a queue selected'
             );
         }
-
     }
 }
