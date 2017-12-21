@@ -1,3 +1,7 @@
+# 1.0.1
+
+- Decoupled from zendframework/zend-mvc and as such the event manager isn't reliably available in the service container. If you are not using zend-mvc and still need to subscribe to emitted events you should inject a shared event manager into your container yourself.
+
 # 1.0.0
 
 - Identical to 0.8.0 
