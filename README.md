@@ -1,9 +1,9 @@
 SlmQueue
 ========
 
-[![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
-[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
-[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
+[![Build Status](https://travis-ci.org/JouwWeb/SlmQueue.png?branch=master)](https://travis-ci.org/JouwWeb/SlmQueue)
+[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
+[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
 
 Created by Jurian Sluiman and Michaël Gallego
 
@@ -133,7 +133,7 @@ Contributing
 SlmQueue is developed by various fanatic Zend Framework 2 users. The code is written to be as generic as possible for
 Zend Framework 2 applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
 
-Any bugs can be reported as an [issue](https://github.com/juriansluiman/SlmQueue/issues) at GitHub. If you want to
+Any bugs can be reported as an [issue](https://github.com/JouwWeb/SlmQueue/issues) at GitHub. If you want to
 contribute, please be aware of the following guidelines:
 
  1. Fork the project to your own repository
