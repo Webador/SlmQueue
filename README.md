@@ -10,7 +10,7 @@ Created by Jurian Sluiman and Michaël Gallego
 Introduction
 ------------
 
-SlmQueue is a job queue abstraction layer for Zend Framework 2 applications. It supports various job queue systems and
+SlmQueue is a job queue abstraction layer for Zend Framework applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
 own adapter-module and are the following:
 
@@ -19,7 +19,7 @@ own adapter-module and are the following:
 * Doctrine ORM: use [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Zend
-Framework 2 application. This will make your response times shorter and your visitors happier. There are many use cases
+Framework application. This will make your response times shorter and your visitors happier. There are many use cases
 for asynchronous jobs and a few examples are:
 
 1. Send an email
@@ -130,8 +130,8 @@ Giving an example with beanstalkd and a queue which you called "default", you ca
 Contributing
 ------------
 
-SlmQueue is developed by various fanatic Zend Framework 2 users. The code is written to be as generic as possible for
-Zend Framework 2 applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
+SlmQueue is developed by various fanatic Zend Framework users. The code is written to be as generic as possible for
+Zend Framework applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
 
 Any bugs can be reported as an [issue](https://github.com/JouwWeb/SlmQueue/issues) at GitHub. If you want to
 contribute, please be aware of the following guidelines:
