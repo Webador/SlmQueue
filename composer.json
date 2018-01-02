@@ -23,6 +23,11 @@
         {
             "name": "Bas Kamer",
             "email": "baskamer@gmail.com"
+        },
+        {
+            "name": "Roel van Duijnhoven",
+            "email": "roel.duijnhoven@gmail.com",
+            "homepage": "http://www.roelvanduijnhoven.nl"
         }
     ],
     "require": {
