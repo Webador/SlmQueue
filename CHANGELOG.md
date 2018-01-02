@@ -1,3 +1,7 @@
+# 1.0.1 And later
+
+Changelog for these releases can be found on the releases page, see https://github.com/JouwWeb/SlmQueue/releases.
+
 # 1.0.0
 
 - Identical to 0.8.0 
