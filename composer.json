@@ -4,6 +4,8 @@
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
+        "zendframework",
+        "zf3",
         "zf2",
         "queue",
         "job"
