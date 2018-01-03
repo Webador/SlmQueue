@@ -7,7 +7,7 @@ use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use Zend\EventManager\EventManagerInterface;
 
-class MaxTimeStrategy extends AbstractStrategy
+class WorkerLifetimeStrategy extends AbstractStrategy
 {
     /**
      * The timestamp when the worker has started
@@ -21,7 +21,7 @@ class MaxTimeStrategy extends AbstractStrategy
      *
      * @var int
      */
-    protected $maxTime = 3600;
+    protected $lifetime = 3600;
 
     /**
      * {@inheritDoc}
@@ -29,19 +29,19 @@ class MaxTimeStrategy extends AbstractStrategy
     protected $state = '0 seconds passed';
 
     /**
-     * @param int $maxTime
+     * @param int $lifetime
      */
-    public function setMaxTime($maxTime)
+    public function setLifetime($lifetime)
     {
-        $this->maxTime = $maxTime;
+        $this->lifetime = (int) $lifetime;
     }
 
     /**
      * @return int
      */
-    public function getMaxTime()
+    public function getLifetime()
     {
-        return $this->maxTime;
+        return $this->lifetime;
     }
 
     /**
@@ -90,11 +90,11 @@ class MaxTimeStrategy extends AbstractStrategy
     public function checkRuntime(WorkerEventInterface $event)
     {
         $now         = time();
-        $diff        = $now - $this->startTime;
-        $this->state = sprintf('%d seconds passed', $diff);
+        $runtime     = $now - $this->startTime;
+        $this->state = sprintf('%d seconds passed', $runtime);
 
-        if ($diff >= $this->maxTime) {
-            $reason = sprintf('maximum of %d seconds passed', round($this->maxTime));
+        if ($runtime >= $this->lifetime) {
+            $reason = sprintf('lifetime of %d seconds reached', $this->lifetime);
 
             return ExitWorkerLoopResult::withReason($reason);
         }

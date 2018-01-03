@@ -3,50 +3,54 @@
 namespace SlmQueueTest\Listener\Strategy;
 
 use PHPUnit_Framework_TestCase;
-use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\MaxTimeStrategy;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
+use SlmQueue\Strategy\WorkerLifetimeStrategy;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
+use Zend\EventManager\EventManagerInterface;
 
-class MaxTimeStrategyTest extends PHPUnit_Framework_TestCase
+class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
 {
     protected $queue;
     protected $worker;
-    /** @var MaxTimeStrategy */
+
+    /**
+     * @var WorkerLifetimeStrategy
+     */
     protected $listener;
 
     public function setUp()
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->queue    = $this->getMock(QueueInterface::class);
         $this->worker   = new SimpleWorker();
-        $this->listener = new MaxTimeStrategy();
+        $this->listener = new WorkerLifetimeStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testMaxTimeDefault()
+    public function testLifetimeDefault()
     {
-        static::assertEquals(3600, $this->listener->getMaxTime());
+        static::assertEquals(3600, $this->listener->getLifetime());
     }
 
-    public function testMaxRunsSetter()
+    public function testLifetimeSetter()
     {
-        $this->listener->setMaxTime(7200);
+        $this->listener->setLifetime(7200);
 
-        static::assertEquals(7200, $this->listener->getMaxTime());
+        static::assertEquals(7200, $this->listener->getLifetime());
     }
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm = $this->getMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -63,7 +67,7 @@ class MaxTimeStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testOnStopConditionCheckHandler()
     {
-        $this->listener->setMaxTime(2);
+        $this->listener->setLifetime(2);
 
         $this->listener->onBootstrap(new BootstrapEvent($this->worker, $this->queue));
 

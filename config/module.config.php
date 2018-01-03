@@ -15,7 +15,7 @@ use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueue\Strategy\MaxMemoryStrategy;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
 use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\MaxTimeStrategy;
+use SlmQueue\Strategy\WorkerLifetimeStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueue\Strategy\StrategyPluginManager;
 
@@ -75,7 +75,7 @@ return [
                 ProcessQueueStrategy::class        => ProcessQueueStrategy::class,
                 InterruptStrategy::class           => InterruptStrategy::class,
                 MaxRunsStrategy::class             => MaxRunsStrategy::class,
-                MaxTimeStrategy::class             => MaxTimeStrategy::class,
+                WorkerLifetimeStrategy::class      => WorkerLifetimeStrategy::class,
                 MaxMemoryStrategy::class           => MaxMemoryStrategy::class,
                 FileWatchStrategy::class           => FileWatchStrategy::class,
                 MaxPollingFrequencyStrategy::class => MaxPollingFrequencyStrategy::class,
