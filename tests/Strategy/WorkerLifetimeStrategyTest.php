@@ -82,7 +82,7 @@ class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
         $result = $this->listener->checkRuntime(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
-        static::assertContains('lifetime of 2 seconds passed', $result->getReason());
+        static::assertContains('lifetime of 2 seconds reached', $result->getReason());
 
         $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
         static::assertContains('3 seconds passed', $stateResult->getState());
