@@ -1,18 +1,16 @@
 SlmQueue
 ========
 
-[![Build Status](https://travis-ci.org/juriansluiman/SlmQueue.png?branch=master)](https://travis-ci.org/juriansluiman/SlmQueue)
-[![Code Coverage](https://scrutinizer-ci.com/g/juriansluiman/SlmQueue/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/juriansluiman/SlmQueue/?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
-[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/juriansluiman/slm-queue)
-[![Dependency Status](https://www.versioneye.com/user/projects/53d0f4b9ead8b3e94400000c/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53d0f4b9ead8b3e94400000c)
+[![Build Status](https://travis-ci.org/JouwWeb/SlmQueue.png?branch=master)](https://travis-ci.org/JouwWeb/SlmQueue)
+[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
+[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
 
 Created by Jurian Sluiman and Michaël Gallego
 
 Introduction
 ------------
 
-SlmQueue is a job queue abstraction layer for Zend Framework 2 applications. It supports various job queue systems and
+SlmQueue is a job queue abstraction layer for Zend Framework applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
 own adapter-module and are the following:
 
@@ -21,7 +19,7 @@ own adapter-module and are the following:
 * Doctrine ORM: use [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Zend
-Framework 2 application. This will make your response times shorter and your visitors happier. There are many use cases
+Framework application. This will make your response times shorter and your visitors happier. There are many use cases
 for asynchronous jobs and a few examples are:
 
 1. Send an email
@@ -132,10 +130,10 @@ Giving an example with beanstalkd and a queue which you called "default", you ca
 Contributing
 ------------
 
-SlmQueue is developed by various fanatic Zend Framework 2 users. The code is written to be as generic as possible for
-Zend Framework 2 applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
+SlmQueue is developed by various fanatic Zend Framework users. The code is written to be as generic as possible for
+Zend Framework applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
 
-Any bugs can be reported as an [issue](https://github.com/juriansluiman/SlmQueue/issues) at GitHub. If you want to
+Any bugs can be reported as an [issue](https://github.com/JouwWeb/SlmQueue/issues) at GitHub. If you want to
 contribute, please be aware of the following guidelines:
 
  1. Fork the project to your own repository

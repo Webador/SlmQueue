@@ -58,7 +58,7 @@ return [
 
         /**
          * Allow to configure the plugin manager that manages strategies. This works like any other
-         * PluginManager in Zend Framework 2.
+         * PluginManager in Zend Framework.
          *
          * Add you own or override existing factories
          *
@@ -72,7 +72,7 @@ return [
 
         /**
          * Allow to configure dependencies for jobs that are pulled from any queue. This works like any other
-         * PluginManager in Zend Framework 2. For instance, if you want to inject something into every job using
+         * PluginManager in Zend Framework. For instance, if you want to inject something into every job using
          * a factory, just adds an element into the "factories" array, with the key being the FQCN of the job,
          * and the value the factory:
          *
@@ -91,7 +91,7 @@ return [
 
         /**
          * Allow to add queues. You need to have at least one queue. This works like any other PluginManager in
-         * Zend Framework 2. For instance, if you have a queue whose name is "email", you can add it as an
+         * Zend Framework. For instance, if you have a queue whose name is "email", you can add it as an
          * invokable this way:
          *
          * 'queue_manager' => [
