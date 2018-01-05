@@ -1,9 +1,11 @@
 {
     "name": "slm/queue",
-    "description": "Zend Framework 2 module that integrates with various queue management systems",
+    "description": "Zend Framework module that integrates with various queue management systems",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
+        "zendframework",
+        "zf3",
         "zf2",
         "queue",
         "job"
@@ -23,6 +25,11 @@
         {
             "name": "Bas Kamer",
             "email": "baskamer@gmail.com"
+        },
+        {
+            "name": "Roel van Duijnhoven",
+            "email": "roel.duijnhoven@gmail.com",
+            "homepage": "http://www.roelvanduijnhoven.nl"
         }
     ],
     "require": {
