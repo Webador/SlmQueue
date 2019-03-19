@@ -7,6 +7,7 @@
         "zendframework",
         "zf3",
         "zf2",
+        "expressive",
         "queue",
         "job"
     ],
@@ -60,7 +61,8 @@
             "dev-master": "1.1.x-dev"
         },
         "zf": {
-            "module": "SlmQueue"
+            "module": "SlmQueue",
+            "config-provider": "SlmQueue\\ConfigProvider"
         }
     },
     "autoload": {
