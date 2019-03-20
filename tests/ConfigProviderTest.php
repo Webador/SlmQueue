@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest;
 
-use SlmQueueTest\Module;
+use SlmQueue\Module;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigProviderTest extends TestCase
@@ -12,7 +12,7 @@ public function testConfigProviderGetConfig()
 $configProvider = new \SlmQueue\ConfigProvider();
 $config         = $configProvider();
 
-$this->assertNotEmpty($config);
+static::assertNotEmpty($config);
 }
 
 public function testConfigEqualsToModuleConfig()
@@ -22,7 +22,7 @@ $moduleConfig   = $module->getConfig();
 $configProvider = new \SlmQueue\ConfigProvider();
 $config         = $configProvider();
 
-$this->assertEquals($moduleConfig['service_manager'], $config['dependencies']);
-$this->assertEquals($moduleConfig['slm_queue'], $config['slm_queue']);
+static::assertEquals($moduleConfig['service_manager'], $config['dependencies']);
+static::assertEquals($moduleConfig['slm_queue'], $config['slm_queue']);
 }
 }
