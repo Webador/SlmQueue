@@ -2,13 +2,10 @@
 
 namespace SlmQueue;
 
-use Zend\Loader;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
-
 /**
  * SlmQueue
  */
-class Module implements ConfigProviderInterface
+class Module
 {
     /**
      * {@inheritDoc}
