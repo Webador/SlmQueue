@@ -17,6 +17,7 @@ own adapter-module and are the following:
 * Beanstalk: use [SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd)
 * Amazon SQS: use [SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
 * Doctrine ORM: use [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
+* RabbitMQ: use [SlmQueueRabbitMq](https://github.com/rnd-cosoft/slm-queue-rabbitmq)
 
 A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Zend
 Framework application. This will make your response times shorter and your visitors happier. There are many use cases
