@@ -6,7 +6,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class FileWatchStrategy extends AbstractStrategy
 {

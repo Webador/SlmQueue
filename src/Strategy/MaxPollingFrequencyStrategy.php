@@ -4,7 +4,7 @@ namespace SlmQueue\Strategy;
 
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class MaxPollingFrequencyStrategy extends AbstractStrategy
 {

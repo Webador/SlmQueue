@@ -5,10 +5,10 @@ use Interop\Container\ContainerInterface;
 use SlmQueue\Exception\RuntimeException;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerInterface;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\EventManagerInterface;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 /**
  * WorkerFactory

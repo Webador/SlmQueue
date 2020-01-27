@@ -7,7 +7,7 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Queue controller plugin
@@ -87,7 +87,7 @@ class QueuePlugin extends AbstractPlugin
         }
 
         $this->queue->push($job, $options);
-        
+
         return $job;
     }
 

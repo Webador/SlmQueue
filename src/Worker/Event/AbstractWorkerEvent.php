@@ -3,7 +3,7 @@
 namespace SlmQueue\Worker\Event;
 
 use SlmQueue\Worker\WorkerInterface;
-use Zend\EventManager\Event;
+use Laminas\EventManager\Event;
 
 /**
  * AbstractWorkerEvent

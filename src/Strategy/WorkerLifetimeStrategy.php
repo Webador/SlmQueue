@@ -5,7 +5,7 @@ namespace SlmQueue\Strategy;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class WorkerLifetimeStrategy extends AbstractStrategy
 {

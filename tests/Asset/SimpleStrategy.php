@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Asset;
 
 use SlmQueue\Strategy\AbstractStrategy;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class SimpleStrategy extends AbstractStrategy
 {

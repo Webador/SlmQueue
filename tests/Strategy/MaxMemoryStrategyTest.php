@@ -43,7 +43,7 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')

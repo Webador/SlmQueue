@@ -5,7 +5,7 @@ namespace SlmQueue\Strategy;
 use SlmQueue\Exception;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ProcessStateResult;
-use Zend\EventManager\AbstractListenerAggregate;
+use Laminas\EventManager\AbstractListenerAggregate;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {

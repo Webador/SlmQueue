@@ -5,8 +5,8 @@ namespace SlmQueue\Strategy;
 use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
 class AttachQueueListenersStrategy extends AbstractStrategy
 {

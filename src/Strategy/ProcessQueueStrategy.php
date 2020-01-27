@@ -9,8 +9,8 @@ use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ResponseCollection;
 
 class ProcessQueueStrategy extends AbstractStrategy
 {

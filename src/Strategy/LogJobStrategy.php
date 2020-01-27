@@ -4,8 +4,8 @@ namespace SlmQueue\Strategy;
 
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
-use Zend\Console\Adapter\AdapterInterface;
-use Zend\EventManager\EventManagerInterface;
+use Laminas\Console\Adapter\AdapterInterface;
+use Laminas\EventManager\EventManagerInterface;
 
 class LogJobStrategy extends AbstractStrategy
 {

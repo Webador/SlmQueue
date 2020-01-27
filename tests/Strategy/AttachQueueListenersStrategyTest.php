@@ -7,7 +7,7 @@ use SlmQueue\Strategy\AttachQueueListenersStrategy;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueueTest\Asset\SimpleWorker;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
 class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 {
@@ -39,7 +39,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -50,7 +50,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testAttachQueueListenersDetachedSelfFromEventManager()
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManager');
+        $eventManager = $this->getMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
 
         $eventManager->expects($this->at(0))->method('attach')
@@ -131,7 +131,7 @@ class AttachQueueListenersStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testAttachQueueListenersBootstrapEventIsTriggeredOnlyOnce()
     {
-        $eventManager = $this->getMock(\Zend\EventManager\EventManager::class);
+        $eventManager = $this->getMock(\Laminas\EventManager\EventManager::class);
         $this->worker = new SimpleWorker($eventManager);
         $this->queue->expects($this->once())->method('getName')->willreturn('queueName');
 

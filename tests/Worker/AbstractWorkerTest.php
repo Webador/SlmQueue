@@ -12,8 +12,8 @@ use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueue\Worker\Result\ProcessStateResult;
 use SlmQueueTest\Asset\SimpleWorker;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\ResponseCollection;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\ResponseCollection;
 
 class AbstractWorkerTest extends TestCase
 {
@@ -47,7 +47,7 @@ class AbstractWorkerTest extends TestCase
 
     public function testWorkerLoopEvents()
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManager');
+        $eventManager = $this->getMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
 
         // BootstrapEvent

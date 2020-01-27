@@ -8,9 +8,9 @@ use SlmQueue\Worker\Event\FinishEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ResponseCollection;
+use Laminas\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker

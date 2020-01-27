@@ -4,8 +4,8 @@ namespace SlmQueue\Strategy\Factory;
 
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
 use SlmQueue\Strategy\StrategyPluginManager;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Interop\Container\ContainerInterface;
 
 /**

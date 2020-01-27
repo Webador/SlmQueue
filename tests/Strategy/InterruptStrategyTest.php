@@ -30,9 +30,9 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
-        
+
         $evm->expects($this->at(0))->method('attach')
             ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')

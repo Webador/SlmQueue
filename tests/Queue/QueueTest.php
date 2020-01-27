@@ -9,7 +9,7 @@ use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueue\Job\JobPluginManager;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class QueueTest extends TestCase
 {

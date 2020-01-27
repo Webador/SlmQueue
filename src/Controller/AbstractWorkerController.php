@@ -6,7 +6,7 @@ use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Worker\WorkerInterface;
-use Zend\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  * AbstractController

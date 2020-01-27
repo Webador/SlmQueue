@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueue\Job\JobPluginManager;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class QueueAwareTraitTest extends TestCase
 {

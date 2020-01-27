@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\Exception\RuntimeException;
 use SlmQueueTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class QueuePluginManagerTest extends TestCase
 {

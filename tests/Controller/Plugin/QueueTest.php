@@ -11,7 +11,7 @@ use SlmQueue\Controller\Plugin\QueuePlugin;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueTest\Job\JobTest;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class QueueTest extends TestCase
 {
@@ -115,7 +115,7 @@ class QueueTest extends TestCase
 
         static::assertSame($payload, $result->getContent());
     }
-    
+
     public function testPluginPushesJobIntoQueueWithPushOptions()
     {
         $serviceManager = new ServiceManager();
@@ -131,31 +131,31 @@ class QueueTest extends TestCase
 
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
-    
+
         $options = ['foo' => 'bar'];
         $result = $plugin->push('SimpleJob', null, $options);
-        
+
         static::assertSame($queue->getUsedOptions(), $options);
     }
-    
+
     public function testPluginPushesJobIntoQueueWithoutPushOptions()
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager   = new JobPluginManager($serviceManager);
-    
+
         $name  = 'DefaultQueue';
         $queue = new SimpleQueue('queue', $jobPluginManager);
         $job   = new SimpleJob;
-    
+
         $queuePluginManager->setService($name, $queue);
         $jobPluginManager->setService('SimpleJob', $job);
-    
+
         $plugin  = new QueuePlugin($queuePluginManager, $jobPluginManager);
         $plugin->__invoke($name);
-    
+
         $result = $plugin->push('SimpleJob');
-    
+
         static::assertSame($queue->getUsedOptions(), []);
     }
 

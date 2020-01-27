@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Job;
 
-use Zend\Stdlib\MessageInterface;
+use Laminas\Stdlib\MessageInterface;
 
 /**
  * A job is a task inserted into a queue, and it contains metadata and content.

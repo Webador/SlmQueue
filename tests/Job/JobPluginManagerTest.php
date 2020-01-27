@@ -7,7 +7,7 @@ use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Util\ServiceManagerFactory;
 use SlmQueue\Job\Exception\RuntimeException;
 use SlmQueue\Job\JobPluginManager;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class JobPluginManagerTest extends TestCase
 {
