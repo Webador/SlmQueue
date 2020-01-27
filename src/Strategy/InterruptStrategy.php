@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
 
 class InterruptStrategy extends AbstractStrategy
 {
@@ -57,7 +57,7 @@ class InterruptStrategy extends AbstractStrategy
      */
     public function onStopConditionCheck(WorkerEventInterface $event)
     {
-        declare(ticks = 1);
+        declare(ticks=1);
 
         if ($this->interrupted) {
             $reason = sprintf("interrupt by an external signal on '%s'", $event->getName());

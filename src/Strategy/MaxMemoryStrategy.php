@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
 
 class MaxMemoryStrategy extends AbstractStrategy
 {
@@ -62,7 +62,7 @@ class MaxMemoryStrategy extends AbstractStrategy
             gc_collect_cycles();
         }
 
-        $usage       = memory_get_usage();
+        $usage = memory_get_usage();
         $this->state = sprintf('%s memory usage', $this->humanFormat($usage));
 
         if ($this->maxMemory && $usage > $this->maxMemory) {
@@ -77,7 +77,7 @@ class MaxMemoryStrategy extends AbstractStrategy
     }
 
     /**
-     * @param  string $bytes Bytes to be formatted
+     * @param string $bytes Bytes to be formatted
      * @return string human readable
      */
     private function humanFormat($bytes)

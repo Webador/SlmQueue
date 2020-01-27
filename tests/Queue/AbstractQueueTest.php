@@ -2,11 +2,10 @@
 
 namespace SlmQueueTest\Queue;
 
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
-use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Util\ServiceManagerFactory;
-use Laminas\ServiceManager\ServiceManager;
 
 class AbstractQueueTest extends TestCase
 {
@@ -30,5 +29,4 @@ class AbstractQueueTest extends TestCase
         static::assertSame('name', $queue->getName());
         static::assertSame($jobPluginManager, $queue->getJobPluginManager());
     }
-
 }

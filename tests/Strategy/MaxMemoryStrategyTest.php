@@ -2,11 +2,14 @@
 
 namespace SlmQueueTest\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\MaxMemoryStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
 
@@ -19,14 +22,14 @@ class MaxMemoryStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new MaxMemoryStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testMaxMemoryDefault()
@@ -43,7 +46,7 @@ class MaxMemoryStrategyTest extends TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')

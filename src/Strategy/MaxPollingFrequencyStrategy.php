@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\WorkerEventInterface;
-use SlmQueue\Worker\Event\ProcessQueueEvent;
 use Laminas\EventManager\EventManagerInterface;
+use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 
 class MaxPollingFrequencyStrategy extends AbstractStrategy
 {
@@ -37,7 +37,7 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
     public function onQueueProcessFinish(ProcessQueueEvent $event)
     {
         $startTime = microtime(true);
-        $time      = ($startTime - $this->lastTime);
+        $time = ($startTime - $this->lastTime);
 
         $minTime = 1 / $this->maxFrequency;
 

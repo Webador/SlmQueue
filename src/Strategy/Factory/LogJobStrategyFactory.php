@@ -1,10 +1,11 @@
 <?php
+
 namespace SlmQueue\Strategy\Factory;
 
-use SlmQueue\Strategy\LogJobStrategy;
+use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
+use SlmQueue\Strategy\LogJobStrategy;
 
 /**
  * LogJobStrategyFactory

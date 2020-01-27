@@ -12,8 +12,8 @@ class LogJobFactoryTest extends TestCase
     public function testCreateService()
     {
         $serviceManager = ServiceManagerFactory::getServiceManager();
-        $factory        = new LogJobStrategyFactory();
-        $strategy       = $factory($serviceManager, LogJobStrategy::class);
+        $factory = new LogJobStrategyFactory();
+        $strategy = $factory($serviceManager, LogJobStrategy::class);
 
         static::assertInstanceOf(LogJobStrategy::class, $strategy);
     }

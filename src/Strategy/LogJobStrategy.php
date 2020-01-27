@@ -2,10 +2,10 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\WorkerEventInterface;
-use SlmQueue\Worker\Event\ProcessJobEvent;
 use Laminas\Console\Adapter\AdapterInterface;
 use Laminas\EventManager\EventManagerInterface;
+use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 
 class LogJobStrategy extends AbstractStrategy
 {
@@ -47,7 +47,7 @@ class LogJobStrategy extends AbstractStrategy
      */
     public function onLogJobProcessStart(ProcessJobEvent $processJobEvent)
     {
-        $job  = $processJobEvent->getJob();
+        $job = $processJobEvent->getJob();
         $name = $job->getMetadata('name');
         if (null === $name) {
             $name = get_class($job);

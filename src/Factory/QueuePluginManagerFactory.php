@@ -2,11 +2,10 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Queue\QueuePluginManager;
-use Laminas\ServiceManager\Config;
+use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
+use SlmQueue\Queue\QueuePluginManager;
 
 /**
  * QueuePluginManagerFactory

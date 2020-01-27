@@ -2,8 +2,8 @@
 
 namespace SlmQueue\Worker\Event;
 
-use SlmQueue\Worker\WorkerInterface;
 use Laminas\EventManager\Event;
+use SlmQueue\Worker\WorkerInterface;
 
 /**
  * AbstractWorkerEvent

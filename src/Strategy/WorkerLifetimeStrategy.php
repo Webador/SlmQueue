@@ -2,10 +2,10 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
 
 class WorkerLifetimeStrategy extends AbstractStrategy
 {
@@ -89,8 +89,8 @@ class WorkerLifetimeStrategy extends AbstractStrategy
      */
     public function checkRuntime(WorkerEventInterface $event)
     {
-        $now         = time();
-        $runtime     = $now - $this->startTime;
+        $now = time();
+        $runtime = $now - $this->startTime;
         $this->state = sprintf('%d seconds passed', $runtime);
 
         if ($runtime >= $this->lifetime) {
@@ -98,6 +98,7 @@ class WorkerLifetimeStrategy extends AbstractStrategy
 
             return ExitWorkerLoopResult::withReason($reason);
         }
+
         return null;
     }
 }

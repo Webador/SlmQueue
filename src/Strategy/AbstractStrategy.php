@@ -2,10 +2,10 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\AbstractListenerAggregate;
 use SlmQueue\Exception;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ProcessStateResult;
-use Laminas\EventManager\AbstractListenerAggregate;
 
 abstract class AbstractStrategy extends AbstractListenerAggregate
 {
@@ -19,7 +19,7 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     /**
      * Constructor
      *
-     * @param  array $options
+     * @param array $options
      */
     public function __construct(array $options = null)
     {
@@ -31,14 +31,14 @@ abstract class AbstractStrategy extends AbstractListenerAggregate
     /**
      * Set options from array
      *
-     * @param  array $options
+     * @param array $options
      * @return void
      */
     public function setOptions(array $options)
     {
         foreach ($options as $key => $value) {
             $setter = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
-            if (!method_exists($this, $setter)) {
+            if (! method_exists($this, $setter)) {
                 throw new Exception\BadMethodCallException(
                     'The option "' . $key . '" does not '
                     . 'have a matching ' . $setter . ' setter method '

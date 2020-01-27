@@ -2,11 +2,12 @@
 
 namespace SlmQueueTest\Queue;
 
-use PHPUnit\Framework\TestCase as TestCase;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Queue\Exception\RuntimeException;
-use SlmQueueTest\Util\ServiceManagerFactory;
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Queue\Exception\RuntimeException;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueueTest\Util\ServiceManagerFactory;
+use stdClass;
 
 class QueuePluginManagerTest extends TestCase
 {
@@ -31,7 +32,7 @@ class QueuePluginManagerTest extends TestCase
     {
         $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
 
-        $firstInstance  = $queuePluginManager->get('basic-queue');
+        $firstInstance = $queuePluginManager->get('basic-queue');
         $secondInstance = $queuePluginManager->get('basic-queue');
 
         static::assertSame($firstInstance, $secondInstance);
@@ -41,7 +42,7 @@ class QueuePluginManagerTest extends TestCase
     {
         $serviceManager = new ServiceManager();
         $manager = new QueuePluginManager($serviceManager);
-        $queue   = new \stdClass();
+        $queue = new stdClass();
 
         $this->expectException(RuntimeException::class);
         $manager->validatePlugin($queue);

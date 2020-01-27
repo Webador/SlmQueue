@@ -3,6 +3,7 @@
 namespace SlmQueue\Queue;
 
 use SlmQueue\Job\JobInterface;
+use SlmQueue\Job\JobPluginManager;
 
 /**
  * Contract for a queue
@@ -19,15 +20,15 @@ interface QueueInterface
     /**
      * Get the job plugin manager
      *
-     * @return \SlmQueue\Job\JobPluginManager
+     * @return JobPluginManager
      */
     public function getJobPluginManager();
 
     /**
      * Push a new job into the queue
      *
-     * @param  JobInterface $job
-     * @param  array        $options
+     * @param JobInterface $job
+     * @param array        $options
      * @return void
      */
     public function push(JobInterface $job, array $options = []);
@@ -35,7 +36,7 @@ interface QueueInterface
     /**
      * Pop a job from the queue
      *
-     * @param  array $options
+     * @param array $options
      * @return JobInterface|null
      */
     public function pop(array $options = []);
@@ -43,7 +44,7 @@ interface QueueInterface
     /**
      * Delete a job from the queue
      *
-     * @param  JobInterface $job
+     * @param JobInterface $job
      * @return void
      */
     public function delete(JobInterface $job);

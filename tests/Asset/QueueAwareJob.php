@@ -2,7 +2,6 @@
 
 namespace SlmQueueTest\Asset;
 
-use SlmQueue\Job\AbstractJob;
 use SlmQueue\Queue\QueueAwareInterface;
 use SlmQueue\Queue\QueueInterface;
 

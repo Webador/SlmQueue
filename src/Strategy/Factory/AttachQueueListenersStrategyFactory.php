@@ -2,11 +2,11 @@
 
 namespace SlmQueue\Strategy\Factory;
 
-use SlmQueue\Strategy\AttachQueueListenersStrategy;
-use SlmQueue\Strategy\StrategyPluginManager;
+use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
+use SlmQueue\Strategy\AttachQueueListenersStrategy;
+use SlmQueue\Strategy\StrategyPluginManager;
 
 /**
  * AttachQueueListenersStrategyFactory
@@ -18,8 +18,8 @@ class AttachQueueListenersStrategyFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $pluginManager  = $container->get(StrategyPluginManager::class);
-        $config         = $container->get('config');
+        $pluginManager = $container->get(StrategyPluginManager::class);
+        $config = $container->get('config');
         $strategyConfig = $config['slm_queue']['worker_strategies']['queues'];
 
         return new AttachQueueListenersStrategy($pluginManager, $strategyConfig);

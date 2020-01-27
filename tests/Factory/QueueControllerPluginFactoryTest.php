@@ -12,8 +12,8 @@ class QueueControllerPluginFactoryTest extends TestCase
 
     public function testCreateService()
     {
-        $serviceManager               = ServiceManagerFactory::getServiceManager();
-        $factory                      = new QueueControllerPluginFactory();
+        $serviceManager = ServiceManagerFactory::getServiceManager();
+        $factory = new QueueControllerPluginFactory();
 
         $queueControllerPluginFactory = $factory($serviceManager, QueuePlugin::class);
         static::assertInstanceOf(QueuePlugin::class, $queueControllerPluginFactory);

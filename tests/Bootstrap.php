@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,18 +18,20 @@
  * <http://www.doctrine-project.org>.
  */
 
-if  (
-    !($loader = @include __DIR__ . '/../vendor/autoload.php')
-    && !($loader = @include __DIR__ . '/../../../autoload.php')
-) {
+use SlmQueueTest\Util\ServiceManagerFactory;
+
+$loader = @include __DIR__ . '/../vendor/autoload.php';
+
+if (! $loader) {
+    $loader = @include __DIR__ . '/../../../autoload.php';
+}
+
+if (! $loader) {
     throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
 }
 
-/* @var $loader \Composer\Autoload\ClassLoader */
-$loader->add('SlmQueueTest\\', __DIR__);
-
-if (!$config = @include __DIR__ . '/TestConfiguration.php') {
+if (! $config = @include __DIR__ . '/TestConfiguration.php') {
     $config = require __DIR__ . '/TestConfiguration.php.dist';
 }
 
-\SlmQueueTest\Util\ServiceManagerFactory::setConfig($config);
+ServiceManagerFactory::setConfig($config);

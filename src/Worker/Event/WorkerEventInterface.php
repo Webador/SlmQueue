@@ -9,12 +9,12 @@ interface WorkerEventInterface
     /**
      * Various events you can subscribe to
      */
-    const EVENT_BOOTSTRAP     = 'bootstrap';
-    const EVENT_FINISH        = 'finish';
-    const EVENT_PROCESS_QUEUE = 'process.queue';
-    const EVENT_PROCESS_JOB   = 'process.job';
-    const EVENT_PROCESS_IDLE  = 'process.idle';
-    const EVENT_PROCESS_STATE = 'process.state';
+    public const EVENT_BOOTSTRAP     = 'bootstrap';
+    public const EVENT_FINISH        = 'finish';
+    public const EVENT_PROCESS_QUEUE = 'process.queue';
+    public const EVENT_PROCESS_JOB   = 'process.job';
+    public const EVENT_PROCESS_IDLE  = 'process.idle';
+    public const EVENT_PROCESS_STATE = 'process.state';
 
     /**
      * @return WorkerInterface

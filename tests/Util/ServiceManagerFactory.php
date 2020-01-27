@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,8 +20,9 @@
 
 namespace SlmQueueTest\Util;
 
-use Laminas\ServiceManager\ServiceManager;
+use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\Service\ServiceManagerConfig;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Utility used to retrieve a freshly bootstrapped application's service manager
@@ -65,9 +67,10 @@ class ServiceManagerFactory
         $serviceManager->setFactory('ServiceListener', 'Laminas\Mvc\Service\ServiceListenerFactory');
         $serviceManager->setAllowOverride(false);
 
-        /** @var $moduleManager \Laminas\ModuleManager\ModuleManager */
+        /** @var $moduleManager ModuleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
+
         return $serviceManager;
     }
 }

@@ -2,20 +2,20 @@
 
 namespace SlmQueueTest\Controller;
 
+use Laminas\Mvc\Router\RouteMatch;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Controller\Exception\WorkerProcessException;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleQueueFactory;
 use SlmQueueTest\Asset\SimpleWorker;
-use SlmQueue\Controller\Exception\WorkerProcessException;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\ProcessQueueStrategy;
-use Laminas\Mvc\Router\RouteMatch;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\ServiceManager;
 
 class AbstractControllerTest extends TestCase
 {
@@ -45,7 +45,7 @@ class AbstractControllerTest extends TestCase
         ];
 
         $this->queuePluginManager = new QueuePluginManager($serviceManager, $config);
-        $this->controller         = new SimpleController($worker, $this->queuePluginManager);
+        $this->controller = new SimpleController($worker, $this->queuePluginManager);
     }
 
     public function testThrowExceptionIfQueueIsUnknown()

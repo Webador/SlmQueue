@@ -26,7 +26,7 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function __construct($name, JobPluginManager $jobPluginManager)
     {
-        $this->name             = $name;
+        $this->name = $name;
         $this->jobPluginManager = $jobPluginManager;
     }
 
@@ -54,18 +54,18 @@ abstract class AbstractQueue implements QueueInterface
      * the decoded JSON value to create a job instance, configure it
      * and return it.
      *
-     * @param  string $string
-     * @param  array  $metadata
-     * @return \SlmQueue\Job\JobInterface
+     * @param string $string
+     * @param array  $metadata
+     * @return JobInterface
      */
     public function unserializeJob($string, array $metadata = [])
     {
-        $data     =  json_decode($string, true);
-        $name     =  $data['metadata']['__name__'];
+        $data = json_decode($string, true);
+        $name = $data['metadata']['__name__'];
         $metadata += $data['metadata'];
-        $content  =  $data['content'];
+        $content = $data['content'];
 
-        /** @var $job \SlmQueue\Job\JobInterface */
+        /** @var $job JobInterface */
         $job = $this->getJobPluginManager()->get($name);
 
         if ($job instanceof BinaryMessageInterface) {
@@ -92,7 +92,7 @@ abstract class AbstractQueue implements QueueInterface
      * will be set and be available as metadata. An invokable job has no service
      * name and therefore the FQCN will be used.
      *
-     * @param  JobInterface $job The job to persist
+     * @param JobInterface $job The job to persist
      * @return string
      */
     public function serializeJob(JobInterface $job)
@@ -100,8 +100,8 @@ abstract class AbstractQueue implements QueueInterface
         $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
 
         $data = [
-            'content'  => serialize($job->getContent()),
-            'metadata' => $job->getMetadata()
+            'content' => serialize($job->getContent()),
+            'metadata' => $job->getMetadata(),
         ];
 
         if ($job instanceof BinaryMessageInterface) {

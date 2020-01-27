@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
 
 class MaxRunsStrategy extends AbstractStrategy
 {

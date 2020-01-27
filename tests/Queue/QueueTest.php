@@ -2,14 +2,13 @@
 
 namespace SlmQueueTest\Queue;
 
-use DateTime;
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Job\JobPluginManager;
+use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
-use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\SimpleQueue;
-use SlmQueue\Job\JobPluginManager;
-use Laminas\ServiceManager\ServiceManager;
 
 class QueueTest extends TestCase
 {
@@ -20,11 +19,11 @@ class QueueTest extends TestCase
 
     public function setUp(): void
     {
-        $this->job     = new SimpleJob;
+        $this->job = new SimpleJob();
         $this->jobName = SimpleJob::class;
         $serviceManager = new ServiceManager();
 
-        $this->binaryJob     = new BinaryJob;
+        $this->binaryJob = new BinaryJob();
         $this->binaryJobName = BinaryJob::class;
 
         $this->jobPluginManager = $this->createMock(JobPluginManager::class, [], [$serviceManager]);
@@ -34,9 +33,9 @@ class QueueTest extends TestCase
     public function testCanPushThenPopJob()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $this->queue->push($this->job);
         $job = $this->queue->pop();
@@ -44,16 +43,16 @@ class QueueTest extends TestCase
         static::assertInstanceOf($this->jobName, $job);
 
         $expected = spl_object_hash($this->job);
-        $actual   = spl_object_hash($job);
+        $actual = spl_object_hash($job);
         static::assertEquals($expected, $actual);
     }
 
     public function testCanPushThenPopWithJobContent()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $this->job->setContent('Foo');
 
@@ -66,9 +65,9 @@ class QueueTest extends TestCase
     public function testCanPushThenPopWithJobMetadata()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $this->job->setMetadata('Foo', 'Bar');
 
@@ -88,7 +87,7 @@ class QueueTest extends TestCase
         $job->setContent('Foo');
 
         $expected = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $actual   = $this->queue->serializeJob($job);
+        $actual = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
     }
@@ -99,7 +98,7 @@ class QueueTest extends TestCase
         $job->setMetadata('Foo', 'Bar');
 
         $expected = '{"content":"N;","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $actual   = $this->queue->serializeJob($job);
+        $actual = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
     }
@@ -111,7 +110,7 @@ class QueueTest extends TestCase
         $job->setMetadata('Foo', 'Bar');
 
         $expected = '{"content":"s:3:\"Foo\";","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $actual   = $this->queue->serializeJob($job);
+        $actual = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
     }
@@ -122,7 +121,7 @@ class QueueTest extends TestCase
         $job->setMetadata('__name__', 'SimpleJob');
 
         $expected = '{"content":"N;","metadata":{"__name__":"SimpleJob"}}';
-        $actual   = $this->queue->serializeJob($job);
+        $actual = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
     }
@@ -130,42 +129,42 @@ class QueueTest extends TestCase
     public function testCanCreateJobWithFQCN()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $payload = '{"content":"N;","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $job     = $this->queue->unserializeJob($payload);
+        $job = $this->queue->unserializeJob($payload);
 
         $expected = spl_object_hash($this->job);
-        $actual   = spl_object_hash($job);
+        $actual = spl_object_hash($job);
         static::assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithStringName()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with('SimpleJob')
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with('SimpleJob')
+            ->will($this->returnValue($this->job));
 
         $payload = '{"content":"N;","metadata":{"__name__":"SimpleJob"}}';
-        $job     = $this->queue->unserializeJob($payload);
+        $job = $this->queue->unserializeJob($payload);
 
         $expected = spl_object_hash($this->job);
-        $actual   = spl_object_hash($job);
+        $actual = spl_object_hash($job);
         static::assertEquals($expected, $actual);
     }
 
     public function testCanCreateJobWithContent()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $payload = '{"content":"s:3:\"Foo\";","metadata":{"__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $job     = $this->queue->unserializeJob($payload);
+        $job = $this->queue->unserializeJob($payload);
 
         static::assertEquals('Foo', $job->getContent());
     }
@@ -173,15 +172,16 @@ class QueueTest extends TestCase
     public function testCanCreateJobWithBinaryContent()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->binaryJobName)
-                               ->will($this->returnValue($this->binaryJob));
+            ->method('get')
+            ->with($this->binaryJobName)
+            ->will($this->returnValue($this->binaryJob));
 
         // 1x1px image
         $image = file_get_contents(dirname(__DIR__) . '/Asset/1x1px.png');
 
-        $payload = '{"content":"' . base64_encode(serialize($image)) . '","metadata":{"__name__":"SlmQueueTest\\\Asset\\\BinaryJob"}}';
-        $job     = $this->queue->unserializeJob($payload);
+        $payload = '{"content":"' . base64_encode(serialize($image)) . '",' .
+            '"metadata":{"__name__":"SlmQueueTest\\\Asset\\\BinaryJob"}}';
+        $job = $this->queue->unserializeJob($payload);
 
         static::assertEquals($image, $job->getContent());
     }
@@ -189,12 +189,12 @@ class QueueTest extends TestCase
     public function testCanCreateJobWithMetadata()
     {
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with($this->jobName)
-                               ->will($this->returnValue($this->job));
+            ->method('get')
+            ->with($this->jobName)
+            ->will($this->returnValue($this->job));
 
         $payload = '{"content":"N;","metadata":{"Foo":"Bar","__name__":"SlmQueueTest\\\Asset\\\SimpleJob"}}';
-        $job     = $this->queue->unserializeJob($payload);
+        $job = $this->queue->unserializeJob($payload);
 
         static::assertEquals('Bar', $job->getMetadata('Foo'));
     }
@@ -203,9 +203,9 @@ class QueueTest extends TestCase
     {
         $job = new QueueAwareJob();
         $this->jobPluginManager->expects($this->once())
-                               ->method('get')
-                               ->with('QueueAwareJob')
-                               ->will($this->returnValue($job));
+            ->method('get')
+            ->with('QueueAwareJob')
+            ->will($this->returnValue($job));
 
         $payload = '{"__name__":"QueueAwareJob","content":"N;","metadata":{"__name__":"QueueAwareJob"}}';
         $this->queue->unserializeJob($payload);

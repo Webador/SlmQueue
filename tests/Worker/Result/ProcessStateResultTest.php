@@ -9,7 +9,7 @@ class ProcessStateResultTest extends TestCase
 {
     public function testGetsState()
     {
-        $state  = 'some state';
+        $state = 'some state';
         $result = ProcessStateResult::withState($state);
 
         static::assertEquals($state, $result->getState());

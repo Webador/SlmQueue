@@ -3,7 +3,9 @@
 namespace SlmQueueTest\Worker\Event;
 
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\WorkerInterface;
 
 class ProcessQueueEventTest extends TestCase
 {
@@ -14,10 +16,10 @@ class ProcessQueueEventTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue   = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker  = $this->createMock(\SlmQueue\Worker\WorkerInterface::class);
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = $this->createMock(WorkerInterface::class);
         $this->options = ['foo' => 'bar'];
-        $this->event   = new ProcessQueueEvent($this->worker, $this->queue, $this->options);
+        $this->event = new ProcessQueueEvent($this->worker, $this->queue, $this->options);
     }
 
     public function testSetsWorkerAsTarget()

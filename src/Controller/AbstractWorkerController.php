@@ -2,11 +2,11 @@
 
 namespace SlmQueue\Controller;
 
+use Laminas\Mvc\Controller\AbstractActionController;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Worker\WorkerInterface;
-use Laminas\Mvc\Controller\AbstractActionController;
 
 /**
  * AbstractController
@@ -29,7 +29,7 @@ abstract class AbstractWorkerController extends AbstractActionController
      */
     public function __construct(WorkerInterface $worker, QueuePluginManager $queuePluginManager)
     {
-        $this->worker             = $worker;
+        $this->worker = $worker;
         $this->queuePluginManager = $queuePluginManager;
     }
 
@@ -42,8 +42,8 @@ abstract class AbstractWorkerController extends AbstractActionController
     public function processAction()
     {
         $options = $this->params()->fromRoute();
-        $name    = $options['queue'];
-        $queue   = $this->queuePluginManager->get($name);
+        $name = $options['queue'];
+        $queue = $this->queuePluginManager->get($name);
 
         try {
             $messages = $this->worker->processQueue($queue, $options);
@@ -59,8 +59,8 @@ abstract class AbstractWorkerController extends AbstractActionController
     }
 
     /**
-     * @param  string $queueName
-     * @param  array  $messages
+     * @param string $queueName
+     * @param array  $messages
      * @return string
      */
     protected function formatOutput($queueName, array $messages = [])

@@ -2,10 +2,13 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\InterruptStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
 
@@ -18,19 +21,19 @@ class InterruptStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new InterruptStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -43,20 +46,20 @@ class InterruptStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler_NoSignal()
+    public function testOnStopConditionCheckHandlerNoSignal()
     {
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNull($result);
     }
 
-    public function testOnStopConditionCheckHandler_SIGTERM()
+    public function testOnStopConditionCheckHandlerSIGTERM()
     {
         $this->listener->onPCNTLSignal(SIGTERM);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 
-    public function testOnStopConditionCheckHandler_SIGINT()
+    public function testOnStopConditionCheckHandlerSIGINT()
     {
         $this->listener->onPCNTLSignal(SIGINT);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));

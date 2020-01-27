@@ -10,8 +10,8 @@ class ConfigProvider
         $config = $module->getConfig();
 
         return [
-            'dependencies'  => $config['service_manager'],
-            'slm_queue'     => $config['slm_queue'],
+            'dependencies' => $config['service_manager'],
+            'slm_queue' => $config['slm_queue'],
         ];
     }
 }

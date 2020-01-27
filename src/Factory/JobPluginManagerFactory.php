@@ -2,11 +2,10 @@
 
 namespace SlmQueue\Factory;
 
-use SlmQueue\Job\JobPluginManager;
-use Laminas\ServiceManager\Config;
+use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
+use SlmQueue\Job\JobPluginManager;
 
 /**
  * JobPluginManagerFactory

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,11 +17,14 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
+use SlmQueueTest\Asset\SimpleQueue;
+
 return [
     'service_manager' => [
         'factories' => [
-            'SlmQueueTest\Asset\SimpleWorker'    => 'SlmQueue\Factory\WorkerFactory',
-        ]
+            'SlmQueueTest\Asset\SimpleWorker' => 'SlmQueue\Factory\WorkerFactory',
+        ],
     ],
     'slm_queue' => [
         /**
@@ -33,15 +37,15 @@ return [
                      * avoid calling deprecated ServiceLocator on SM3
                      */
                     if ($locator->has('SlmQueue\Job\JobPluginManager')) {
-                        $parentLocator    = $locator;
+                        $parentLocator = $locator;
                     } else {
-                        $parentLocator    = $locator->getServiceLocator();
+                        $parentLocator = $locator->getServiceLocator();
                     }
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
-                    return new \SlmQueueTest\Asset\SimpleQueue('basic-queue', $jobPluginManager);
-                }
-            ]
-        ]
+                    return new SimpleQueue('basic-queue', $jobPluginManager);
+                },
+            ],
+        ],
     ],
 ];

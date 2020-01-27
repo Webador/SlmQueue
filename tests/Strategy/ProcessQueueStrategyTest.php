@@ -2,11 +2,14 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
@@ -20,19 +23,19 @@ class ProcessQueueStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new ProcessQueueStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))
@@ -56,10 +59,12 @@ class ProcessQueueStrategyTest extends TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredIdle = false;
-        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
+        $this->worker->getEventManager()->attach(
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             function ($e) use (&$triggeredIdle) {
                 $triggeredIdle = true;
-            });
+            }
+        );
 
         $result = $this->listener->onJobPop($event);
 
@@ -79,12 +84,14 @@ class ProcessQueueStrategyTest extends TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredIdle = false;
-        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_IDLE,
+        $this->worker->getEventManager()->attach(
+            WorkerEventInterface::EVENT_PROCESS_IDLE,
             function ($e) use (&$triggeredIdle) {
                 $triggeredIdle = true;
 
                 return ExitWorkerLoopResult::withReason('some reason');
-            });
+            }
+        );
 
         $result = $this->listener->onJobPop($event);
 
@@ -95,7 +102,7 @@ class ProcessQueueStrategyTest extends TestCase
 
     public function testJobPopWithJobTriggersProcessJobEvent()
     {
-        $job        = new SimpleJob();
+        $job = new SimpleJob();
         $popOptions = [];
         $this->queue->expects($this->at(0))
             ->method('pop')
@@ -105,10 +112,12 @@ class ProcessQueueStrategyTest extends TestCase
         $event = new ProcessQueueEvent($this->worker, $this->queue, $popOptions);
 
         $triggeredProcessJobEvent = false;
-        $this->worker->getEventManager()->attach(WorkerEventInterface::EVENT_PROCESS_JOB,
+        $this->worker->getEventManager()->attach(
+            WorkerEventInterface::EVENT_PROCESS_JOB,
             function ($e) use (&$triggeredProcessJobEvent) {
                 $triggeredProcessJobEvent = true;
-            });
+            }
+        );
 
         $result = $this->listener->onJobPop($event);
 
@@ -119,7 +128,7 @@ class ProcessQueueStrategyTest extends TestCase
 
     public function testOnJobProcess()
     {
-        $job   = new SimpleJob();
+        $job = new SimpleJob();
         $event = new ProcessJobEvent($job, $this->worker, $this->queue);
 
         $result = $this->listener->onJobProcess($event);
@@ -129,5 +138,4 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertEquals($job, $event->getJob());
         static::assertSame('bar', $event->getJob()->getMetadata('foo'));
     }
-
 }

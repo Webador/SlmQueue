@@ -11,12 +11,14 @@ class JobPluginManager extends AbstractPluginManager
 {
     /**
      * SM2
+     *
      * @var bool
      */
     protected $shareByDefault = false;
 
     /**
      * SM3
+     *
      * @var bool
      */
     protected $sharedByDefault = false;
@@ -25,8 +27,8 @@ class JobPluginManager extends AbstractPluginManager
      * @inheritdoc
      *
      * @param string $name
-     * @param array $options
-     * @param bool $usePeeringServiceManagers
+     * @param array  $options
+     * @param bool   $usePeeringServiceManagers
      * @return JobInterface
      */
     public function get($name, $options = [], $usePeeringServiceManagers = true)

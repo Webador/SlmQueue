@@ -11,7 +11,7 @@ class SimpleQueue extends AbstractQueue
      * @var array
      */
     protected $jobs;
-    
+
     /**
      * @var array
      */
@@ -33,9 +33,9 @@ class SimpleQueue extends AbstractQueue
     public function pop(array $options = [])
     {
         $this->options = $options;
-        
+
         $payload = array_pop($this->jobs);
-        if (!$payload) {
+        if (! $payload) {
             return;
         }
 
@@ -53,9 +53,10 @@ class SimpleQueue extends AbstractQueue
             }
         }
     }
-    
+
     /**
      * Return used options param
+     *
      * @return mixed
      */
     public function getUsedOptions()

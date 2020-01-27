@@ -2,17 +2,17 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\WorkerLifetimeStrategy;
 use SlmQueue\Worker\Event\BootstrapEvent;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
-use Laminas\EventManager\EventManagerInterface;
 
 class WorkerLifetimeStrategyTest extends TestCase
 {
@@ -26,8 +26,8 @@ class WorkerLifetimeStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new WorkerLifetimeStrategy();
     }
 

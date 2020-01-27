@@ -2,8 +2,8 @@
 
 namespace SlmQueueTest\Asset;
 
-use SlmQueue\Strategy\AbstractStrategy;
 use Laminas\EventManager\EventManagerInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 
 class SimpleStrategy extends AbstractStrategy
 {

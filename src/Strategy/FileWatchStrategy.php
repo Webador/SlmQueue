@@ -2,11 +2,12 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
+use SplFileInfo;
 
 class FileWatchStrategy extends AbstractStrategy
 {
@@ -42,7 +43,7 @@ class FileWatchStrategy extends AbstractStrategy
     public function setPattern($pattern)
     {
         $this->pattern = $pattern;
-        $this->files   = [];
+        $this->files = [];
     }
 
     /**
@@ -94,7 +95,7 @@ class FileWatchStrategy extends AbstractStrategy
     }
 
     /**
-     * @param  WorkerEventInterface $event
+     * @param WorkerEventInterface $event
      * @return ExitWorkerLoopResult|void
      */
     public function onStopConditionCheck(WorkerEventInterface $event)
@@ -107,14 +108,14 @@ class FileWatchStrategy extends AbstractStrategy
             }
         }
 
-        if (!count($this->files)) {
+        if (! count($this->files)) {
             $this->constructFileList();
 
             $this->state = sprintf("watching %s files for modifications", count($this->files));
         }
 
         foreach ($this->files as $checksum => $file) {
-            if (!file_exists($file) || !is_readable($file) || (string) $checksum !== hash_file('crc32', $file)) {
+            if (! file_exists($file) || ! is_readable($file) || (string) $checksum !== hash_file('crc32', $file)) {
                 $reason = sprintf("file modification detected for '%s'", $file);
 
                 return ExitWorkerLoopResult::withReason($reason);
@@ -127,16 +128,16 @@ class FileWatchStrategy extends AbstractStrategy
      */
     protected function constructFileList()
     {
-        $iterator   = new RecursiveDirectoryIterator('.', RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
-        $files      = new RecursiveIteratorIterator($iterator);
+        $iterator = new RecursiveDirectoryIterator('.', RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $files = new RecursiveIteratorIterator($iterator);
 
-        /** @var $file \SplFileInfo  */
+        /** @var $file SplFileInfo */
         foreach ($files as $file) {
             if ($file->isDir()) {
                 continue;
             }
 
-            if (!preg_match($this->pattern, $file)) {
+            if (! preg_match($this->pattern, $file)) {
                 continue;
             }
 

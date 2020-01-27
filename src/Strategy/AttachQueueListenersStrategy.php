@@ -2,11 +2,11 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\Event\WorkerEventInterface;
-use SlmQueue\Worker\Event\BootstrapEvent;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
+use SlmQueue\Worker\AbstractWorker;
+use SlmQueue\Worker\Event\BootstrapEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 
 class AttachQueueListenersStrategy extends AbstractStrategy
 {
@@ -26,7 +26,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
      */
     public function __construct(StrategyPluginManager $pluginManager, array $strategyConfig)
     {
-        $this->pluginManager  = $pluginManager;
+        $this->pluginManager = $pluginManager;
         $this->strategyConfig = $strategyConfig;
     }
 
@@ -48,13 +48,13 @@ class AttachQueueListenersStrategy extends AbstractStrategy
     public function attachQueueListeners(BootstrapEvent $bootstrapEvent)
     {
         /** @var AbstractWorker $worker */
-        $worker       = $bootstrapEvent->getWorker();
-        $name         = $bootstrapEvent->getQueue()->getName();
+        $worker = $bootstrapEvent->getWorker();
+        $name = $bootstrapEvent->getQueue()->getName();
         $eventManager = $worker->getEventManager();
 
         $this->detach($eventManager);
 
-        if (!isset($this->strategyConfig[$name])) {
+        if (! isset($this->strategyConfig[$name])) {
             $name = 'default'; // We want to make sure the default process queue is always attached
         }
 
@@ -64,10 +64,10 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options  = [];
+                $options = [];
             }
 
-            if (!is_string($strategy) || !is_array($options)) {
+            if (! is_string($strategy) || ! is_array($options)) {
                 continue;
             }
 
@@ -80,7 +80,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             /** @var ListenerAggregateInterface $listener */
             $listener = $this->pluginManager->get($strategy, $options);
 
-            if (!is_null($priority)) {
+            if (! is_null($priority)) {
                 $listener->attach($eventManager, $priority);
             } else {
                 $listener->attach($eventManager);

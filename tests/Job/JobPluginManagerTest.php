@@ -2,12 +2,12 @@
 
 namespace SlmQueueTest\Job;
 
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
-use SlmQueueTest\Asset\SimpleJob;
-use SlmQueueTest\Util\ServiceManagerFactory;
 use SlmQueue\Job\Exception\RuntimeException;
 use SlmQueue\Job\JobPluginManager;
-use Laminas\ServiceManager\ServiceManager;
+use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Util\ServiceManagerFactory;
 
 class JobPluginManagerTest extends TestCase
 {
@@ -32,7 +32,7 @@ class JobPluginManagerTest extends TestCase
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
 
-        $firstInstance  = $jobPluginManager->get(SimpleJob::class);
+        $firstInstance = $jobPluginManager->get(SimpleJob::class);
         $secondInstance = $jobPluginManager->get(SimpleJob::class);
 
         static::assertNotSame($firstInstance, $secondInstance);

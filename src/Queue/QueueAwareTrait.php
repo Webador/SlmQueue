@@ -22,7 +22,7 @@ trait QueueAwareTrait
     /**
      * Inject a Queue instance
      *
-     * @param  QueueInterface $queue
+     * @param QueueInterface $queue
      * @return void
      */
     public function setQueue(QueueInterface $queue)

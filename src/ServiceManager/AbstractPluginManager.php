@@ -2,9 +2,9 @@
 
 namespace SlmQueue\ServiceManager;
 
+use Laminas\Mvc\Controller\Plugin\PluginInterface;
 use Laminas\ServiceManager\AbstractPluginManager as LaminasAbstractPluginManager;
 use Laminas\Stdlib\DispatchableInterface as Dispatchable;
-use Laminas\Mvc\Controller\Plugin\PluginInterface;
 
 /**
  * AbstractPluginManager
@@ -42,6 +42,7 @@ abstract class AbstractPluginManager extends LaminasAbstractPluginManager implem
     public function setController(Dispatchable $controller)
     {
         $this->controller = $controller;
+
         return $this;
     }
 }

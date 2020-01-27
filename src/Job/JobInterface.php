@@ -15,7 +15,7 @@ interface JobInterface extends MessageInterface
     /**
      * Set the identifier of the job (it proxies to its metadata)
      *
-     * @param  mixed $id
+     * @param mixed $id
      * @return JobInterface
      */
     public function setId($id);

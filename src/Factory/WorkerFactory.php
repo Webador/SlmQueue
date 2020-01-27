@@ -1,14 +1,15 @@
 <?php
+
 namespace SlmQueue\Factory;
 
 use Interop\Container\ContainerInterface;
-use SlmQueue\Exception\RuntimeException;
-use SlmQueue\Strategy\StrategyPluginManager;
-use SlmQueue\Worker\WorkerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use SlmQueue\Exception\RuntimeException;
+use SlmQueue\Strategy\StrategyPluginManager;
+use SlmQueue\Worker\WorkerInterface;
 
 /**
  * WorkerFactory
@@ -20,10 +21,10 @@ class WorkerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config     = $container->get('config');
+        $config = $container->get('config');
         $strategies = $config['slm_queue']['worker_strategies']['default'];
 
-        $eventManager          = $container->has('EventManager') ? $container->get('EventManager') : new EventManager;
+        $eventManager = $container->has('EventManager') ? $container->get('EventManager') : new EventManager();
         $listenerPluginManager = $container->get(StrategyPluginManager::class);
         $this->attachWorkerListeners($eventManager, $listenerPluginManager, $strategies);
 
@@ -36,9 +37,9 @@ class WorkerFactory implements FactoryInterface
     /**
      * Create service
      *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @param  null                    $canonicalName
-     * @param  null                    $requestedName
+     * @param ServiceLocatorInterface $serviceLocator
+     * @param null                    $canonicalName
+     * @param null                    $requestedName
      * @return WorkerInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
@@ -61,10 +62,10 @@ class WorkerFactory implements FactoryInterface
             // no options given, name stored as value
             if (is_numeric($strategy) && is_string($options)) {
                 $strategy = $options;
-                $options  = [];
+                $options = [];
             }
 
-            if (!is_string($strategy) || !is_array($options)) {
+            if (! is_string($strategy) || ! is_array($options)) {
                 continue;
             }
 
@@ -76,7 +77,7 @@ class WorkerFactory implements FactoryInterface
 
             $listener = $listenerPluginManager->get($strategy, $options);
 
-            if (!is_null($priority)) {
+            if (! is_null($priority)) {
                 $listener->attach($eventManager, $priority);
             } else {
                 $listener->attach($eventManager);

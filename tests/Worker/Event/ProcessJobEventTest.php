@@ -3,7 +3,10 @@
 namespace SlmQueueTest\Worker\Event;
 
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Job\JobInterface;
+use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\WorkerInterface;
 
 class ProcessJobEventTest extends TestCase
 {
@@ -14,10 +17,10 @@ class ProcessJobEventTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue  = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker = $this->createMock(\SlmQueue\Worker\WorkerInterface::class);
-        $this->job    = $this->createMock(\SlmQueue\Job\JobInterface::class);
-        $this->event  = new ProcessJobEvent($this->job, $this->worker, $this->queue);
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = $this->createMock(WorkerInterface::class);
+        $this->job = $this->createMock(JobInterface::class);
+        $this->event = new ProcessJobEvent($this->job, $this->worker, $this->queue);
     }
 
     public function testSetsWorkerAsTarget()
@@ -39,5 +42,4 @@ class ProcessJobEventTest extends TestCase
     {
         static::assertEquals(ProcessJobEvent::JOB_STATUS_UNKNOWN, $this->event->getResult());
     }
-
 }

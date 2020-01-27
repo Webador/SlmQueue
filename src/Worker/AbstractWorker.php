@@ -2,15 +2,14 @@
 
 namespace SlmQueue\Worker;
 
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ResponseCollection;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\FinishEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
-use Laminas\EventManager\ResponseCollection;
-use Laminas\Stdlib\ArrayUtils;
 
 /**
  * AbstractWorker
@@ -30,7 +29,7 @@ abstract class AbstractWorker implements WorkerInterface
         $eventManager->setIdentifiers([
             __CLASS__,
             get_called_class(),
-            'SlmQueue\Worker\WorkerInterface'
+            'SlmQueue\Worker\WorkerInterface',
         ]);
 
         $this->eventManager = $eventManager;
@@ -44,7 +43,7 @@ abstract class AbstractWorker implements WorkerInterface
         $this->eventManager->triggerEvent(new BootstrapEvent($this, $queue));
 
         $shouldExitWorkerLoop = false;
-        while (!$shouldExitWorkerLoop) {
+        while (! $shouldExitWorkerLoop) {
             /** @var ResponseCollection $exitReasons */
             $exitReasons = $this->eventManager->triggerEventUntil(
                 function ($response) {

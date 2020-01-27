@@ -2,11 +2,14 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\FileWatchStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
@@ -20,19 +23,19 @@ class FileWatchStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new FileWatchStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -78,7 +81,7 @@ class FileWatchStrategyTest extends TestCase
     public function testCanFileFilesByPattern()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
@@ -92,14 +95,17 @@ class FileWatchStrategyTest extends TestCase
     public function testWatchedFileChangeStopsPropagation()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNull($result);
 
         static::assertCount(1, $this->listener->getFiles());
@@ -107,8 +113,11 @@ class FileWatchStrategyTest extends TestCase
         // change the file
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
         static::assertStringContainsString('file modification detected for', $result->getReason());
@@ -117,14 +126,17 @@ class FileWatchStrategyTest extends TestCase
     public function testWatchedFileRemovedStopsPropagation()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNull($result);
 
         static::assertCount(1, $this->listener->getFiles());
@@ -132,8 +144,11 @@ class FileWatchStrategyTest extends TestCase
         // remove the file
         unlink('tests/build/filewatch.txt');
 
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
         static::assertStringContainsString('file modification detected for', $result->getReason());
@@ -142,7 +157,7 @@ class FileWatchStrategyTest extends TestCase
     public function testStopConditionCheckIdlingThrottling()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');

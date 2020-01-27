@@ -3,7 +3,9 @@
 namespace SlmQueueTest\Worker\Event;
 
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\FinishEvent;
+use SlmQueue\Worker\WorkerInterface;
 
 class FinishEventTest extends TestCase
 {
@@ -13,9 +15,9 @@ class FinishEventTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue  = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker = $this->createMock(\SlmQueue\Worker\WorkerInterface::class);
-        $this->event  = new FinishEvent($this->worker, $this->queue);
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = $this->createMock(WorkerInterface::class);
+        $this->event = new FinishEvent($this->worker, $this->queue);
     }
 
     public function testSetsWorkerAsTarget()
@@ -27,5 +29,4 @@ class FinishEventTest extends TestCase
     {
         static::assertEquals($this->queue, $this->event->getQueue());
     }
-
 }

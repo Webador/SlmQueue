@@ -2,11 +2,14 @@
 
 namespace SlmQueueTest\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\LogJobStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
 
@@ -20,20 +23,20 @@ class LogJobTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
-        $this->console  = $this->createMock('Laminas\Console\Adapter\AdapterInterface');
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
+        $this->console = $this->createMock('Laminas\Console\Adapter\AdapterInterface');
         $this->listener = new LogJobStrategy($this->console);
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -44,7 +47,7 @@ class LogJobTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnLogJobProcessStart_SendsOutputToConsole()
+    public function testOnLogJobProcessStartSendsOutputToConsole()
     {
         $this->console->expects($this->once())->method('write')
             ->with('Processing job SlmQueueTest\Asset\SimpleJob...');
@@ -52,22 +55,25 @@ class LogJobTest extends TestCase
         $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
     }
 
-    public function testOnLogJobProcessStart_DoesNotGenerateState()
+    public function testOnLogJobProcessStartDoesNotGenerateState()
     {
         $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
 
         static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
 
-    public function testOnLogJobProcessStart_DoesNotHaltPropagation()
+    public function testOnLogJobProcessStartDoesNotHaltPropagation()
     {
-        $result = $this->listener->onLogJobProcessStart(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onLogJobProcessStart(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
 
         static::assertNull($result);
     }
 
-    public function testOnLogJobProcessDone_SendsOutputToConsole()
+    public function testOnLogJobProcessDoneSendsOutputToConsole()
     {
         $this->console->expects($this->once())->method('writeLine')
             ->with('Done!');
@@ -75,17 +81,20 @@ class LogJobTest extends TestCase
         $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
     }
 
-    public function testOnLogJobProcessDone_DoesNotGenerateState()
+    public function testOnLogJobProcessDoneDoesNotGenerateState()
     {
         $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
 
         static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
 
-    public function testOnLogJobProcessDone_DoesNotHaltPropagation()
+    public function testOnLogJobProcessDoneDoesNotHaltPropagation()
     {
-        $result = $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onLogJobProcessDone(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
 
         static::assertNull($result);
     }

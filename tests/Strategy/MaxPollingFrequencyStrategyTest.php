@@ -2,10 +2,13 @@
 
 namespace SlmQueueTest\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueueTest\Asset\SimpleWorker;
 
 class MaxPollingFrequencyStrategyTest extends TestCase
@@ -17,14 +20,14 @@ class MaxPollingFrequencyStrategyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new MaxPollingFrequencyStrategy();
     }
 
     public function testListenerInstanceOfAbstractStrategy()
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
     public function testMaxPollingFrequencySetter()
@@ -36,7 +39,7 @@ class MaxPollingFrequencyStrategyTest extends TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -53,7 +56,7 @@ class MaxPollingFrequencyStrategyTest extends TestCase
         $this->listener->onQueueProcessFinish(new ProcessQueueEvent($this->worker, $this->queue));
         $this->listener->onQueueProcessFinish(new ProcessQueueEvent($this->worker, $this->queue));
         $endTime = microtime(true);
-        $delay   = round($endTime - $startTime);
+        $delay = round($endTime - $startTime);
 
         static::assertEquals(1, $delay);
     }

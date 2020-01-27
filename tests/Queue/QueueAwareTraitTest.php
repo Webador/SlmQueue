@@ -2,11 +2,11 @@
 
 namespace SlmQueueTest\Queue;
 
+use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as TestCase;
+use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
-use SlmQueue\Job\JobPluginManager;
-use Laminas\ServiceManager\ServiceManager;
 
 class QueueAwareTraitTest extends TestCase
 {
@@ -17,10 +17,11 @@ class QueueAwareTraitTest extends TestCase
 
     public function setUp(): void
     {
-        if (version_compare(phpversion() , '5.4', 'lt')) {
+        if (version_compare(phpversion(), '5.4', 'lt')) {
             $this->markTestSkipped(
                 'Traits are not available in php53.'
             );
+
             return;
         }
 

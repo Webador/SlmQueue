@@ -2,15 +2,15 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ResponseCollection;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Laminas\EventManager\EventManagerInterface;
-use Laminas\EventManager\ResponseCollection;
 
 class ProcessQueueStrategy extends AbstractStrategy
 {
@@ -38,15 +38,15 @@ class ProcessQueueStrategy extends AbstractStrategy
     public function onJobPop(ProcessQueueEvent $processQueueEvent)
     {
         /** @var AbstractWorker $worker */
-        $worker       = $processQueueEvent->getWorker();
-        $queue        = $processQueueEvent->getQueue();
-        $options      = $processQueueEvent->getOptions();
+        $worker = $processQueueEvent->getWorker();
+        $queue = $processQueueEvent->getQueue();
+        $options = $processQueueEvent->getOptions();
         $eventManager = $worker->getEventManager();
 
-        $job          = $queue->pop($options);
+        $job = $queue->pop($options);
 
         // The queue may return null, for instance if a timeout was set
-        if (!$job instanceof JobInterface) {
+        if (! $job instanceof JobInterface) {
             /** @var ResponseCollection $results */
             $results = $eventManager->triggerEventUntil(
                 function ($response) {
@@ -68,12 +68,12 @@ class ProcessQueueStrategy extends AbstractStrategy
     }
 
     /**
-     * @param  ProcessJobEvent $processJobEvent
+     * @param ProcessJobEvent $processJobEvent
      * @return void
      */
     public function onJobProcess(ProcessJobEvent $processJobEvent)
     {
-        $job   = $processJobEvent->getJob();
+        $job = $processJobEvent->getJob();
         $queue = $processJobEvent->getQueue();
 
         /** @var AbstractWorker $worker */
