@@ -1,13 +1,11 @@
 {
     "name": "slm/queue",
-    "description": "Zend Framework module that integrates with various queue management systems",
+    "description": "Laminas module that integrates with various queue management systems",
     "license": "BSD-3-Clause",
     "type": "library",
     "keywords": [
-        "zendframework",
-        "zf3",
-        "zf2",
-        "expressive",
+        "laminas",
+        "mezzio",
         "queue",
         "job"
     ],
@@ -35,19 +33,19 @@
     ],
     "require": {
         "php": ">=5.5",
-        "zendframework/zend-eventmanager": "^2.6 || ^3.0",
-        "zendframework/zend-servicemanager": "^2.7 || ^3.0",
-        "zendframework/zend-stdlib": "^2.7 || ^3.0"
+        "laminas/laminas-eventmanager": "^2.6 || ^3.0",
+        "laminas/laminas-servicemanager": "^2.7 || ^3.0",
+        "laminas/laminas-stdlib": "^2.7 || ^3.0"
     },
     "require-dev": {
-        "zendframework/zend-mvc": "^2.5",
-        "zendframework/zend-modulemanager": "^2.5",
-        "zendframework/zend-view": "^2.7",
-        "zendframework/zend-serializer": "^2.6",
-        "zendframework/zend-log": "^2.7",
-        "zendframework/zend-i18n": "^2.6",
-        "zendframework/zend-console": "^2.6",
-        "zendframework/zend-config": "^2.6",
+        "laminas/laminas-mvc": "^2.5",
+        "laminas/laminas-modulemanager": "^2.5",
+        "laminas/laminas-view": "^2.7",
+        "laminas/laminas-serializer": "^2.6",
+        "laminas/laminas-log": "^2.7",
+        "laminas/laminas-i18n": "^2.6",
+        "laminas/laminas-console": "^2.6",
+        "laminas/laminas-config": "^2.6",
         "squizlabs/php_codesniffer": "^2.0",
         "phpunit/phpunit": "^4.8"
     },
@@ -60,7 +58,7 @@
         "branch-alias": {
             "dev-master": "1.1.x-dev"
         },
-        "zf": {
+        "laminas": {
             "module": "SlmQueue",
             "config-provider": "SlmQueue\\ConfigProvider"
         }
