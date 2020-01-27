@@ -31,7 +31,7 @@ cache:
 
 before_script:
   - composer self-update
-  - composer update--prefer-source $DEPENDENCIES
+  - composer update --prefer-source $DEPENDENCIES
   - mkdir -p tests/build/logs
 
 script:
