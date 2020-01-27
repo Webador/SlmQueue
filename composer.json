@@ -73,5 +73,9 @@
         "psr-4": {
             "SlmQueueTest\\": "tests/"
         }
+    },
+    "scripts": {
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf"
     }
 }
