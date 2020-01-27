@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
@@ -10,7 +10,7 @@ use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class LogJobTest extends PHPUnit_Framework_TestCase
+class LogJobTest extends TestCase
 {
     protected $queue;
     protected $worker;
@@ -18,11 +18,11 @@ class LogJobTest extends PHPUnit_Framework_TestCase
     /** @var LogJobStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
         $this->worker   = new SimpleWorker();
-        $this->console  = $this->getMock('Laminas\Console\Adapter\AdapterInterface');
+        $this->console  = $this->createMock('Laminas\Console\Adapter\AdapterInterface');
         $this->listener = new LogJobStrategy($this->console);
     }
 
@@ -33,7 +33,7 @@ class LogJobTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')

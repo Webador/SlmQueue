@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Strategy\Factory;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Strategy\Factory\LogJobStrategyFactory;
 use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueueTest\Util\ServiceManagerFactory;

@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Queue;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueue\Job\JobPluginManager;
@@ -15,7 +15,7 @@ class QueueAwareTraitTest extends TestCase
      */
     private $job;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (version_compare(phpversion() , '5.4', 'lt')) {
             $this->markTestSkipped(

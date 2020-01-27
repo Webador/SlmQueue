@@ -2,23 +2,23 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Strategy\InterruptStrategy;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class InterruptStrategyTest extends PHPUnit_Framework_TestCase
+class InterruptStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var InterruptStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
         $this->worker   = new SimpleWorker();
         $this->listener = new InterruptStrategy();
     }
@@ -30,7 +30,7 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')

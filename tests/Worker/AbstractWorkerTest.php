@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Worker;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\BootstrapEvent;
@@ -23,11 +23,11 @@ class AbstractWorkerTest extends TestCase
     protected $job;
     protected $maxRuns;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->worker = new SimpleWorker;
-        $this->queue  = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->job    = $this->getMock(\SlmQueue\Job\JobInterface::class);
+        $this->queue  = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->job    = $this->createMock(\SlmQueue\Job\JobInterface::class);
 
         // set max runs so our tests won't run forever
         $this->maxRuns = new MaxRunsStrategy;
@@ -40,14 +40,14 @@ class AbstractWorkerTest extends TestCase
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();
 
-        static::assertContains(\SlmQueue\Worker\AbstractWorker::class, $eventManager->getIdentifiers());
-        static::assertContains(\SlmQueueTest\Asset\SimpleWorker::class, $eventManager->getIdentifiers());
-        static::assertContains(\SlmQueue\Worker\WorkerInterface::class, $eventManager->getIdentifiers());
+        static::assertTrue(\in_array(\SlmQueue\Worker\AbstractWorker::class, $eventManager->getIdentifiers()));
+        static::assertTrue(\in_array(\SlmQueueTest\Asset\SimpleWorker::class, $eventManager->getIdentifiers()));
+        static::assertTrue(\in_array(\SlmQueue\Worker\WorkerInterface::class, $eventManager->getIdentifiers()));
     }
 
     public function testWorkerLoopEvents()
     {
-        $eventManager = $this->getMock('Laminas\EventManager\EventManager');
+        $eventManager = $this->createMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
 
         // BootstrapEvent

@@ -2,22 +2,22 @@
 
 namespace SlmQueueTest\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
+class MaxPollingFrequencyStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var MaxPollingFrequencyStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->queue    = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
         $this->worker   = new SimpleWorker();
         $this->listener = new MaxPollingFrequencyStrategy();
     }
@@ -36,7 +36,7 @@ class MaxPollingFrequencyStrategyTest extends PHPUnit_Framework_TestCase
 
     public function testListensToCorrectEventAtCorrectPriority()
     {
-        $evm      = $this->getMock(\Laminas\EventManager\EventManagerInterface::class);
+        $evm      = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')

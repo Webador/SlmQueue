@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Controller;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
@@ -30,7 +30,7 @@ class AbstractControllerTest extends TestCase
     protected $controller;
 
 
-    public function setUp()
+    public function setUp(): void
     {
         $worker = new SimpleWorker();
 
@@ -53,7 +53,7 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotFoundException::class);
         $this->controller->processAction();
     }
 
@@ -67,8 +67,8 @@ class AbstractControllerTest extends TestCase
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $result = $this->controller->processAction();
-        static::assertContains("Finished worker for queue 'knownQueue'", $result);
-        static::assertContains("maximum of 1 jobs processed", $result);
+        static::assertStringContainsString("Finished worker for queue 'knownQueue'", $result);
+        static::assertStringContainsString("maximum of 1 jobs processed", $result);
     }
 
     public function testFailingJobThrowException()
@@ -80,7 +80,7 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(['queue' => 'knownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException(WorkerProcessException::class);
+        $this->expectException(WorkerProcessException::class);
         $this->controller->processAction();
     }
 }

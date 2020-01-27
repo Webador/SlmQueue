@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Factory;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Factory\WorkerFactory;
 use SlmQueueTest\Util\ServiceManagerFactory;
 

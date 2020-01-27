@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Queue;
 
 use DateTime;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\BinaryJob;
@@ -18,7 +18,7 @@ class QueueTest extends TestCase
     protected $jobPluginManager;
     protected $queue;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->job     = new SimpleJob;
         $this->jobName = SimpleJob::class;
@@ -27,7 +27,7 @@ class QueueTest extends TestCase
         $this->binaryJob     = new BinaryJob;
         $this->binaryJobName = BinaryJob::class;
 
-        $this->jobPluginManager = $this->getMock(JobPluginManager::class, [], [$serviceManager]);
+        $this->jobPluginManager = $this->createMock(JobPluginManager::class, [], [$serviceManager]);
         $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
     }
 

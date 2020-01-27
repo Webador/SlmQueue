@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Queue;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Queue\Exception\RuntimeException;
 use SlmQueueTest\Util\ServiceManagerFactory;
@@ -15,7 +15,7 @@ class QueuePluginManagerTest extends TestCase
      */
     protected $serviceManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
@@ -43,7 +43,7 @@ class QueuePluginManagerTest extends TestCase
         $manager = new QueuePluginManager($serviceManager);
         $queue   = new \stdClass();
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $manager->validatePlugin($queue);
     }
 }

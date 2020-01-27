@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Queue;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Util\ServiceManagerFactory;
@@ -15,7 +15,7 @@ class AbstractQueueTest extends TestCase
      */
     protected $serviceManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->serviceManager = ServiceManagerFactory::getServiceManager();

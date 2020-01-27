@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Job;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Util\ServiceManagerFactory;
 use SlmQueue\Job\Exception\RuntimeException;
@@ -16,7 +16,7 @@ class JobPluginManagerTest extends TestCase
      */
     protected $serviceManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
@@ -56,7 +56,7 @@ class JobPluginManagerTest extends TestCase
         $jobPluginManager = new JobPluginManager($serviceManager);
         $jobPluginManager->setInvokableClass('InvalidJob', 'stdClass');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $instance = $jobPluginManager->get('InvalidJob');
     }

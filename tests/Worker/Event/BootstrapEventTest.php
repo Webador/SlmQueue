@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Worker\Event;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use SlmQueue\Worker\Event\BootstrapEvent;
 
 class WorkerEventTest extends TestCase
@@ -11,10 +11,10 @@ class WorkerEventTest extends TestCase
     protected $worker;
     protected $event;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue  = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker = $this->getMock(\SlmQueue\Worker\WorkerInterface::class);
+        $this->queue  = $this->createMock(\SlmQueue\Queue\QueueInterface::class);
+        $this->worker = $this->createMock(\SlmQueue\Worker\WorkerInterface::class);
         $this->event  = new BootstrapEvent($this->worker, $this->queue);
     }
 
