@@ -29,12 +29,12 @@ class LogJobTest extends TestCase
         $this->listener = new LogJobStrategy($this->console);
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -47,7 +47,7 @@ class LogJobTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnLogJobProcessStartSendsOutputToConsole()
+    public function testOnLogJobProcessStartSendsOutputToConsole(): void
     {
         $this->console->expects($this->once())->method('write')
             ->with('Processing job SlmQueueTest\Asset\SimpleJob...');
@@ -62,7 +62,7 @@ class LogJobTest extends TestCase
         static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
 
-    public function testOnLogJobProcessStartDoesNotHaltPropagation()
+    public function testOnLogJobProcessStartDoesNotHaltPropagation(): void
     {
         $result = $this->listener->onLogJobProcessStart(new ProcessJobEvent(
             new SimpleJob(),
@@ -73,7 +73,7 @@ class LogJobTest extends TestCase
         static::assertNull($result);
     }
 
-    public function testOnLogJobProcessDoneSendsOutputToConsole()
+    public function testOnLogJobProcessDoneSendsOutputToConsole(): void
     {
         $this->console->expects($this->once())->method('writeLine')
             ->with('Done!');
@@ -81,14 +81,14 @@ class LogJobTest extends TestCase
         $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
     }
 
-    public function testOnLogJobProcessDoneDoesNotGenerateState()
+    public function testOnLogJobProcessDoneDoesNotGenerateState(): void
     {
         $this->listener->onLogJobProcessDone(new ProcessJobEvent(new SimpleJob(), $this->worker, $this->queue));
 
         static::assertFalse($this->listener->onReportQueueState(new ProcessStateEvent($this->worker)));
     }
 
-    public function testOnLogJobProcessDoneDoesNotHaltPropagation()
+    public function testOnLogJobProcessDoneDoesNotHaltPropagation(): void
     {
         $result = $this->listener->onLogJobProcessDone(new ProcessJobEvent(
             new SimpleJob(),

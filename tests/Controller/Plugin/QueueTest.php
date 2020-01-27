@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Controller\Plugin;
 
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Controller\Exception\QueueNotFoundException;
 use SlmQueue\Controller\Plugin\QueuePlugin;
 use SlmQueue\Job\JobPluginManager;
@@ -13,7 +13,7 @@ use SlmQueueTest\Asset\SimpleQueue;
 
 class QueueTest extends TestCase
 {
-    public function testPluginCreatesQueueFromPluginManager()
+    public function testPluginCreatesQueueFromPluginManager(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = $this->createMock(QueuePluginManager::class, [], [$serviceManager]);
@@ -35,7 +35,7 @@ class QueueTest extends TestCase
         $plugin->__invoke('DefaultQueue');
     }
 
-    public function testPluginThrowsExceptionWhenQueueDoesNotExists()
+    public function testPluginThrowsExceptionWhenQueueDoesNotExists(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = $this->createMock(QueuePluginManager::class, [], [$serviceManager]);
@@ -52,7 +52,7 @@ class QueueTest extends TestCase
         $plugin->__invoke('DefaultQueue');
     }
 
-    public function testPluginThrowsExceptionWhenNoQueueIsSet()
+    public function testPluginThrowsExceptionWhenNoQueueIsSet(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = $this->createMock(QueuePluginManager::class, [], [$serviceManager]);
@@ -63,7 +63,7 @@ class QueueTest extends TestCase
         $plugin->push('TestJob');
     }
 
-    public function testPluginPushesJobIntoQueue()
+    public function testPluginPushesJobIntoQueue(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
@@ -87,7 +87,7 @@ class QueueTest extends TestCase
         static::assertSame($job, $result);
     }
 
-    public function testPayloadCanBeInjectedViaPlugin()
+    public function testPayloadCanBeInjectedViaPlugin(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
@@ -113,7 +113,7 @@ class QueueTest extends TestCase
         static::assertSame($payload, $result->getContent());
     }
 
-    public function testPluginPushesJobIntoQueueWithPushOptions()
+    public function testPluginPushesJobIntoQueueWithPushOptions(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
@@ -135,7 +135,7 @@ class QueueTest extends TestCase
         static::assertSame($queue->getUsedOptions(), $options);
     }
 
-    public function testPluginPushesJobIntoQueueWithoutPushOptions()
+    public function testPluginPushesJobIntoQueueWithoutPushOptions(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
@@ -156,7 +156,7 @@ class QueueTest extends TestCase
         static::assertSame($queue->getUsedOptions(), []);
     }
 
-    public function testPluginPushesJobInstance()
+    public function testPluginPushesJobInstance(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
@@ -181,7 +181,7 @@ class QueueTest extends TestCase
         static::assertEquals(123, $poppedJob->getContent());
     }
 
-    public function testPluginThrowsExceptionWhenQueueNotSet()
+    public function testPluginThrowsExceptionWhenQueueNotSet(): void
     {
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);

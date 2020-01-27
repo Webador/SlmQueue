@@ -26,12 +26,12 @@ class InterruptStrategyTest extends TestCase
         $this->listener = new InterruptStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -46,20 +46,20 @@ class InterruptStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandlerNoSignal()
+    public function testOnStopConditionCheckHandlerNoSignal(): void
     {
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNull($result);
     }
 
-    public function testOnStopConditionCheckHandlerSIGTERM()
+    public function testOnStopConditionCheckHandlerSIGTERM(): void
     {
         $this->listener->onPCNTLSignal(SIGTERM);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 
-    public function testOnStopConditionCheckHandlerSIGINT()
+    public function testOnStopConditionCheckHandlerSIGINT(): void
     {
         $this->listener->onPCNTLSignal(SIGINT);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));

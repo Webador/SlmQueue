@@ -2,13 +2,13 @@
 
 namespace SlmQueueTest;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\ConfigProvider;
 use SlmQueue\Module;
 
 class ConfigProviderTest extends TestCase
 {
-    public function testConfigProviderGetConfig()
+    public function testConfigProviderGetConfig(): void
     {
         $configProvider = new ConfigProvider();
         $config = $configProvider();
@@ -16,7 +16,7 @@ class ConfigProviderTest extends TestCase
         static::assertNotEmpty($config);
     }
 
-    public function testConfigEqualsToModuleConfig()
+    public function testConfigEqualsToModuleConfig(): void
     {
         $module = new Module();
         $moduleConfig = $module->getConfig();

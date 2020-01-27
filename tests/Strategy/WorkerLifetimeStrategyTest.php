@@ -31,24 +31,24 @@ class WorkerLifetimeStrategyTest extends TestCase
         $this->listener = new WorkerLifetimeStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testLifetimeDefault()
+    public function testLifetimeDefault(): void
     {
         static::assertEquals(3600, $this->listener->getLifetime());
     }
 
-    public function testLifetimeSetter()
+    public function testLifetimeSetter(): void
     {
         $this->listener->setLifetime(7200);
 
         static::assertEquals(7200, $this->listener->getLifetime());
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -65,7 +65,7 @@ class WorkerLifetimeStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler()
+    public function testOnStopConditionCheckHandler(): void
     {
         $this->listener->setLifetime(2);
 

@@ -5,9 +5,6 @@ namespace SlmQueue\Worker\Event;
 use Laminas\EventManager\Event;
 use SlmQueue\Worker\WorkerInterface;
 
-/**
- * AbstractWorkerEvent
- */
 abstract class AbstractWorkerEvent extends Event implements WorkerEventInterface
 {
     /**
@@ -19,11 +16,11 @@ abstract class AbstractWorkerEvent extends Event implements WorkerEventInterface
         parent::__construct($name, $target);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getWorker()
+    public function getWorker(): WorkerInterface
     {
-        return $this->getTarget();
+        /** @var WorkerInterface $worker */
+        $worker = $this->getTarget();
+
+        return $worker;
     }
 }

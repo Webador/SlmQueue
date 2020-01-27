@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Queue;
 
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\QueueAwareJob;
@@ -30,7 +30,7 @@ class QueueTest extends TestCase
         $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
     }
 
-    public function testCanPushThenPopJob()
+    public function testCanPushThenPopJob(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -47,7 +47,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCanPushThenPopWithJobContent()
+    public function testCanPushThenPopWithJobContent(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -62,7 +62,7 @@ class QueueTest extends TestCase
         static::assertEquals('Foo', $job->getContent());
     }
 
-    public function testCanPushThenPopWithJobMetadata()
+    public function testCanPushThenPopWithJobMetadata(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -81,7 +81,7 @@ class QueueTest extends TestCase
         static::assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
-    public function testCorrectlySerializeJobContent()
+    public function testCorrectlySerializeJobContent(): void
     {
         $job = new SimpleJob();
         $job->setContent('Foo');
@@ -92,7 +92,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCorrectlySerializeJobMetadata()
+    public function testCorrectlySerializeJobMetadata(): void
     {
         $job = new SimpleJob();
         $job->setMetadata('Foo', 'Bar');
@@ -103,7 +103,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCorrectlySerializeJobContentAndMetadata()
+    public function testCorrectlySerializeJobContentAndMetadata(): void
     {
         $job = new SimpleJob();
         $job->setContent('Foo');
@@ -115,7 +115,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCorrectlySerializeJobServiceName()
+    public function testCorrectlySerializeJobServiceName(): void
     {
         $job = new SimpleJob();
         $job->setMetadata('__name__', 'SimpleJob');
@@ -126,7 +126,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCanCreateJobWithFQCN()
+    public function testCanCreateJobWithFQCN(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -141,7 +141,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCanCreateJobWithStringName()
+    public function testCanCreateJobWithStringName(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -156,7 +156,7 @@ class QueueTest extends TestCase
         static::assertEquals($expected, $actual);
     }
 
-    public function testCanCreateJobWithContent()
+    public function testCanCreateJobWithContent(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -169,7 +169,7 @@ class QueueTest extends TestCase
         static::assertEquals('Foo', $job->getContent());
     }
 
-    public function testCanCreateJobWithBinaryContent()
+    public function testCanCreateJobWithBinaryContent(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -186,7 +186,7 @@ class QueueTest extends TestCase
         static::assertEquals($image, $job->getContent());
     }
 
-    public function testCanCreateJobWithMetadata()
+    public function testCanCreateJobWithMetadata(): void
     {
         $this->jobPluginManager->expects($this->once())
             ->method('get')
@@ -199,7 +199,7 @@ class QueueTest extends TestCase
         static::assertEquals('Bar', $job->getMetadata('Foo'));
     }
 
-    public function testCreateQueueAwareJob()
+    public function testCreateQueueAwareJob(): void
     {
         $job = new QueueAwareJob();
         $this->jobPluginManager->expects($this->once())

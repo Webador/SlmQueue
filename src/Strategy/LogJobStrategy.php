@@ -14,10 +14,6 @@ class LogJobStrategy extends AbstractStrategy
      */
     protected $console;
 
-    /**
-     * @param AdapterInterface $console
-     * @param array            $options
-     */
     public function __construct(AdapterInterface $console, array $options = null)
     {
         $this->console = $console;
@@ -25,10 +21,7 @@ class LogJobStrategy extends AbstractStrategy
         parent::__construct($options);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_JOB,
@@ -42,10 +35,7 @@ class LogJobStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param ProcessJobEvent $processJobEvent
-     */
-    public function onLogJobProcessStart(ProcessJobEvent $processJobEvent)
+    public function onLogJobProcessStart(ProcessJobEvent $processJobEvent): void
     {
         $job = $processJobEvent->getJob();
         $name = $job->getMetadata('name');
@@ -56,10 +46,7 @@ class LogJobStrategy extends AbstractStrategy
         $this->console->write(sprintf('Processing job %s...', $name));
     }
 
-    /**
-     * @param ProcessJobEvent $processJobEvent
-     */
-    public function onLogJobProcessDone(ProcessJobEvent $processJobEvent)
+    public function onLogJobProcessDone(ProcessJobEvent $processJobEvent): void
     {
         $this->console->writeLine('Done!');
     }

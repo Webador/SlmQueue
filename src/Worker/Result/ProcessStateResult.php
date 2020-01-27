@@ -9,35 +9,22 @@ final class ProcessStateResult
      */
     private $state;
 
-    /**
-     * @param $state
-     */
-    private function __construct($state)
+    private function __construct(string $state)
     {
         $this->state = $state;
     }
 
-    /**
-     * @param $state
-     * @return ProcessStateResult
-     */
-    public static function withState($state)
+    public static function withState(string $state): ProcessStateResult
     {
         return new static($state);
     }
 
-    /**
-     * @return string
-     */
-    public function getState()
+    public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->state;
     }

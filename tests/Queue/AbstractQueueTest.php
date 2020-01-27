@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Queue;
 
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Util\ServiceManagerFactory;
 
@@ -17,10 +17,11 @@ class AbstractQueueTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
-    public function testGetters()
+    public function testGetters(): void
     {
         $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
 

@@ -4,7 +4,7 @@ namespace SlmQueue;
 
 class ConfigProvider
 {
-    public function __invoke()
+    public function __invoke(): array
     {
         $module = new Module();
         $config = $module->getConfig();

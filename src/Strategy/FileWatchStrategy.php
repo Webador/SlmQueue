@@ -40,42 +40,31 @@ class FileWatchStrategy extends AbstractStrategy
     /**
      * @param string $pattern
      */
-    public function setPattern($pattern)
+    public function setPattern(string $pattern): void
     {
         $this->pattern = $pattern;
         $this->files = [];
     }
 
-    /**
-     * @return string
-     */
-    public function getPattern()
+    public function getPattern(): string
     {
         return $this->pattern;
     }
 
-    /**
-     * @param int $idle_throttle_time
-     */
-    public function setIdleThrottleTime($idleThrottleTime)
+    public function setIdleThrottleTime(int $idleThrottleTime): void
     {
         $this->idleThrottleTime = $idleThrottleTime;
     }
 
     /**
      * Files being watched
-     *
-     * @return array|null
      */
-    public function getFiles()
+    public function getFiles(): ?array
     {
         return $this->files;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_IDLE,
@@ -94,15 +83,11 @@ class FileWatchStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param WorkerEventInterface $event
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onStopConditionCheck(WorkerEventInterface $event)
+    public function onStopConditionCheck(WorkerEventInterface $event): ?ExitWorkerLoopResult
     {
         if ($event->getName() == WorkerEventInterface::EVENT_PROCESS_IDLE) {
             if ($this->previousIdlingTime + $this->idleThrottleTime > microtime(true)) {
-                return;
+                return null;
             } else {
                 $this->previousIdlingTime = microtime(true);
             }
@@ -121,12 +106,11 @@ class FileWatchStrategy extends AbstractStrategy
                 return ExitWorkerLoopResult::withReason($reason);
             }
         }
+
+        return null;
     }
 
-    /**
-     * @return void
-     */
-    protected function constructFileList()
+    protected function constructFileList(): void
     {
         $iterator = new RecursiveDirectoryIterator('.', RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
         $files = new RecursiveIteratorIterator($iterator);

@@ -38,12 +38,12 @@ class AttachQueueListenersStrategyTest extends TestCase
         ]);
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -54,7 +54,7 @@ class AttachQueueListenersStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testAttachQueueListenersDetachedSelfFromEventManager()
+    public function testAttachQueueListenersDetachedSelfFromEventManager(): void
     {
         $eventManager = $this->createMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
@@ -78,7 +78,7 @@ class AttachQueueListenersStrategyTest extends TestCase
         $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
-    public function testAttachQueueListenerFallbackToDefaultIfQueueNameIsNotMatched()
+    public function testAttachQueueListenerFallbackToDefaultIfQueueNameIsNotMatched(): void
     {
         // let's change the config setup
         $class = new ReflectionClass(AttachQueueListenersStrategy::class);
@@ -101,7 +101,7 @@ class AttachQueueListenersStrategyTest extends TestCase
         $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
-    public function testAttachQueueListenersStrategyConfig()
+    public function testAttachQueueListenersStrategyConfig(): void
     {
         // let's change the config setup
         $class = new ReflectionClass(AttachQueueListenersStrategy::class);
@@ -143,7 +143,7 @@ class AttachQueueListenersStrategyTest extends TestCase
         $this->listener->attachQueueListeners(new BootstrapEvent($this->worker, $this->queue));
     }
 
-    public function testAttachQueueListenersBootstrapEventIsTriggeredOnlyOnce()
+    public function testAttachQueueListenersBootstrapEventIsTriggeredOnlyOnce(): void
     {
         $eventManager = $this->createMock(EventManager::class);
         $this->worker = new SimpleWorker($eventManager);

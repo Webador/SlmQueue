@@ -28,18 +28,12 @@ class WorkerLifetimeStrategy extends AbstractStrategy
      */
     protected $state = '0 seconds passed';
 
-    /**
-     * @param int $lifetime
-     */
-    public function setLifetime($lifetime)
+    public function setLifetime(int $lifetime): void
     {
         $this->lifetime = (int) $lifetime;
     }
 
-    /**
-     * @return int
-     */
-    public function getLifetime()
+    public function getLifetime(): int
     {
         return $this->lifetime;
     }
@@ -47,7 +41,7 @@ class WorkerLifetimeStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_BOOTSTRAP,

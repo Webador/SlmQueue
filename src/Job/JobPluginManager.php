@@ -4,9 +4,6 @@ namespace SlmQueue\Job;
 
 use SlmQueue\ServiceManager\AbstractPluginManager;
 
-/**
- * JobPluginManager
- */
 class JobPluginManager extends AbstractPluginManager
 {
     /**
@@ -31,7 +28,7 @@ class JobPluginManager extends AbstractPluginManager
      * @param bool   $usePeeringServiceManagers
      * @return JobInterface
      */
-    public function get($name, $options = [], $usePeeringServiceManagers = true)
+    public function get($name, $options = [], $usePeeringServiceManagers = true): JobInterface
     {
         // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
         $instance = parent::get($name, $options, $usePeeringServiceManagers);

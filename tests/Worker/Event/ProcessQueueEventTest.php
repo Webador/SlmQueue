@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Worker\Event;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\WorkerInterface;
@@ -22,17 +22,17 @@ class ProcessQueueEventTest extends TestCase
         $this->event = new ProcessQueueEvent($this->worker, $this->queue, $this->options);
     }
 
-    public function testSetsWorkerAsTarget()
+    public function testSetsWorkerAsTarget(): void
     {
         static::assertEquals($this->worker, $this->event->getWorker());
     }
 
-    public function testGetsQueue()
+    public function testGetsQueue(): void
     {
         static::assertEquals($this->queue, $this->event->getQueue());
     }
 
-    public function testGetsOptions()
+    public function testGetsOptions(): void
     {
         static::assertEquals($this->options, $this->event->getOptions());
     }

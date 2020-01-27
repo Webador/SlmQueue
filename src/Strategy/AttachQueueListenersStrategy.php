@@ -20,20 +20,13 @@ class AttachQueueListenersStrategy extends AbstractStrategy
      */
     protected $strategyConfig;
 
-    /**
-     * @param StrategyPluginManager $pluginManager
-     * @param array                 $strategyConfig
-     */
     public function __construct(StrategyPluginManager $pluginManager, array $strategyConfig)
     {
         $this->pluginManager = $pluginManager;
         $this->strategyConfig = $strategyConfig;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_BOOTSTRAP,
@@ -42,10 +35,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param BootstrapEvent $bootstrapEvent
-     */
-    public function attachQueueListeners(BootstrapEvent $bootstrapEvent)
+    public function attachQueueListeners(BootstrapEvent $bootstrapEvent): void
     {
         /** @var AbstractWorker $worker */
         $worker = $bootstrapEvent->getWorker();
@@ -80,7 +70,7 @@ class AttachQueueListenersStrategy extends AbstractStrategy
             /** @var ListenerAggregateInterface $listener */
             $listener = $this->pluginManager->get($strategy, $options);
 
-            if (! is_null($priority)) {
+            if ($priority !== null) {
                 $listener->attach($eventManager, $priority);
             } else {
                 $listener->attach($eventManager);

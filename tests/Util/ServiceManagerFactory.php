@@ -41,7 +41,7 @@ class ServiceManagerFactory
     /**
      * @param array $config
      */
-    public static function setConfig(array $config)
+    public static function setConfig(array $config): void
     {
         static::$config = $config;
     }
@@ -49,7 +49,7 @@ class ServiceManagerFactory
     /**
      * Builds a new service manager
      */
-    public static function getServiceManager()
+    public static function getServiceManager(): ServiceManager
     {
         $serviceManagerConfig = new ServiceManagerConfig(
             isset(static::$config['service_manager']) ? static::$config['service_manager'] : []

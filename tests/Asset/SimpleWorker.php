@@ -18,7 +18,7 @@ class SimpleWorker extends AbstractWorker
         parent::__construct($eventManager);
     }
 
-    public function processJob(JobInterface $job, QueueInterface $queue)
+    public function processJob(JobInterface $job, QueueInterface $queue): int
     {
         return $job->execute();
     }

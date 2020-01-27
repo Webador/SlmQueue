@@ -16,6 +16,7 @@ use SlmQueueTest\Asset\SimpleWorker;
 
 class ProcessQueueStrategyTest extends TestCase
 {
+    /** @var \PHPUnit\Framework\MockObject\MockObject|QueueInterface  */
     protected $queue;
     protected $worker;
     /** @var ProcessQueueStrategy */
@@ -28,12 +29,12 @@ class ProcessQueueStrategyTest extends TestCase
         $this->listener = new ProcessQueueStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -48,7 +49,7 @@ class ProcessQueueStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testJobPopWithEmptyQueueTriggersIdleAndNoExitResultIsReturned()
+    public function testJobPopWithEmptyQueueTriggersIdleAndNoExitResultIsReturned(): void
     {
         $popOptions = [];
         $this->queue->expects($this->at(0))
@@ -73,7 +74,7 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertTrue($event->propagationIsStopped(), "EventPropagation should be stopped");
     }
 
-    public function testJobPopWithEmptyQueueTriggersIdleAndExitResultIsReturned()
+    public function testJobPopWithEmptyQueueTriggersIdleAndExitResultIsReturned(): void
     {
         $popOptions = [];
         $this->queue->expects($this->at(0))
@@ -100,7 +101,7 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertTrue($event->propagationIsStopped(), "EventPropagation should be stopped");
     }
 
-    public function testJobPopWithJobTriggersProcessJobEvent()
+    public function testJobPopWithJobTriggersProcessJobEvent(): void
     {
         $job = new SimpleJob();
         $popOptions = [];
@@ -126,15 +127,14 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertFalse($event->propagationIsStopped(), "EventPropagation should not be stopped");
     }
 
-    public function testOnJobProcess()
+    public function testOnJobProcess(): void
     {
         $job = new SimpleJob();
         $event = new ProcessJobEvent($job, $this->worker, $this->queue);
 
-        $result = $this->listener->onJobProcess($event);
+        $this->listener->onJobProcess($event);
 
-        static::assertNull($result);
-        static::assertSame('result', $event->getResult());
+        static::assertSame(999, $event->getResult());
         static::assertEquals($job, $event->getJob());
         static::assertSame('bar', $event->getJob()->getMetadata('foo'));
     }

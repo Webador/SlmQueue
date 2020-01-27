@@ -23,26 +23,17 @@ class MaxRunsStrategy extends AbstractStrategy
      */
     protected $state = '0 jobs processed';
 
-    /**
-     * @param int $maxRuns
-     */
-    public function setMaxRuns($maxRuns)
+    public function setMaxRuns(int $maxRuns): void
     {
         $this->maxRuns = $maxRuns;
     }
 
-    /**
-     * @return int
-     */
-    public function getMaxRuns()
+    public function getMaxRuns(): int
     {
         return $this->maxRuns;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_QUEUE,
@@ -56,11 +47,7 @@ class MaxRunsStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param WorkerEventInterface $event
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onStopConditionCheck(WorkerEventInterface $event)
+    public function onStopConditionCheck(WorkerEventInterface $event): ?ExitWorkerLoopResult
     {
         $this->runCount++;
 
@@ -71,5 +58,7 @@ class MaxRunsStrategy extends AbstractStrategy
 
             return ExitWorkerLoopResult::withReason($reason);
         }
+
+        return null;
     }
 }

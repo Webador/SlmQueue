@@ -11,9 +11,6 @@ use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 
-/**
- * AbstractWorker
- */
 abstract class AbstractWorker implements WorkerInterface
 {
     /**
@@ -35,10 +32,7 @@ abstract class AbstractWorker implements WorkerInterface
         $this->eventManager = $eventManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function processQueue(QueueInterface $queue, array $options = [])
+    public function processQueue(QueueInterface $queue, array $options = []): array
     {
         $this->eventManager->triggerEvent(new BootstrapEvent($this, $queue));
 
@@ -72,10 +66,7 @@ abstract class AbstractWorker implements WorkerInterface
         return $queueState;
     }
 
-    /**
-     * @return EventManagerInterface
-     */
-    public function getEventManager()
+    public function getEventManager(): EventManagerInterface
     {
         return $this->eventManager;
     }

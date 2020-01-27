@@ -28,12 +28,12 @@ class FileWatchStrategyTest extends TestCase
         $this->listener = new FileWatchStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -48,13 +48,13 @@ class FileWatchStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testPatternDefault()
+    public function testPatternDefault(): void
     {
         // standard zf2 application php and phtml files
         static::assertEquals('/^\.\/(config|module).*\.(php|phtml)$/', $this->listener->getPattern());
     }
 
-    public function testFilesGetterReturnEmptyArrayByDefault()
+    public function testFilesGetterReturnEmptyArrayByDefault(): void
     {
         // standard zf2 application php and phtml files
         static::assertEmpty($this->listener->getFiles());

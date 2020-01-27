@@ -7,27 +7,17 @@ use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use SlmQueue\Queue\QueuePluginManager;
 
-/**
- * QueuePluginManagerFactory
- */
 class QueuePluginManagerFactory implements FactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): QueuePluginManager
     {
         $config = $container->get('config');
         $config = $config['slm_queue']['queue_manager'];
-        $queuePluginManager = new QueuePluginManager($container, $config);
 
-        return $queuePluginManager;
+        return new QueuePluginManager($container, $config);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator): QueuePluginManager
     {
         return $this($serviceLocator, QueuePluginManager::class);
     }

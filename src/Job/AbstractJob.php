@@ -15,10 +15,7 @@ abstract class AbstractJob extends Message implements JobInterface
      */
     protected $content = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
+    public function setId($id): JobInterface
     {
         $this->setMetadata('__id__', $id);
 

@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Factory;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Controller\Plugin\QueuePlugin;
 use SlmQueue\Factory\QueueControllerPluginFactory;
 use SlmQueueTest\Util\ServiceManagerFactory;
@@ -10,7 +10,7 @@ use SlmQueueTest\Util\ServiceManagerFactory;
 class QueueControllerPluginFactoryTest extends TestCase
 {
 
-    public function testCreateService()
+    public function testCreateService(): void
     {
         $serviceManager = ServiceManagerFactory::getServiceManager();
         $factory = new QueueControllerPluginFactory();

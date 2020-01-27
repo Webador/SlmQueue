@@ -27,24 +27,24 @@ class MaxRunsStrategyTest extends TestCase
         $this->listener = new MaxRunsStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testMaxRunsDefault()
+    public function testMaxRunsDefault(): void
     {
         static::assertEquals(0, $this->listener->getMaxRuns());
     }
 
-    public function testMaxRunsSetter()
+    public function testMaxRunsSetter(): void
     {
         $this->listener->setMaxRuns(2);
 
         static::assertEquals(2, $this->listener->getMaxRuns());
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -57,7 +57,7 @@ class MaxRunsStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler()
+    public function testOnStopConditionCheckHandler(): void
     {
         $this->listener->setMaxRuns(3);
 

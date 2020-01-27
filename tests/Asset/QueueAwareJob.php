@@ -9,18 +9,12 @@ class QueueAwareJob extends SimpleJob implements QueueAwareInterface
 {
     protected $queue;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getQueue()
+    public function getQueue(): QueueInterface
     {
         return $this->queue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setQueue(QueueInterface $queue)
+    public function setQueue(QueueInterface $queue): void
     {
         $this->queue = $queue;
     }

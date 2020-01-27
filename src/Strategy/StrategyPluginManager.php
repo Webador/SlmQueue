@@ -5,9 +5,6 @@ namespace SlmQueue\Strategy;
 use SlmQueue\Exception\RuntimeException;
 use SlmQueue\ServiceManager\AbstractPluginManager;
 
-/**
- * StrategyPluginManager
- */
 class StrategyPluginManager extends AbstractPluginManager
 {
     /**
@@ -18,7 +15,7 @@ class StrategyPluginManager extends AbstractPluginManager
     /**
      * {@inheritDoc}
      */
-    public function validate($instance)
+    public function validate($instance): void
     {
         if ($instance instanceof AbstractStrategy) {
             return; // we're okay

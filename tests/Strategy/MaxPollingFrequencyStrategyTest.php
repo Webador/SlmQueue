@@ -25,19 +25,19 @@ class MaxPollingFrequencyStrategyTest extends TestCase
         $this->listener = new MaxPollingFrequencyStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testMaxPollingFrequencySetter()
+    public function testMaxPollingFrequencySetter(): void
     {
         $this->listener->setMaxFrequency(100);
 
         static::assertEquals(100, $this->listener->getMaxFrequency());
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -48,7 +48,7 @@ class MaxPollingFrequencyStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testDelayWhenFrequencyIsSet()
+    public function testDelayWhenFrequencyIsSet(): void
     {
         $this->listener->setMaxFrequency(1);
 

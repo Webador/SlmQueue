@@ -5,7 +5,7 @@ namespace SlmQueueTest\Controller;
 use Laminas\Mvc\Router\RouteMatch;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Strategy\MaxRunsStrategy;
@@ -48,7 +48,7 @@ class AbstractControllerTest extends TestCase
         $this->controller = new SimpleController($worker, $this->queuePluginManager);
     }
 
-    public function testThrowExceptionIfQueueIsUnknown()
+    public function testThrowExceptionIfQueueIsUnknown(): void
     {
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
@@ -57,7 +57,7 @@ class AbstractControllerTest extends TestCase
         $this->controller->processAction();
     }
 
-    public function testSimpleJob()
+    public function testSimpleJob(): void
     {
         /** @var SimpleQueue $queue */
         $queue = $this->queuePluginManager->get('knownQueue');
@@ -71,7 +71,7 @@ class AbstractControllerTest extends TestCase
         static::assertStringContainsString("maximum of 1 jobs processed", $result);
     }
 
-    public function testFailingJobThrowException()
+    public function testFailingJobThrowException(): void
     {
         /** @var SimpleQueue $queue */
         $queue = $this->queuePluginManager->get('knownQueue');

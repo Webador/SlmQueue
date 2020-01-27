@@ -6,14 +6,11 @@ use SlmQueue\Job\AbstractJob;
 
 class SimpleJob extends AbstractJob
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function execute()
+    public function execute(): ?int
     {
         // Just set some stupid metadata
         $this->setMetadata('foo', 'bar');
 
-        return 'result';
+        return 999;
     }
 }

@@ -9,9 +9,6 @@ use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
 
-/**
- * Queue controller plugin
- */
 class QueuePlugin extends AbstractPlugin
 {
     /**
@@ -49,11 +46,8 @@ class QueuePlugin extends AbstractPlugin
 
     /**
      * Invoke plugin and optionally set queue
-     *
-     * @param string $name Name of queue when set
-     * @return self
      */
-    public function __invoke($name = null)
+    public function __invoke(string $name = null): self
     {
         if (null !== $name) {
             if (! $this->queuePluginManager->has($name)) {
@@ -77,7 +71,7 @@ class QueuePlugin extends AbstractPlugin
      * @return JobInterface    Created job by the job plugin manager
      * @throws QueueNotFoundException If the method is called without a queue set
      */
-    public function push($name, $payload = null, array $options = [])
+    public function push(string $name, $payload = null, array $options = []): JobInterface
     {
         $this->assertQueueIsSet();
 
@@ -98,7 +92,7 @@ class QueuePlugin extends AbstractPlugin
      * @param array        $options Push job options
      * @throws QueueNotFoundException If the method is called without a queue set
      */
-    public function pushJob(JobInterface $job, array $options = [])
+    public function pushJob(JobInterface $job, array $options = []): void
     {
         $this->assertQueueIsSet();
 
@@ -108,7 +102,7 @@ class QueuePlugin extends AbstractPlugin
     /**
      * @throws QueueNotFoundException
      */
-    protected function assertQueueIsSet()
+    protected function assertQueueIsSet(): void
     {
         if (null === $this->queue) {
             throw new QueueNotFoundException(

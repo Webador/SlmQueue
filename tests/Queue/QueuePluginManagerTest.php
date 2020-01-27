@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Queue;
 
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\Exception\RuntimeException;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueueTest\Util\ServiceManagerFactory;
@@ -19,16 +19,17 @@ class QueuePluginManagerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
-    public function testCanRetrievePluginManagerWithServiceManager()
+    public function testCanRetrievePluginManagerWithServiceManager(): void
     {
         $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
         static::assertInstanceOf(QueuePluginManager::class, $queuePluginManager);
     }
 
-    public function testAskingTwiceTheSameQueueReturnsTheSameInstance()
+    public function testAskingTwiceTheSameQueueReturnsTheSameInstance(): void
     {
         $queuePluginManager = $this->serviceManager->get(QueuePluginManager::class);
 
@@ -38,7 +39,7 @@ class QueuePluginManagerTest extends TestCase
         static::assertSame($firstInstance, $secondInstance);
     }
 
-    public function testPluginValidation()
+    public function testPluginValidation(): void
     {
         $serviceManager = new ServiceManager();
         $manager = new QueuePluginManager($serviceManager);

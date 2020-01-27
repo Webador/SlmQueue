@@ -4,7 +4,7 @@ namespace SlmQueueTest\Worker;
 
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\ResponseCollection;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\MaxRunsStrategy;
@@ -39,7 +39,7 @@ class AbstractWorkerTest extends TestCase
         $this->maxRuns->attach($this->worker->getEventManager());
     }
 
-    public function testCorrectIdentifiersAreSetToEventManager()
+    public function testCorrectIdentifiersAreSetToEventManager(): void
     {
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();
@@ -49,7 +49,7 @@ class AbstractWorkerTest extends TestCase
         static::assertTrue(in_array(WorkerInterface::class, $eventManager->getIdentifiers()));
     }
 
-    public function testWorkerLoopEvents()
+    public function testWorkerLoopEvents(): void
     {
         $eventManager = $this->createMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
@@ -97,7 +97,7 @@ class AbstractWorkerTest extends TestCase
         static::assertEquals(["some strategy state", "another strategy state", "some exit reason"], $result);
     }
 
-    public function testProcessQueueSetsOptionsOnProcessQueueEvent()
+    public function testProcessQueueSetsOptionsOnProcessQueueEvent(): void
     {
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();

@@ -16,8 +16,5 @@ interface WorkerEventInterface
     public const EVENT_PROCESS_IDLE  = 'process.idle';
     public const EVENT_PROCESS_STATE = 'process.state';
 
-    /**
-     * @return WorkerInterface
-     */
-    public function getWorker();
+    public function getWorker(): WorkerInterface;
 }

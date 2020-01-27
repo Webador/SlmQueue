@@ -3,7 +3,7 @@
 namespace SlmQueueTest\Job;
 
 use Laminas\ServiceManager\ServiceManager;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\Exception\RuntimeException;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueueTest\Asset\SimpleJob;
@@ -22,13 +22,13 @@ class JobPluginManagerTest extends TestCase
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
-    public function testCanRetrievePluginManagerWithServiceManager()
+    public function testCanRetrievePluginManagerWithServiceManager(): void
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
         static::assertInstanceOf(JobPluginManager::class, $jobPluginManager);
     }
 
-    public function testAskingTwiceForTheSameJobReturnsDifferentInstances()
+    public function testAskingTwiceForTheSameJobReturnsDifferentInstances(): void
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
 
@@ -38,7 +38,7 @@ class JobPluginManagerTest extends TestCase
         static::assertNotSame($firstInstance, $secondInstance);
     }
 
-    public function testPluginManagerSetsServiceNameAsMetadata()
+    public function testPluginManagerSetsServiceNameAsMetadata(): void
     {
         $serviceManager = new ServiceManager();
         $jobPluginManager = new JobPluginManager($serviceManager);
@@ -50,7 +50,7 @@ class JobPluginManagerTest extends TestCase
         static::assertEquals('SimpleJob', $instance->getMetadata('__name__'));
     }
 
-    public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
+    public function testPluginManagerThrowsExceptionOnInvalidJobClasses(): void
     {
         $serviceManager = new ServiceManager();
         $jobPluginManager = new JobPluginManager($serviceManager);

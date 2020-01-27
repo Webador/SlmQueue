@@ -27,24 +27,24 @@ class MaxMemoryStrategyTest extends TestCase
         $this->listener = new MaxMemoryStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testMaxMemoryDefault()
+    public function testMaxMemoryDefault(): void
     {
-        static::assertTrue($this->listener->getMaxMemory() == 0);
+        static::assertTrue($this->listener->getMaxMemory() === 0);
     }
 
-    public function testMaxMemorySetter()
+    public function testMaxMemorySetter(): void
     {
         $this->listener->setMaxMemory(1024 * 25);
 
-        static::assertTrue($this->listener->getMaxMemory() == 1024 * 25);
+        static::assertTrue($this->listener->getMaxMemory() === 1024 * 25);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
@@ -59,7 +59,7 @@ class MaxMemoryStrategyTest extends TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler()
+    public function testOnStopConditionCheckHandler(): void
     {
         $this->listener->setMaxMemory(1024 * 1024 * 1000);
 

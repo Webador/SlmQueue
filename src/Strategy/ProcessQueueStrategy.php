@@ -17,7 +17,7 @@ class ProcessQueueStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_QUEUE,
@@ -31,11 +31,7 @@ class ProcessQueueStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param ProcessQueueEvent $processQueueEvent
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onJobPop(ProcessQueueEvent $processQueueEvent)
+    public function onJobPop(ProcessQueueEvent $processQueueEvent): ?ExitWorkerLoopResult
     {
         /** @var AbstractWorker $worker */
         $worker = $processQueueEvent->getWorker();
@@ -61,17 +57,15 @@ class ProcessQueueStrategy extends AbstractStrategy
                 return $results->last();
             }
 
-            return;
+            return null;
         }
 
         $eventManager->triggerEvent(new ProcessJobEvent($job, $worker, $queue));
+
+        return null;
     }
 
-    /**
-     * @param ProcessJobEvent $processJobEvent
-     * @return void
-     */
-    public function onJobProcess(ProcessJobEvent $processJobEvent)
+    public function onJobProcess(ProcessJobEvent $processJobEvent): void
     {
         $job = $processJobEvent->getJob();
         $queue = $processJobEvent->getQueue();

@@ -11,28 +11,19 @@ class MaxMemoryStrategy extends AbstractStrategy
     /**
      * @var int
      */
-    protected $maxMemory;
+    protected $maxMemory = 0;
 
-    /**
-     * @param int $maxMemory
-     */
-    public function setMaxMemory($maxMemory)
+    public function setMaxMemory(int $maxMemory): void
     {
-        $this->maxMemory = (int) $maxMemory;
+        $this->maxMemory = $maxMemory;
     }
 
-    /**
-     * @return int
-     */
-    public function getMaxMemory()
+    public function getMaxMemory(): int
     {
         return $this->maxMemory;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_IDLE,
@@ -51,11 +42,7 @@ class MaxMemoryStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param WorkerEventInterface $event
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onStopConditionCheck(WorkerEventInterface $event)
+    public function onStopConditionCheck(WorkerEventInterface $event): ?ExitWorkerLoopResult
     {
         // @see http://php.net/manual/en/features.gc.collecting-cycles.php
         if (gc_enabled()) {
@@ -74,16 +61,14 @@ class MaxMemoryStrategy extends AbstractStrategy
 
             return ExitWorkerLoopResult::withReason($reason);
         }
+
+        return null;
     }
 
-    /**
-     * @param string $bytes Bytes to be formatted
-     * @return string human readable
-     */
-    private function humanFormat($bytes)
+    private function humanFormat(int $bytes): string
     {
         $units = ['b', 'kB', 'MB', 'GB', 'TB', 'PB'];
 
-        return @round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), 2) . $units[$i];
+        return @round($bytes / (1024 ** ($i = floor(log($bytes, 1024)))), 2) . $units[$i];
     }
 }

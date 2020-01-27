@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Worker\Event;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\Event\ProcessJobEvent;
