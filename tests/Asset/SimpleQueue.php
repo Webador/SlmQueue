@@ -11,41 +11,32 @@ class SimpleQueue extends AbstractQueue
      * @var array
      */
     protected $jobs;
-    
+
     /**
      * @var array
      */
     protected $options;
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public function push(JobInterface $job, array $options = [])
+    public function push(JobInterface $job, array $options = []): void
     {
         $this->jobs[] = $this->serializeJob($job);
         $this->options = $options;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function pop(array $options = [])
+    public function pop(array $options = []): ?JobInterface
     {
         $this->options = $options;
-        
+
         $payload = array_pop($this->jobs);
-        if (!$payload) {
-            return;
+        if (! $payload) {
+            return null;
         }
 
         return $this->unserializeJob($payload);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function delete(JobInterface $job)
+    public function delete(JobInterface $job): void
     {
         foreach ($this->jobs as $key => $value) {
             if ($value->getId() === $job->getId()) {
@@ -53,12 +44,11 @@ class SimpleQueue extends AbstractQueue
             }
         }
     }
-    
+
     /**
      * Return used options param
-     * @return mixed
      */
-    public function getUsedOptions()
+    public function getUsedOptions(): array
     {
         return $this->options;
     }

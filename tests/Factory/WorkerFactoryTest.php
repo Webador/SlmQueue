@@ -2,27 +2,26 @@
 
 namespace SlmQueueTest\Factory;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Factory\WorkerFactory;
 use SlmQueueTest\Util\ServiceManagerFactory;
 
 class AbstractWorkerTest extends TestCase
 {
-    public function testCreateViaServiceManager()
+    public function testCreateViaServiceManager(): void
     {
-        $sm      = ServiceManagerFactory::getServiceManager();
-        $worker  = $sm->get('SlmQueueTest\Asset\SimpleWorker');
+        $sm = ServiceManagerFactory::getServiceManager();
+        $worker = $sm->get('SlmQueueTest\Asset\SimpleWorker');
 
         static::assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
     }
 
-    public function testCreateService()
+    public function testCreateService(): void
     {
-        $sm      = ServiceManagerFactory::getServiceManager();
+        $sm = ServiceManagerFactory::getServiceManager();
         $factory = new WorkerFactory();
-        $worker  = $factory->createService($sm, 'slmqueuetestassetsimpleworker', 'SlmQueueTest\Asset\SimpleWorker');
+        $worker = $factory->createService($sm, 'slmqueuetestassetsimpleworker', 'SlmQueueTest\Asset\SimpleWorker');
 
         static::assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
     }
-
 }

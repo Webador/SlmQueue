@@ -5,9 +5,6 @@ namespace SlmQueue\Queue;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 
-/**
- * AbstractQueue
- */
 abstract class AbstractQueue implements QueueInterface
 {
     /**
@@ -26,22 +23,16 @@ abstract class AbstractQueue implements QueueInterface
      */
     public function __construct($name, JobPluginManager $jobPluginManager)
     {
-        $this->name             = $name;
+        $this->name = $name;
         $this->jobPluginManager = $jobPluginManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getJobPluginManager()
+    public function getJobPluginManager(): JobPluginManager
     {
         return $this->jobPluginManager;
     }
@@ -53,19 +44,15 @@ abstract class AbstractQueue implements QueueInterface
      * is a JSON string containing job name, content and metadata. Use
      * the decoded JSON value to create a job instance, configure it
      * and return it.
-     *
-     * @param  string $string
-     * @param  array  $metadata
-     * @return \SlmQueue\Job\JobInterface
      */
-    public function unserializeJob($string, array $metadata = [])
+    public function unserializeJob($string, array $metadata = []): JobInterface
     {
-        $data     =  json_decode($string, true);
-        $name     =  $data['metadata']['__name__'];
+        $data = json_decode($string, true);
+        $name = $data['metadata']['__name__'];
         $metadata += $data['metadata'];
-        $content  =  $data['content'];
+        $content = $data['content'];
 
-        /** @var $job \SlmQueue\Job\JobInterface */
+        /** @var $job JobInterface */
         $job = $this->getJobPluginManager()->get($name);
 
         if ($job instanceof BinaryMessageInterface) {
@@ -91,17 +78,14 @@ abstract class AbstractQueue implements QueueInterface
      * "metadata" and "__name__". When a job is fetched from the SL, a job name
      * will be set and be available as metadata. An invokable job has no service
      * name and therefore the FQCN will be used.
-     *
-     * @param  JobInterface $job The job to persist
-     * @return string
      */
-    public function serializeJob(JobInterface $job)
+    public function serializeJob(JobInterface $job): string
     {
         $job->setMetadata('__name__', $job->getMetadata('__name__', get_class($job)));
 
         $data = [
-            'content'  => serialize($job->getContent()),
-            'metadata' => $job->getMetadata()
+            'content' => serialize($job->getContent()),
+            'metadata' => $job->getMetadata(),
         ];
 
         if ($job instanceof BinaryMessageInterface) {

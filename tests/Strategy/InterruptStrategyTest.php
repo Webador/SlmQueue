@@ -2,37 +2,40 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use Laminas\EventManager\EventManagerInterface;
+use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\InterruptStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class InterruptStrategyTest extends PHPUnit_Framework_TestCase
+class InterruptStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var InterruptStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new InterruptStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
-        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
-        
+
         $evm->expects($this->at(0))->method('attach')
             ->with(WorkerEventInterface::EVENT_PROCESS_IDLE, [$this->listener, 'onStopConditionCheck'], $priority);
         $evm->expects($this->at(1))->method('attach')
@@ -43,20 +46,20 @@ class InterruptStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler_NoSignal()
+    public function testOnStopConditionCheckHandlerNoSignal(): void
     {
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNull($result);
     }
 
-    public function testOnStopConditionCheckHandler_SIGTERM()
+    public function testOnStopConditionCheckHandlerSIGTERM(): void
     {
         $this->listener->onPCNTLSignal(SIGTERM);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
     }
 
-    public function testOnStopConditionCheckHandler_SIGINT()
+    public function testOnStopConditionCheckHandlerSIGINT(): void
     {
         $this->listener->onPCNTLSignal(SIGINT);
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));

@@ -6,31 +6,28 @@ use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Worker\WorkerInterface;
 
-/**
- * ProcessJobEvent
- */
 class ProcessJobEvent extends AbstractWorkerEvent
 {
 
     /**
      * Status for unstarted jobs
      */
-    const JOB_STATUS_UNKNOWN = 0;
+    public const JOB_STATUS_UNKNOWN = 0;
 
     /**
      * Status for successfully finished job
      */
-    const JOB_STATUS_SUCCESS = 1;
+    public const JOB_STATUS_SUCCESS = 1;
 
     /**
      * Status for job that has failed and cannot be processed again
      */
-    const JOB_STATUS_FAILURE = 2;
+    public const JOB_STATUS_FAILURE = 2;
 
     /**
      * Status for job that has failed but can be processed again
      */
-    const JOB_STATUS_FAILURE_RECOVERABLE = 4;
+    public const JOB_STATUS_FAILURE_RECOVERABLE = 4;
 
     /**
      * @var QueueInterface
@@ -61,44 +58,28 @@ class ProcessJobEvent extends AbstractWorkerEvent
         $this->setJob($job);
     }
 
-    /**
-     * @return QueueInterface
-     */
-    public function getQueue()
+    public function getQueue(): QueueInterface
     {
         return $this->queue;
     }
 
-    /**
-     * @param  JobInterface $job
-     * @return void
-     */
-    private function setJob(JobInterface $job)
+    private function setJob(JobInterface $job): void
     {
         $this->job = $job;
         $this->setResult(self::JOB_STATUS_UNKNOWN);
     }
 
-    /**
-     * @return JobInterface
-     */
-    public function getJob()
+    public function getJob(): JobInterface
     {
         return $this->job;
     }
 
-    /**
-     * @param int $result
-     */
-    public function setResult($result)
+    public function setResult(int $result): void
     {
         $this->result = $result;
     }
 
-    /**
-     * @return int
-     */
-    public function getResult()
+    public function getResult(): int
     {
         return $this->result;
     }

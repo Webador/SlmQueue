@@ -2,22 +2,22 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ResponseCollection;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Worker\AbstractWorker;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ResponseCollection;
 
 class ProcessQueueStrategy extends AbstractStrategy
 {
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_QUEUE,
@@ -31,22 +31,18 @@ class ProcessQueueStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param ProcessQueueEvent $processQueueEvent
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onJobPop(ProcessQueueEvent $processQueueEvent)
+    public function onJobPop(ProcessQueueEvent $processQueueEvent): ?ExitWorkerLoopResult
     {
         /** @var AbstractWorker $worker */
-        $worker       = $processQueueEvent->getWorker();
-        $queue        = $processQueueEvent->getQueue();
-        $options      = $processQueueEvent->getOptions();
+        $worker = $processQueueEvent->getWorker();
+        $queue = $processQueueEvent->getQueue();
+        $options = $processQueueEvent->getOptions();
         $eventManager = $worker->getEventManager();
 
-        $job          = $queue->pop($options);
+        $job = $queue->pop($options);
 
         // The queue may return null, for instance if a timeout was set
-        if (!$job instanceof JobInterface) {
+        if (! $job instanceof JobInterface) {
             /** @var ResponseCollection $results */
             $results = $eventManager->triggerEventUntil(
                 function ($response) {
@@ -61,19 +57,17 @@ class ProcessQueueStrategy extends AbstractStrategy
                 return $results->last();
             }
 
-            return;
+            return null;
         }
 
         $eventManager->triggerEvent(new ProcessJobEvent($job, $worker, $queue));
+
+        return null;
     }
 
-    /**
-     * @param  ProcessJobEvent $processJobEvent
-     * @return void
-     */
-    public function onJobProcess(ProcessJobEvent $processJobEvent)
+    public function onJobProcess(ProcessJobEvent $processJobEvent): void
     {
-        $job   = $processJobEvent->getJob();
+        $job = $processJobEvent->getJob();
         $queue = $processJobEvent->getQueue();
 
         /** @var AbstractWorker $worker */

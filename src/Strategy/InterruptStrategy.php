@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
-use Zend\EventManager\EventManagerInterface;
 
 class InterruptStrategy extends AbstractStrategy
 {
@@ -13,9 +13,6 @@ class InterruptStrategy extends AbstractStrategy
      */
     protected $interrupted = false;
 
-    /**
-     * @param array $options
-     */
     public function __construct(array $options = null)
     {
         parent::__construct($options);
@@ -27,10 +24,7 @@ class InterruptStrategy extends AbstractStrategy
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_IDLE,
@@ -49,31 +43,22 @@ class InterruptStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * Checks for the stop condition of this strategy
-     *
-     * @param WorkerEventInterface $event
-     * @return ExitWorkerLoopResult|void
-     */
-    public function onStopConditionCheck(WorkerEventInterface $event)
+    public function onStopConditionCheck(WorkerEventInterface $event): ?ExitWorkerLoopResult
     {
-        declare(ticks = 1);
+        declare(ticks=1);
 
         if ($this->interrupted) {
             $reason = sprintf("interrupt by an external signal on '%s'", $event->getName());
 
             return ExitWorkerLoopResult::withReason($reason);
         }
+
+        return null;
     }
 
-    /**
-     * Handle the signal
-     *
-     * @param int $signo
-     */
-    public function onPCNTLSignal($signo)
+    public function onPCNTLSignal(int $signal): void
     {
-        switch ($signo) {
+        switch ($signal) {
             case SIGTERM:
             case SIGINT:
                 $this->interrupted = true;

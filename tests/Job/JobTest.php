@@ -2,12 +2,12 @@
 
 namespace SlmQueueTest\Job;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use SlmQueueTest\Asset\SimpleJob;
 
 class JobTest extends TestCase
 {
-    public function testSetIdAutomaticallyAddMetadata()
+    public function testSetIdAutomaticallyAddMetadata(): void
     {
         $job = new SimpleJob();
         $job->setId(3);
@@ -16,7 +16,7 @@ class JobTest extends TestCase
         static::assertEquals(3, $job->getMetadata('__id__'));
     }
 
-    public function testJobCanBeExecuted()
+    public function testJobCanBeExecuted(): void
     {
         // The simple Job just add a metadata
         $job = new SimpleJob();

@@ -9,23 +9,12 @@ trait QueueAwareTrait
      */
     protected $queue;
 
-    /**
-     * Retrieve the queue
-     *
-     * @return QueueInterface
-     */
-    public function getQueue()
+    public function getQueue(): QueueInterface
     {
         return $this->queue;
     }
 
-    /**
-     * Inject a Queue instance
-     *
-     * @param  QueueInterface $queue
-     * @return void
-     */
-    public function setQueue(QueueInterface $queue)
+    public function setQueue(QueueInterface $queue): void
     {
         $this->queue = $queue;
     }

@@ -9,35 +9,22 @@ final class ExitWorkerLoopResult
      */
     private $reason;
 
-    /**
-     * @param $reason
-     */
-    private function __construct($reason)
+    private function __construct(string $reason)
     {
         $this->reason = $reason;
     }
 
-    /**
-     * @param $reason
-     * @return ExitWorkerLoopResult
-     */
-    public static function withReason($reason)
+    public static function withReason(string $reason): ExitWorkerLoopResult
     {
         return new static($reason);
     }
 
-    /**
-     * @return string
-     */
-    public function getReason()
+    public function getReason(): string
     {
         return $this->reason;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->reason;
     }

@@ -2,37 +2,40 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use Laminas\EventManager\EventManagerInterface;
+use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\FileWatchStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessIdleEvent;
 use SlmQueue\Worker\Event\ProcessJobEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
+class FileWatchStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var FileWatchStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new FileWatchStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
-        $evm = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -45,13 +48,13 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testPatternDefault()
+    public function testPatternDefault(): void
     {
         // standard zf2 application php and phtml files
         static::assertEquals('/^\.\/(config|module).*\.(php|phtml)$/', $this->listener->getPattern());
     }
 
-    public function testFilesGetterReturnEmptyArrayByDefault()
+    public function testFilesGetterReturnEmptyArrayByDefault(): void
     {
         // standard zf2 application php and phtml files
         static::assertEmpty($this->listener->getFiles());
@@ -78,7 +81,7 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
     public function testCanFileFilesByPattern()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
@@ -92,14 +95,17 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
     public function testWatchedFileChangeStopsPropagation()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNull($result);
 
         static::assertCount(1, $this->listener->getFiles());
@@ -107,24 +113,30 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         // change the file
         file_put_contents('tests/build/filewatch.txt', 'hello');
 
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
-        static::assertContains('file modification detected for', $result->getReason());
+        static::assertStringContainsString('file modification detected for', $result->getReason());
     }
 
     public function testWatchedFileRemovedStopsPropagation()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');
 
         $this->listener->setPattern('/^\.\/(tests\/build).*\.(txt)$/');
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNull($result);
 
         static::assertCount(1, $this->listener->getFiles());
@@ -132,17 +144,20 @@ class FileWatchStrategyTest extends PHPUnit_Framework_TestCase
         // remove the file
         unlink('tests/build/filewatch.txt');
 
-        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(new SimpleJob(), $this->worker,
-            $this->queue));
+        $result = $this->listener->onStopConditionCheck(new ProcessJobEvent(
+            new SimpleJob(),
+            $this->worker,
+            $this->queue
+        ));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
-        static::assertContains('file modification detected for', $result->getReason());
+        static::assertStringContainsString('file modification detected for', $result->getReason());
     }
 
     public function testStopConditionCheckIdlingThrottling()
     {
         // builds a file list
-        if (!is_dir('tests/build')) {
+        if (! is_dir('tests/build')) {
             mkdir('tests/build', 0755, true);
         }
         file_put_contents('tests/build/filewatch.txt', 'hi');

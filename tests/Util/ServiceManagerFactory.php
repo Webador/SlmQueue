@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,8 +20,9 @@
 
 namespace SlmQueueTest\Util;
 
-use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Mvc\Service\ServiceManagerConfig;
+use Laminas\ServiceManager\ServiceManager;
 
 /**
  * Utility used to retrieve a freshly bootstrapped application's service manager
@@ -39,7 +41,7 @@ class ServiceManagerFactory
     /**
      * @param array $config
      */
-    public static function setConfig(array $config)
+    public static function setConfig(array $config): void
     {
         static::$config = $config;
     }
@@ -47,7 +49,7 @@ class ServiceManagerFactory
     /**
      * Builds a new service manager
      */
-    public static function getServiceManager()
+    public static function getServiceManager(): ServiceManager
     {
         $serviceManagerConfig = new ServiceManagerConfig(
             isset(static::$config['service_manager']) ? static::$config['service_manager'] : []
@@ -62,12 +64,13 @@ class ServiceManagerFactory
         $serviceManager = new ServiceManager($config);
         $serviceManager->setService('ApplicationConfig', static::$config);
         $serviceManager->setAllowOverride(true);
-        $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
+        $serviceManager->setFactory('ServiceListener', 'Laminas\Mvc\Service\ServiceListenerFactory');
         $serviceManager->setAllowOverride(false);
 
-        /** @var $moduleManager \Zend\ModuleManager\ModuleManager */
+        /** @var $moduleManager ModuleManager */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
+
         return $serviceManager;
     }
 }

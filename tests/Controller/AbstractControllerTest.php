@@ -2,20 +2,20 @@
 
 namespace SlmQueueTest\Controller;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use Laminas\Mvc\Router\RouteMatch;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
+use SlmQueue\Controller\Exception\WorkerProcessException;
+use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleController;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Asset\SimpleQueueFactory;
 use SlmQueueTest\Asset\SimpleWorker;
-use SlmQueue\Controller\Exception\WorkerProcessException;
-use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\ProcessQueueStrategy;
-use Zend\Mvc\Router\RouteMatch;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\ServiceManager;
 
 class AbstractControllerTest extends TestCase
 {
@@ -30,7 +30,7 @@ class AbstractControllerTest extends TestCase
     protected $controller;
 
 
-    public function setUp()
+    public function setUp(): void
     {
         $worker = new SimpleWorker();
 
@@ -45,19 +45,19 @@ class AbstractControllerTest extends TestCase
         ];
 
         $this->queuePluginManager = new QueuePluginManager($serviceManager, $config);
-        $this->controller         = new SimpleController($worker, $this->queuePluginManager);
+        $this->controller = new SimpleController($worker, $this->queuePluginManager);
     }
 
-    public function testThrowExceptionIfQueueIsUnknown()
+    public function testThrowExceptionIfQueueIsUnknown(): void
     {
         $routeMatch = new RouteMatch(['queue' => 'unknownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException(ServiceNotFoundException::class);
+        $this->expectException(ServiceNotFoundException::class);
         $this->controller->processAction();
     }
 
-    public function testSimpleJob()
+    public function testSimpleJob(): void
     {
         /** @var SimpleQueue $queue */
         $queue = $this->queuePluginManager->get('knownQueue');
@@ -67,11 +67,11 @@ class AbstractControllerTest extends TestCase
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
         $result = $this->controller->processAction();
-        static::assertContains("Finished worker for queue 'knownQueue'", $result);
-        static::assertContains("maximum of 1 jobs processed", $result);
+        static::assertStringContainsString("Finished worker for queue 'knownQueue'", $result);
+        static::assertStringContainsString("maximum of 1 jobs processed", $result);
     }
 
-    public function testFailingJobThrowException()
+    public function testFailingJobThrowException(): void
     {
         /** @var SimpleQueue $queue */
         $queue = $this->queuePluginManager->get('knownQueue');
@@ -80,7 +80,7 @@ class AbstractControllerTest extends TestCase
         $routeMatch = new RouteMatch(['queue' => 'knownQueue']);
         $this->controller->getEvent()->setRouteMatch($routeMatch);
 
-        $this->setExpectedException(WorkerProcessException::class);
+        $this->expectException(WorkerProcessException::class);
         $this->controller->processAction();
     }
 }

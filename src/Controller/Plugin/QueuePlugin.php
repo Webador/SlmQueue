@@ -2,16 +2,13 @@
 
 namespace SlmQueue\Controller\Plugin;
 
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use SlmQueue\Controller\Exception\QueueNotFoundException;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Queue\QueuePluginManager;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
-/**
- * Queue controller plugin
- */
 class QueuePlugin extends AbstractPlugin
 {
     /**
@@ -44,19 +41,16 @@ class QueuePlugin extends AbstractPlugin
     public function __construct(QueuePluginManager $queuePluginManager, JobPluginManager $jobPluginManager)
     {
         $this->queuePluginManager = $queuePluginManager;
-        $this->jobPluginManager   = $jobPluginManager;
+        $this->jobPluginManager = $jobPluginManager;
     }
 
     /**
      * Invoke plugin and optionally set queue
-     *
-     * @param  string $name Name of queue when set
-     * @return self
      */
-    public function __invoke($name = null)
+    public function __invoke(string $name = null): self
     {
         if (null !== $name) {
-            if (!$this->queuePluginManager->has($name)) {
+            if (! $this->queuePluginManager->has($name)) {
                 throw new QueueNotFoundException(
                     sprintf("Queue '%s' does not exist", $name)
                 );
@@ -71,13 +65,13 @@ class QueuePlugin extends AbstractPlugin
     /**
      * Push a job by its name onto the selected queue
      *
-     * @param  string $name    Name of the job to create
-     * @param  mixed $payload  Payload of the job set as content
-     * @param  array $options  Push job options
-     * @throws QueueNotFoundException If the method is called without a queue set
+     * @param string $name    Name of the job to create
+     * @param mixed  $payload Payload of the job set as content
+     * @param array  $options Push job options
      * @return JobInterface    Created job by the job plugin manager
+     * @throws QueueNotFoundException If the method is called without a queue set
      */
-    public function push($name, $payload = null, array $options = [])
+    public function push(string $name, $payload = null, array $options = []): JobInterface
     {
         $this->assertQueueIsSet();
 
@@ -87,7 +81,7 @@ class QueuePlugin extends AbstractPlugin
         }
 
         $this->queue->push($job, $options);
-        
+
         return $job;
     }
 
@@ -95,10 +89,10 @@ class QueuePlugin extends AbstractPlugin
      * Push a job on the selected queue
      *
      * @param JobInterface $job
-     * @param array $options Push job options
-      * @throws QueueNotFoundException If the method is called without a queue set
+     * @param array        $options Push job options
+     * @throws QueueNotFoundException If the method is called without a queue set
      */
-    public function pushJob(JobInterface $job, array $options = [])
+    public function pushJob(JobInterface $job, array $options = []): void
     {
         $this->assertQueueIsSet();
 
@@ -108,7 +102,7 @@ class QueuePlugin extends AbstractPlugin
     /**
      * @throws QueueNotFoundException
      */
-    protected function assertQueueIsSet()
+    protected function assertQueueIsSet(): void
     {
         if (null === $this->queue) {
             throw new QueueNotFoundException(

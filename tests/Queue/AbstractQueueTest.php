@@ -2,11 +2,10 @@
 
 namespace SlmQueueTest\Queue;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueue\Queue\QueuePluginManager;
+use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 use SlmQueueTest\Asset\SimpleQueue;
 use SlmQueueTest\Util\ServiceManagerFactory;
-use Zend\ServiceManager\ServiceManager;
 
 class AbstractQueueTest extends TestCase
 {
@@ -15,13 +14,14 @@ class AbstractQueueTest extends TestCase
      */
     protected $serviceManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
-    public function testGetters()
+    public function testGetters(): void
     {
         $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
 
@@ -30,5 +30,4 @@ class AbstractQueueTest extends TestCase
         static::assertSame('name', $queue->getName());
         static::assertSame($jobPluginManager, $queue->getJobPluginManager());
     }
-
 }

@@ -2,15 +2,15 @@
 
 namespace SlmQueueTest\Asset;
 
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Strategy\AbstractStrategy;
-use Zend\EventManager\EventManagerInterface;
 
 class SimpleStrategy extends AbstractStrategy
 {
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         die();
     }

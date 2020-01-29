@@ -2,15 +2,12 @@
 
 namespace SlmQueue\Controller;
 
+use Laminas\Mvc\Controller\AbstractActionController;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Exception\ExceptionInterface;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Worker\WorkerInterface;
-use Zend\Mvc\Controller\AbstractActionController;
 
-/**
- * AbstractController
- */
 abstract class AbstractWorkerController extends AbstractActionController
 {
     /**
@@ -29,21 +26,15 @@ abstract class AbstractWorkerController extends AbstractActionController
      */
     public function __construct(WorkerInterface $worker, QueuePluginManager $queuePluginManager)
     {
-        $this->worker             = $worker;
+        $this->worker = $worker;
         $this->queuePluginManager = $queuePluginManager;
     }
 
-    /**
-     * Process a queue
-     *
-     * @return string
-     * @throws WorkerProcessException
-     */
-    public function processAction()
+    public function processAction(): string
     {
         $options = $this->params()->fromRoute();
-        $name    = $options['queue'];
-        $queue   = $this->queuePluginManager->get($name);
+        $name = $options['queue'];
+        $queue = $this->queuePluginManager->get($name);
 
         try {
             $messages = $this->worker->processQueue($queue, $options);
@@ -58,15 +49,10 @@ abstract class AbstractWorkerController extends AbstractActionController
         return $this->formatOutput($name, $messages);
     }
 
-    /**
-     * @param  string $queueName
-     * @param  array  $messages
-     * @return string
-     */
-    protected function formatOutput($queueName, array $messages = [])
+    protected function formatOutput(string $queueName, array $messages = []): string
     {
-        $messages = implode("\n", array_map(function ($m) {
-            return sprintf(' - %s', $m);
+        $messages = implode("\n", array_map(function (string $message): string {
+            return sprintf(' - %s', $message);
         }, $messages));
 
         return sprintf(

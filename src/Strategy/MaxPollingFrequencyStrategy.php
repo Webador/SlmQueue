@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Strategy;
 
-use SlmQueue\Worker\Event\WorkerEventInterface;
+use Laminas\EventManager\EventManagerInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
-use Zend\EventManager\EventManagerInterface;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 
 class MaxPollingFrequencyStrategy extends AbstractStrategy
 {
@@ -21,7 +21,7 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
     /**
      * {@inheritDoc}
      */
-    public function attach(EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1): void
     {
         $this->listeners[] = $events->attach(
             WorkerEventInterface::EVENT_PROCESS_QUEUE,
@@ -30,14 +30,10 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
         );
     }
 
-    /**
-     * @param ProcessQueueEvent $event
-     * @return void
-     */
-    public function onQueueProcessFinish(ProcessQueueEvent $event)
+    public function onQueueProcessFinish(ProcessQueueEvent $event): void
     {
         $startTime = microtime(true);
-        $time      = ($startTime - $this->lastTime);
+        $time = ($startTime - $this->lastTime);
 
         $minTime = 1 / $this->maxFrequency;
 
@@ -49,18 +45,12 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
         $this->lastTime = microtime(true);
     }
 
-    /**
-     * @param mixed $maxFrequency
-     */
-    public function setMaxFrequency($maxFrequency)
+    public function setMaxFrequency(int $maxFrequency): void
     {
         $this->maxFrequency = $maxFrequency;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMaxFrequency()
+    public function getMaxFrequency(): int
     {
         return $this->maxFrequency;
     }

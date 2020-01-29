@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Job;
 
-use Zend\Stdlib\Message;
+use Laminas\Stdlib\Message;
 
 /**
  * This class is supposed to be extended. To create a job, just implements the missing "execute" method. If a queueing
@@ -15,12 +15,10 @@ abstract class AbstractJob extends Message implements JobInterface
      */
     protected $content = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setId($id)
+    public function setId($id): JobInterface
     {
         $this->setMetadata('__id__', $id);
+
         return $this;
     }
 

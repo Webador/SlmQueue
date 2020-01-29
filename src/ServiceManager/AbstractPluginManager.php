@@ -2,14 +2,11 @@
 
 namespace SlmQueue\ServiceManager;
 
-use Zend\ServiceManager\AbstractPluginManager as ZendAbstractPluginManager;
-use Zend\Stdlib\DispatchableInterface as Dispatchable;
-use Zend\Mvc\Controller\Plugin\PluginInterface;
+use Laminas\Mvc\Controller\Plugin\PluginInterface;
+use Laminas\ServiceManager\AbstractPluginManager as LaminasAbstractPluginManager;
+use Laminas\Stdlib\DispatchableInterface as Dispatchable;
 
-/**
- * AbstractPluginManager
- */
-abstract class AbstractPluginManager extends ZendAbstractPluginManager implements PluginInterface
+abstract class AbstractPluginManager extends LaminasAbstractPluginManager implements PluginInterface
 {
     /**
      *
@@ -17,31 +14,20 @@ abstract class AbstractPluginManager extends ZendAbstractPluginManager implement
      */
     protected $controller;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePlugin($plugin)
+    public function validatePlugin($plugin): void
     {
-        return $this->validate($plugin);
+        $this->validate($plugin);
     }
 
-    /**
-     *
-     * @return Dispatchable
-     */
-    public function getController()
+    public function getController(): Dispatchable
     {
         return $this->controller;
     }
 
-    /**
-     *
-     * @param Dispatchable $controller
-     * @return AbstractPluginManager
-     */
-    public function setController(Dispatchable $controller)
+    public function setController(Dispatchable $controller): self
     {
         $this->controller = $controller;
+
         return $this;
     }
 }

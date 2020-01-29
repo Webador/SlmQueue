@@ -2,12 +2,12 @@
 
 namespace SlmQueueTest\Job;
 
-use PHPUnit_Framework_TestCase as TestCase;
-use SlmQueueTest\Asset\SimpleJob;
-use SlmQueueTest\Util\ServiceManagerFactory;
+use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\Exception\RuntimeException;
 use SlmQueue\Job\JobPluginManager;
-use Zend\ServiceManager\ServiceManager;
+use SlmQueueTest\Asset\SimpleJob;
+use SlmQueueTest\Util\ServiceManagerFactory;
 
 class JobPluginManagerTest extends TestCase
 {
@@ -16,29 +16,29 @@ class JobPluginManagerTest extends TestCase
      */
     protected $serviceManager;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->serviceManager = ServiceManagerFactory::getServiceManager();
     }
 
-    public function testCanRetrievePluginManagerWithServiceManager()
+    public function testCanRetrievePluginManagerWithServiceManager(): void
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
         static::assertInstanceOf(JobPluginManager::class, $jobPluginManager);
     }
 
-    public function testAskingTwiceForTheSameJobReturnsDifferentInstances()
+    public function testAskingTwiceForTheSameJobReturnsDifferentInstances(): void
     {
         $jobPluginManager = $this->serviceManager->get(JobPluginManager::class);
 
-        $firstInstance  = $jobPluginManager->get(SimpleJob::class);
+        $firstInstance = $jobPluginManager->get(SimpleJob::class);
         $secondInstance = $jobPluginManager->get(SimpleJob::class);
 
         static::assertNotSame($firstInstance, $secondInstance);
     }
 
-    public function testPluginManagerSetsServiceNameAsMetadata()
+    public function testPluginManagerSetsServiceNameAsMetadata(): void
     {
         $serviceManager = new ServiceManager();
         $jobPluginManager = new JobPluginManager($serviceManager);
@@ -50,13 +50,13 @@ class JobPluginManagerTest extends TestCase
         static::assertEquals('SimpleJob', $instance->getMetadata('__name__'));
     }
 
-    public function testPluginManagerThrowsExceptionOnInvalidJobClasses()
+    public function testPluginManagerThrowsExceptionOnInvalidJobClasses(): void
     {
         $serviceManager = new ServiceManager();
         $jobPluginManager = new JobPluginManager($serviceManager);
         $jobPluginManager->setInvokableClass('InvalidJob', 'stdClass');
 
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $instance = $jobPluginManager->get('InvalidJob');
     }

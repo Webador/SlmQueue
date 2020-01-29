@@ -2,48 +2,51 @@
 
 namespace SlmQueueTest\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use Laminas\EventManager\EventManagerInterface;
+use PHPUnit\Framework\TestCase;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\MaxMemoryStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
 
-class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
+class MaxMemoryStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
     /** @var MaxMemoryStrategy */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new MaxMemoryStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
-        static::assertInstanceOf(\SlmQueue\Strategy\AbstractStrategy::class, $this->listener);
+        static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testMaxMemoryDefault()
+    public function testMaxMemoryDefault(): void
     {
-        static::assertTrue($this->listener->getMaxMemory() == 0);
+        static::assertTrue($this->listener->getMaxMemory() === 0);
     }
 
-    public function testMaxMemorySetter()
+    public function testMaxMemorySetter(): void
     {
         $this->listener->setMaxMemory(1024 * 25);
 
-        static::assertTrue($this->listener->getMaxMemory() == 1024 * 25);
+        static::assertTrue($this->listener->getMaxMemory() === 1024 * 25);
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
-        $evm      = $this->getMock(\Zend\EventManager\EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -56,7 +59,7 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler()
+    public function testOnStopConditionCheckHandler(): void
     {
         $this->listener->setMaxMemory(1024 * 1024 * 1000);
 
@@ -64,7 +67,7 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
         static::assertNull($result);
 
         $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
-        static::assertContains(' memory usage', $stateResult->getState());
+        static::assertStringContainsString(' memory usage', $stateResult->getState());
 
 
         $this->listener->setMaxMemory(1024);
@@ -72,9 +75,9 @@ class MaxMemoryStrategyTest extends PHPUnit_Framework_TestCase
         $result = $this->listener->onStopConditionCheck(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
-        static::assertContains('memory threshold of 1kB exceeded (usage: ', $result->getReason());
+        static::assertStringContainsString('memory threshold of 1kB exceeded (usage: ', $result->getReason());
 
         $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
-        static::assertContains(' memory usage', $stateResult->getState());
+        static::assertStringContainsString(' memory usage', $stateResult->getState());
     }
 }

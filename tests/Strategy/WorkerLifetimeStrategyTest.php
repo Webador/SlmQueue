@@ -2,19 +2,19 @@
 
 namespace SlmQueueTest\Listener\Strategy;
 
-use PHPUnit_Framework_TestCase;
+use Laminas\EventManager\EventManagerInterface;
+use PHPUnit\Framework\TestCase;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\WorkerLifetimeStrategy;
 use SlmQueue\Worker\Event\BootstrapEvent;
-use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueueTest\Asset\SimpleWorker;
-use Zend\EventManager\EventManagerInterface;
 
-class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
+class WorkerLifetimeStrategyTest extends TestCase
 {
     protected $queue;
     protected $worker;
@@ -24,33 +24,33 @@ class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
      */
     protected $listener;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->queue    = $this->getMock(QueueInterface::class);
-        $this->worker   = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->worker = new SimpleWorker();
         $this->listener = new WorkerLifetimeStrategy();
     }
 
-    public function testListenerInstanceOfAbstractStrategy()
+    public function testListenerInstanceOfAbstractStrategy(): void
     {
         static::assertInstanceOf(AbstractStrategy::class, $this->listener);
     }
 
-    public function testLifetimeDefault()
+    public function testLifetimeDefault(): void
     {
         static::assertEquals(3600, $this->listener->getLifetime());
     }
 
-    public function testLifetimeSetter()
+    public function testLifetimeSetter(): void
     {
         $this->listener->setLifetime(7200);
 
         static::assertEquals(7200, $this->listener->getLifetime());
     }
 
-    public function testListensToCorrectEventAtCorrectPriority()
+    public function testListensToCorrectEventAtCorrectPriority(): void
     {
-        $evm = $this->getMock(EventManagerInterface::class);
+        $evm = $this->createMock(EventManagerInterface::class);
         $priority = 1;
 
         $evm->expects($this->at(0))->method('attach')
@@ -65,7 +65,7 @@ class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
         $this->listener->attach($evm, $priority);
     }
 
-    public function testOnStopConditionCheckHandler()
+    public function testOnStopConditionCheckHandler(): void
     {
         $this->listener->setLifetime(2);
 
@@ -75,16 +75,16 @@ class WorkerLifetimeStrategyTest extends PHPUnit_Framework_TestCase
         static::assertNull($result);
 
         $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
-        static::assertContains(' seconds passed', $stateResult->getState());
+        static::assertStringContainsString(' seconds passed', $stateResult->getState());
 
         sleep(3);
 
         $result = $this->listener->checkRuntime(new ProcessQueueEvent($this->worker, $this->queue));
         static::assertNotNull($result);
         static::assertInstanceOf(ExitWorkerLoopResult::class, $result);
-        static::assertContains('lifetime of 2 seconds reached', $result->getReason());
+        static::assertStringContainsString('lifetime of 2 seconds reached', $result->getReason());
 
         $stateResult = $this->listener->onReportQueueState(new ProcessStateEvent($this->worker));
-        static::assertContains('3 seconds passed', $stateResult->getState());
+        static::assertStringContainsString('3 seconds passed', $stateResult->getState());
     }
 }

@@ -4,15 +4,9 @@ namespace SlmQueue\Queue;
 
 use SlmQueue\ServiceManager\AbstractPluginManager;
 
-/**
- * QueuePluginManager
- */
 class QueuePluginManager extends AbstractPluginManager
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function validate($instance)
+    public function validate($instance): void
     {
         if ($instance instanceof QueueInterface) {
             return; // we're okay!

@@ -2,36 +2,27 @@
 
 namespace SlmQueue\Strategy\Factory;
 
+use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
 use SlmQueue\Strategy\StrategyPluginManager;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Interop\Container\ContainerInterface;
 
-/**
- * AttachQueueListenersStrategyFactory
- */
 class AttachQueueListenersStrategyFactory implements FactoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
-        $pluginManager  = $container->get(StrategyPluginManager::class);
-        $config         = $container->get('config');
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): AttachQueueListenersStrategy {
+        $pluginManager = $container->get(StrategyPluginManager::class);
+        $config = $container->get('config');
         $strategyConfig = $config['slm_queue']['worker_strategies']['queues'];
 
         return new AttachQueueListenersStrategy($pluginManager, $strategyConfig);
     }
 
-    /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return AttachQueueListenersStrategy
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator): AttachQueueListenersStrategy
     {
         return $this($serviceLocator->getServiceLocator(), AttachQueueListenersStrategy::class);
     }

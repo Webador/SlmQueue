@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Job;
 
-use Zend\Stdlib\MessageInterface;
+use Laminas\Stdlib\MessageInterface;
 
 /**
  * A job is a task inserted into a queue, and it contains metadata and content.
@@ -15,10 +15,9 @@ interface JobInterface extends MessageInterface
     /**
      * Set the identifier of the job (it proxies to its metadata)
      *
-     * @param  mixed $id
-     * @return JobInterface
+     * @param mixed $id
      */
-    public function setId($id);
+    public function setId($id): JobInterface;
 
     /**
      * Get the identifier of the job (it proxies to its metadata)
@@ -29,8 +28,6 @@ interface JobInterface extends MessageInterface
 
     /**
      * Execute the job
-     *
-     * @return void|int
      */
-    public function execute();
+    public function execute(): ?int;
 }

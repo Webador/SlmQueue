@@ -2,18 +2,22 @@
 
 namespace SlmQueueTest\Worker;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use Laminas\EventManager\EventManager;
+use Laminas\EventManager\ResponseCollection;
+use PHPUnit\Framework\TestCase;
+use SlmQueue\Job\JobInterface;
+use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Worker\Event\WorkerEventInterface;
+use SlmQueue\Worker\AbstractWorker;
 use SlmQueue\Worker\Event\BootstrapEvent;
 use SlmQueue\Worker\Event\FinishEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\ProcessStateEvent;
+use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
 use SlmQueue\Worker\Result\ProcessStateResult;
+use SlmQueue\Worker\WorkerInterface;
 use SlmQueueTest\Asset\SimpleWorker;
-use Zend\EventManager\EventManager;
-use Zend\EventManager\ResponseCollection;
 
 class AbstractWorkerTest extends TestCase
 {
@@ -23,36 +27,38 @@ class AbstractWorkerTest extends TestCase
     protected $job;
     protected $maxRuns;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->worker = new SimpleWorker;
-        $this->queue  = $this->getMock(\SlmQueue\Queue\QueueInterface::class);
-        $this->job    = $this->getMock(\SlmQueue\Job\JobInterface::class);
+        $this->worker = new SimpleWorker();
+        $this->queue = $this->createMock(QueueInterface::class);
+        $this->job = $this->createMock(JobInterface::class);
 
         // set max runs so our tests won't run forever
-        $this->maxRuns = new MaxRunsStrategy;
+        $this->maxRuns = new MaxRunsStrategy();
         $this->maxRuns->setMaxRuns(1);
         $this->maxRuns->attach($this->worker->getEventManager());
     }
 
-    public function testCorrectIdentifiersAreSetToEventManager()
+    public function testCorrectIdentifiersAreSetToEventManager(): void
     {
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();
 
-        static::assertContains(\SlmQueue\Worker\AbstractWorker::class, $eventManager->getIdentifiers());
-        static::assertContains(\SlmQueueTest\Asset\SimpleWorker::class, $eventManager->getIdentifiers());
-        static::assertContains(\SlmQueue\Worker\WorkerInterface::class, $eventManager->getIdentifiers());
+        static::assertTrue(in_array(AbstractWorker::class, $eventManager->getIdentifiers()));
+        static::assertTrue(in_array(SimpleWorker::class, $eventManager->getIdentifiers()));
+        static::assertTrue(in_array(WorkerInterface::class, $eventManager->getIdentifiers()));
     }
 
-    public function testWorkerLoopEvents()
+    public function testWorkerLoopEvents(): void
     {
-        $eventManager = $this->getMock('Zend\EventManager\EventManager');
+        $eventManager = $this->createMock('Laminas\EventManager\EventManager');
         $this->worker = new SimpleWorker($eventManager);
 
         // BootstrapEvent
-        $eventManager->expects($this->at(0))->method('triggerEvent')->with(new BootstrapEvent($this->worker,
-            $this->queue));
+        $eventManager->expects($this->at(0))->method('triggerEvent')->with(new BootstrapEvent(
+            $this->worker,
+            $this->queue
+        ));
 
         // first ProcessQueueEvent with no exit
         $response = new ResponseCollection();
@@ -70,30 +76,40 @@ class AbstractWorkerTest extends TestCase
         }, new ProcessQueueEvent($this->worker, $this->queue))->willReturn($response);
 
         // FinishEvent
-        $eventManager->expects($this->at(3))->method('triggerEvent')->with(new FinishEvent($this->worker,
-            $this->queue));
+        $eventManager->expects($this->at(3))->method('triggerEvent')->with(new FinishEvent(
+            $this->worker,
+            $this->queue
+        ));
 
         // ProcessStateEvent
         $response = new ResponseCollection();
         $response->push(ProcessStateResult::withState('some strategy state'));
         $response->push(ProcessStateResult::withState('another strategy state'));
-        $eventManager->expects($this->at(4))->method('triggerEvent')->with(new ProcessStateEvent($this->worker))->willReturn($response);
+
+        $eventManager
+            ->expects($this->at(4))
+            ->method('triggerEvent')
+            ->with(new ProcessStateEvent($this->worker))
+            ->willReturn($response);
 
         $result = $this->worker->processQueue($this->queue);
 
         static::assertEquals(["some strategy state", "another strategy state", "some exit reason"], $result);
     }
 
-    public function testProcessQueueSetsOptionsOnProcessQueueEvent()
+    public function testProcessQueueSetsOptionsOnProcessQueueEvent(): void
     {
         /** @var EventManager $eventManager */
         $eventManager = $this->worker->getEventManager();
 
         $options = ['foo' => 'bar'];
 
-        $eventManager->attach(WorkerEventInterface::EVENT_PROCESS_QUEUE, function (ProcessQueueEvent $e) use ($options) {
-            static::assertEquals($options, $e->getOptions());
-        });
+        $eventManager->attach(
+            WorkerEventInterface::EVENT_PROCESS_QUEUE,
+            function (ProcessQueueEvent $e) use ($options) {
+                static::assertEquals($options, $e->getOptions());
+            }
+        );
 
         $this->worker->processQueue($this->queue, $options);
     }
