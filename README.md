@@ -51,8 +51,8 @@ or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 Requirements
 ------------
-* PHP5.5+
-* [laminas-servicemanager 2.7 || 3.0](https://github.com/laminas/laminas-servicemanager)
+* PHP >= 7.2
+* [laminas-servicemanager >= 3.3.1](https://github.com/laminas/laminas-servicemanager)
 
 
 Code samples
@@ -83,8 +83,6 @@ class EmailJob extends AbstractJob
 ```
 
 If you want to inject this job into a queue, you can do this for instance in your controller:
-
-Since v0.8.0 you can also add additional options (in the example the job will be delay by a minute)
 
 ```php
 namespace MyModule\Controller;
