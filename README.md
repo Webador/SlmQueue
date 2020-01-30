@@ -137,3 +137,13 @@ contribute, please be aware of the following guidelines:
  5. If you add a new feature, please work on some documentation as well
 
 For long-term contributors, push access to this repository is granted.
+
+Who to thank?
+-------------
+
+[Jurian Sluiman](https://github.com/juriansluiman) and [Michaël Gallego](https://github.com/bakura10) did the initial work on creating this repo, and maintained it for a long time. 
+
+Currently it is maintained by:
+
+* [Bas Kamer](https://github.com/basz)
+* [Roel van Duijnhoven](https://github.com/roelvanduijnhoven)
