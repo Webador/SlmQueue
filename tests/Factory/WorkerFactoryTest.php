@@ -20,7 +20,7 @@ class AbstractWorkerTest extends TestCase
     {
         $sm = ServiceManagerFactory::getServiceManager();
         $factory = new WorkerFactory();
-        $worker = $factory->createService($sm, 'slmqueuetestassetsimpleworker', 'SlmQueueTest\Asset\SimpleWorker');
+        $worker = $factory->__invoke($sm, 'SlmQueueTest\Asset\SimpleWorker');
 
         static::assertInstanceOf('SlmQueueTest\Asset\SimpleWorker', $worker);
     }
