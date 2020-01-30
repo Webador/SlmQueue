@@ -3,12 +3,7 @@ SlmQueue
 
 [![Build Status](https://travis-ci.org/JouwWeb/SlmQueue.png?branch=master)](https://travis-ci.org/JouwWeb/SlmQueue)
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
-[![Latest Unstable Version](https://poser.pugx.org/slm/queue/v/unstable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
-
-Created by Jurian Sluiman and Michaël Gallego
-
-Introduction
-------------
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/?branch=master)
 
 SlmQueue is a job queue abstraction layer for Zend Framework applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
@@ -38,7 +33,7 @@ SlmQueue works with [Composer](http://getcomposer.org). Make sure you have the c
 
 ```json
 "require": {
-    "slm/queue": "^1.0"
+    "slm/queue": "^2.0"
 }
 ```
 
@@ -56,8 +51,8 @@ or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
 
 Requirements
 ------------
-* PHP5.5+
-* [laminas-servicemanager 2.7 || 3.0](https://github.com/laminas/laminas-servicemanager)
+* PHP >= 7.2
+* [laminas-servicemanager >= 3.3.1](https://github.com/laminas/laminas-servicemanager)
 
 
 Code samples
@@ -88,8 +83,6 @@ class EmailJob extends AbstractJob
 ```
 
 If you want to inject this job into a queue, you can do this for instance in your controller:
-
-Since v0.8.0 you can also add additional options (in the example the job will be delay by a minute)
 
 ```php
 namespace MyModule\Controller;
@@ -144,3 +137,13 @@ contribute, please be aware of the following guidelines:
  5. If you add a new feature, please work on some documentation as well
 
 For long-term contributors, push access to this repository is granted.
+
+Who to thank?
+-------------
+
+[Jurian Sluiman](https://github.com/juriansluiman) and [Michaël Gallego](https://github.com/bakura10) did the initial work on creating this repo, and maintained it for a long time. 
+
+Currently it is maintained by:
+
+* [Bas Kamer](https://github.com/basz)
+* [Roel van Duijnhoven](https://github.com/roelvanduijnhoven)

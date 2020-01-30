@@ -5,8 +5,7 @@ namespace SlmQueue\Factory;
 use Interop\Container\ContainerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerInterface;
 
@@ -25,14 +24,6 @@ class WorkerFactory implements FactoryInterface
         $worker = new $requestedName($eventManager);
 
         return $worker;
-    }
-
-    public function createService(
-        ServiceLocatorInterface $serviceLocator,
-        $canonicalName = null,
-        $requestedName = null
-    ): WorkerInterface {
-        return $this($serviceLocator, $requestedName);
     }
 
     protected function attachWorkerListeners(
