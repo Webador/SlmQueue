@@ -38,7 +38,7 @@
         "laminas/laminas-stdlib": "^3.2"
     },
     "require-dev": {
-        "laminas/laminas-mvc": "^2.7.13",
+        "laminas/laminas-mvc": "^2.7.13 || ^3.0.0",
         "laminas/laminas-modulemanager": "^2.8.3",
         "laminas/laminas-view": "^2.7",
         "laminas/laminas-serializer": "^2.9.1",
