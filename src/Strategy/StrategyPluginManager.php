@@ -2,8 +2,8 @@
 
 namespace SlmQueue\Strategy;
 
+use Laminas\ServiceManager\AbstractPluginManager;
 use SlmQueue\Exception\RuntimeException;
-use SlmQueue\ServiceManager\AbstractPluginManager;
 
 class StrategyPluginManager extends AbstractPluginManager
 {

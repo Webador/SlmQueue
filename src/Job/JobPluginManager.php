@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Job;
 
-use SlmQueue\ServiceManager\AbstractPluginManager;
+use Laminas\ServiceManager\AbstractPluginManager;
 
 class JobPluginManager extends AbstractPluginManager
 {
@@ -30,7 +30,7 @@ class JobPluginManager extends AbstractPluginManager
      */
     public function get($name, $options = [], $usePeeringServiceManagers = true): JobInterface
     {
-        // parent::get calls validatePlugin() so we're sure $instance is a JobInterface
+        // parent::get calls validate() so we're sure $instance is a JobInterface
         $instance = parent::get($name, $options, $usePeeringServiceManagers);
         $instance->setMetadata('__name__', $name);
 
