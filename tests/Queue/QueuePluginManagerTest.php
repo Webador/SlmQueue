@@ -46,6 +46,6 @@ class QueuePluginManagerTest extends TestCase
         $queue = new stdClass();
 
         $this->expectException(RuntimeException::class);
-        $manager->validatePlugin($queue);
+        $manager->validate($queue);
     }
 }

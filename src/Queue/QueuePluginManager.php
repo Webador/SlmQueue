@@ -2,7 +2,7 @@
 
 namespace SlmQueue\Queue;
 
-use SlmQueue\ServiceManager\AbstractPluginManager;
+use Laminas\ServiceManager\AbstractPluginManager;
 
 class QueuePluginManager extends AbstractPluginManager
 {
