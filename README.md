@@ -5,7 +5,7 @@ SlmQueue
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/?branch=master)
 
-SlmQueue is a job queue abstraction layer for Zend Framework applications. It supports various job queue systems and
+SlmQueue is a job queue abstraction layer for Laminas (formerly Zend Framework) and Mezzio (formerly Zend Expressive) applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
 own adapter-module and are the following:
 
@@ -45,9 +45,9 @@ your `config/autoload` folder and apply any setting you want.
 
 NB. SlmQueue is a skeleton and therefore useless by itself. Enable an adapter to give you the implementation details
 you need to push jobs into the queue. Choose one of the available adapters
-[SlmQueueBeanstalkd](https://github.com/juriansluiman/SlmQueueBeanstalkd),
-[SlmQueueSqs](https://github.com/juriansluiman/SlmQueueSqs)
-or [SlmQueueDoctrine](https://github.com/juriansluiman/SlmQueueDoctrine)
+[SlmQueueBeanstalkd](https://github.com/JouwWeb/SlmQueueBeanstalkd),
+[SlmQueueSqs](https://github.com/JouwWeb/SlmQueueSqs)
+or [SlmQueueDoctrine](https://github.com/JouwWeb/SlmQueueDoctrine)
 
 Requirements
 ------------
