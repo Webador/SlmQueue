@@ -4,6 +4,7 @@ namespace SlmQueueTest\Listener\Strategy;
 
 use Laminas\EventManager\EventManagerInterface;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Job\JobInterface;
 use SlmQueue\Queue\QueueInterface;
 use SlmQueue\Strategy\AbstractStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
@@ -11,6 +12,8 @@ use SlmQueue\Worker\Event\ProcessJobEvent;
 use SlmQueue\Worker\Event\ProcessQueueEvent;
 use SlmQueue\Worker\Event\WorkerEventInterface;
 use SlmQueue\Worker\Result\ExitWorkerLoopResult;
+use SlmQueueTest\Asset\JobWithNoReturnType;
+use SlmQueueTest\Asset\JobWithVoidReturnType;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
 
@@ -101,9 +104,11 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertTrue($event->propagationIsStopped(), "EventPropagation should be stopped");
     }
 
-    public function testJobPopWithJobTriggersProcessJobEvent(): void
+    /**
+     * @dataProvider jobsProvider
+     */
+    public function testJobPopWithJobTriggersProcessJobEvent(JobInterface $job): void
     {
-        $job = new SimpleJob();
         $popOptions = [];
         $this->queue->expects($this->at(0))
             ->method('pop')
@@ -127,9 +132,11 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertFalse($event->propagationIsStopped(), "EventPropagation should not be stopped");
     }
 
-    public function testOnJobProcess(): void
+    /**
+     * @dataProvider jobsProvider
+     */
+    public function testOnJobProcess(JobInterface $job): void
     {
-        $job = new SimpleJob();
         $event = new ProcessJobEvent($job, $this->worker, $this->queue);
 
         $this->listener->onJobProcess($event);
@@ -137,5 +144,14 @@ class ProcessQueueStrategyTest extends TestCase
         static::assertSame(999, $event->getResult());
         static::assertEquals($job, $event->getJob());
         static::assertSame('bar', $event->getJob()->getMetadata('foo'));
+    }
+
+    public function jobsProvider(): array
+    {
+        return [
+            [new SimpleJob()],
+            [new JobWithNoReturnType()],
+            [new JobWithVoidReturnType()],
+        ];
     }
 }
