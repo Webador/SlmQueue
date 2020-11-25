@@ -27,7 +27,13 @@ interface JobInterface extends MessageInterface
     public function getId();
 
     /**
-     * Execute the job
+     * Execute the job.
+     *
+     * TODO Deprecate the usage of int as return value, and introduce exceptions as part of the API to signal a
+     *   non-success result.
+     *
+     * @return void|?int Omitting return value, or returning `null` means the job was successful. Otherwise the int
+     *   returned will represent.
      */
-    public function execute(): ?int;
+    public function execute();
 }
