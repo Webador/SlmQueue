@@ -23,6 +23,9 @@ matrix:
         - DEPENDENCIES=""
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
+    - php: 8.0
+      env:
+        - DEPENDENCIES="--ignore-platform-reqs"
 
 cache:
   directories:

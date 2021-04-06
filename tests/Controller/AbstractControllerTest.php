@@ -2,7 +2,7 @@
 
 namespace SlmQueueTest\Controller;
 
-use Laminas\Mvc\Router\RouteMatch;
+use Laminas\Router\RouteMatch;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
