@@ -3,12 +3,6 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 7.2
-      env:
-        - DEPENDENCIES="--prefer-lowest"
-    - php: 7.2
-      env:
-        - DEPENDENCIES=""
     - php: 7.3
       env:
         - DEPENDENCIES="--prefer-lowest"
@@ -23,6 +17,9 @@ matrix:
         - DEPENDENCIES=""
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
+    - php: 8.0
+      env:
+        - DEPENDENCIES="--ignore-platform-reqs"
 
 cache:
   directories:
