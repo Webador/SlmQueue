@@ -32,7 +32,7 @@
         }
     ],
     "require": {
-        "php": "^7.2 || 8.0",
+        "php": "^7.2 || ^8.0",
         "laminas/laminas-eventmanager": "^3.3",
         "laminas/laminas-router": "^3.4",
         "laminas/laminas-servicemanager": "^3.6",
@@ -55,7 +55,8 @@
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
         "slm/queue-beanstalkd": "If you are using Beanstalk",
-        "slm/queue-doctrine": "If you are using Doctrine ORM"
+        "slm/queue-doctrine": "If you are using Doctrine ORM",
+        "rnd-cosoft/slm-queue-rabbitmq": "If you are using RabbitMQ"
     },
     "extra": {
         "branch-alias": {
