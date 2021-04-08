@@ -4,6 +4,7 @@ namespace SlmQueue\Strategy\Factory;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use SlmQueue\Strategy\LogJobStrategy;
 
 class LogJobStrategyFactory implements FactoryInterface
