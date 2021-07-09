@@ -125,11 +125,7 @@ class MyController extends AbstractActionController
         // Do some work
 
         $this->queue->push(
-            EmailJob::create([
-                    'john@doe.com',
-                    'Just hi',
-                    'Hi, I want to say hi!'
-            ]),
+            EmailJob::create('john@doe.com', 'Just hi', 'Hi, I want to say hi!'),
             ['delay' => 60]
         );
     }
