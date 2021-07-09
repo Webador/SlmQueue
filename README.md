@@ -49,7 +49,7 @@ or [SlmQueueDoctrine](https://github.com/JouwWeb/SlmQueueDoctrine)
 
 Requirements
 ------------
-* PHP >= 7.2
+* PHP >= 7.3
 * [laminas-servicemanager >= 3.3.1](https://github.com/laminas/laminas-servicemanager)
 
 
