@@ -46,9 +46,7 @@
         "laminas/laminas-log": "^2.13",
         "laminas/laminas-i18n": "^2.11",
         "laminas/laminas-config": "^3.4",
-        "phpunit/phpunit": "^9.3",
-        "squizlabs/php_codesniffer": "^3.5",
-        "php-coveralls/php-coveralls": "^2.4"
+        "phpunit/phpunit": "^9.3"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
