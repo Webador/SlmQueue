@@ -3,6 +3,7 @@
 namespace SlmQueueTest\Job;
 
 use PHPUnit\Framework\TestCase;
+use SlmQueueTest\Asset\JobWithDependencies;
 use SlmQueueTest\Asset\SimpleJob;
 
 class JobTest extends TestCase
@@ -23,5 +24,13 @@ class JobTest extends TestCase
         $job->execute();
 
         static::assertEquals('bar', $job->getMetadata('foo'));
+    }
+
+    public function testInternalFactoryMethod(): void
+    {
+        $job = JobWithDependencies::testInternalFactoryMethod();
+
+        $this->assertInstanceOf(JobWithDependencies::class, $job);
+        $this->assertEquals(['a' => 123], $job->getContent());
     }
 }

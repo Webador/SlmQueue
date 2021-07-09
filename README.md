@@ -67,6 +67,28 @@ use SlmQueue\Job\AbstractJob;
 
 class EmailJob extends AbstractJob
 {
+    public static function create(string $to, string $subject, string $message): self
+    {
+        // This will bypass the constructor, and thus load a job without having to load the dependencies.
+        $job = self::createEmptyJob([
+            'subject' => $subject,
+            'to' => $to,
+            'message' => $message,
+        ]);
+
+        // Add some metadata, so we see what is going on.
+        $job->setMetadata('to', $to);
+
+        return $job;
+    }
+
+    private SomeMailService $mailService;
+
+    public function __construct(SomeMailService $mailService)
+    {
+        $this->mailService = $mailService;
+    }
+
     public function execute()
     {
         $payload = $this->getContent();
@@ -75,7 +97,7 @@ class EmailJob extends AbstractJob
         $subject = $payload['subject'];
         $message = $payload['message'];
 
-        mail($to, $subject, $message);
+        $this->mailService->send($to, $subject, $message);
     }
 }
 ```
@@ -102,14 +124,14 @@ class MyController extends AbstractActionController
     {
         // Do some work
 
-        $job = new EmailJob;
-        $job->setContent(array(
-            'to'      => 'john@doe.com',
-            'subject' => 'Just hi',
-            'message' => 'Hi, I want to say hi!'
-        ));
-
-        $this->queue->push($job, ['delay' => 60]);
+        $this->queue->push(
+            EmailJob::create([
+                    'john@doe.com',
+                    'Just hi',
+                    'Hi, I want to say hi!'
+            ]),
+            ['delay' => 60]
+        );
     }
 }
 ```
@@ -139,7 +161,7 @@ For long-term contributors, push access to this repository is granted.
 Who to thank?
 -------------
 
-[Jurian Sluiman](https://github.com/juriansluiman) and [Michaël Gallego](https://github.com/bakura10) did the initial work on creating this repo, and maintained it for a long time. 
+[Jurian Sluiman](https://github.com/juriansluiman) and [Michaël Gallego](https://github.com/bakura10) did the initial work on creating this repo, and maintained it for a long time.
 
 Currently it is maintained by:
 
