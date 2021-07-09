@@ -1,0 +1,36 @@
+name: "Continuous Integration"
+
+on:
+    pull_request:
+        branches:
+            - "master"
+    push:
+        branches:
+            - "master"
+
+jobs:
+    unit-test:
+        name: "Unit tests"
+        runs-on: "ubuntu-20.04"
+        strategy:
+            matrix:
+                php-version:
+                    - "7.3"
+                    - "7.4"
+                    - "8.0"
+                dependencies:
+                    - "highest"
+                    - "lowest"
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@v2"
+            - name: "Install PHP"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                  php-version: "${{ matrix.php-version }}"
+            - name: "Install dependencies with Composer"
+              uses: "ramsey/composer-install@v1"
+              with:
+                  dependency-versions: "${{ matrix.dependencies }}"
+            - name: "Run PHPUnit"
+              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"

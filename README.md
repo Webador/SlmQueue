@@ -1,9 +1,7 @@
 SlmQueue
 ========
 
-[![Build Status](https://travis-ci.org/JouwWeb/SlmQueue.png?branch=master)](https://travis-ci.org/JouwWeb/SlmQueue)
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/JouwWeb/SlmQueue/?branch=master)
 
 SlmQueue is a job queue abstraction layer for Laminas (formerly Zend Framework) and Mezzio (formerly Zend Expressive) applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
