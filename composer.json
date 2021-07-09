@@ -34,7 +34,6 @@
     "require": {
         "php": "^7.2 || ^8.0",
         "laminas/laminas-eventmanager": "^3.3",
-        "laminas/laminas-router": "^3.4",
         "laminas/laminas-servicemanager": "^3.6",
         "laminas/laminas-stdlib": "^3.3"
     },
