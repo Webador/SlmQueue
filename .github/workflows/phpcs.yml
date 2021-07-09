@@ -1,4 +1,4 @@
-name: "PHPCS"
+name: "Continuous Integration"
 
 on:
     pull_request:
