@@ -69,7 +69,8 @@ class EmailJob extends AbstractJob
 {
     public static function create(string $to, string $subject, string $message): self
     {
-        // This will bypass the constructor, and thus load a job without having to load the dependencies.
+        // This will bypass the constructor, and thus load a job without
+        // having to load the dependencies.
         $job = self::createEmptyJob([
             'subject' => $subject,
             'to' => $to,
