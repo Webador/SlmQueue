@@ -32,4 +32,4 @@ jobs:
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
             - name: "Run PHPUnit"
-              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
+              run: "composer test"

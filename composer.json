@@ -76,6 +76,7 @@
     },
     "scripts": {
         "cs-check": "phpcs",
-        "cs-fix": "phpcbf"
+        "cs-fix": "phpcbf",
+        "test": "phpunit"
     }
 }
