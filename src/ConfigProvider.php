@@ -12,6 +12,7 @@ class ConfigProvider
         return [
             'dependencies' => $config['service_manager'],
             'slm_queue' => $config['slm_queue'],
+            'laminas-cli' => $config['laminas-cli'],
         ];
     }
 }
