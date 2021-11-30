@@ -4,10 +4,13 @@ namespace SlmQueue\Queue;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Worker\WorkerInterface;
 
 interface QueueInterface
 {
     public function getName(): string;
+
+    public function getWorker(): WorkerInterface;
 
     public function getJobPluginManager(): JobPluginManager;
 

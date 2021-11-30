@@ -3,8 +3,12 @@
 namespace SlmQueueTest\Queue;
 
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueueInterface;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
@@ -12,10 +16,19 @@ use SlmQueueTest\Asset\SimpleQueue;
 
 class QueueTest extends TestCase
 {
-    protected $job;
-    protected $jobName;
-    protected $jobPluginManager;
-    protected $queue;
+    /**
+     * @var JobPluginManager&MockObject
+     */
+    private JobPluginManager $jobPluginManager;
+
+    /**
+     * @var WorkerPluginManager&MockObject
+     */
+    private WorkerPluginManager $workerPluginManager;
+
+    private JobInterface $job;
+    private string $jobName;
+    private QueueInterface $queue;
 
     public function setUp(): void
     {
@@ -27,7 +40,8 @@ class QueueTest extends TestCase
         $this->binaryJobName = BinaryJob::class;
 
         $this->jobPluginManager = $this->createMock(JobPluginManager::class, [], [$serviceManager]);
-        $this->queue = new SimpleQueue('queue', $this->jobPluginManager);
+        $this->workerPluginManager = $this->createMock(WorkerPluginManager::class);
+        $this->queue = new SimpleQueue('queue', $this->jobPluginManager, $this->workerPluginManager);
     }
 
     public function testCanPushThenPopJob(): void

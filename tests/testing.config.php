@@ -21,11 +21,6 @@
 use SlmQueueTest\Asset\SimpleQueue;
 
 return [
-    'service_manager' => [
-        'factories' => [
-            'SlmQueueTest\Asset\SimpleWorker' => 'SlmQueue\Factory\WorkerFactory',
-        ],
-    ],
     'slm_queue' => [
         /**
          * Queues config
@@ -42,8 +37,13 @@ return [
                         $parentLocator = $locator->getServiceLocator();
                     }
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
+                    $workerPluginManager = $parentLocator->get('SlmQueue\Worker\WorkerPluginManager');
 
-                    return new SimpleQueue('basic-queue', $jobPluginManager);
+                    return new SimpleQueue(
+                        'basic-queue',
+                        $jobPluginManager,
+                        $workerPluginManager
+                    );
                 },
             ],
         ],

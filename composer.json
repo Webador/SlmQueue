@@ -35,7 +35,8 @@
         "php": "^7.3 || ^8.0",
         "laminas/laminas-eventmanager": "^3.3",
         "laminas/laminas-servicemanager": "^3.6",
-        "laminas/laminas-stdlib": "^3.3"
+        "laminas/laminas-stdlib": "^3.3",
+        "laminas/laminas-cli": "^1.1.1"
     },
     "require-dev": {
         "laminas/laminas-mvc": "^3.2",

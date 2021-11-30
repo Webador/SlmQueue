@@ -5,6 +5,7 @@ namespace SlmQueueTest\Queue;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueTest\Asset\QueueAwareTraitJob;
 use SlmQueueTest\Asset\SimpleQueue;
 
@@ -24,7 +25,8 @@ class QueueAwareTraitTest extends TestCase
     {
         $serviceManager = new ServiceManager();
         $jobPluginManager = new JobPluginManager($serviceManager);
-        $queue = new SimpleQueue('name', $jobPluginManager);
+        $workerPluginManager = new WorkerPluginManager($serviceManager);
+        $queue = new SimpleQueue('name', $jobPluginManager, $workerPluginManager);
         $this->job->setQueue($queue);
 
         static::assertNotNull($this->job->getQueue());

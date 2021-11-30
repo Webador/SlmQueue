@@ -7,6 +7,8 @@ use SlmQueue\Queue\AbstractQueue;
 
 class SimpleQueue extends AbstractQueue
 {
+    protected static $defaultWorkerName = SimpleWorker::class;
+
     /**
      * @var array
      */

@@ -8,6 +8,7 @@ use SlmQueue\Controller\Exception\QueueNotFoundException;
 use SlmQueue\Controller\Plugin\QueuePlugin;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueuePluginManager;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleQueue;
 
@@ -18,8 +19,9 @@ class QueueTest extends TestCase
         $serviceManager = new ServiceManager();
         $queuePluginManager = $this->createMock(QueuePluginManager::class, [], [$serviceManager]);
         $jobPluginManager = $this->createMock(JobPluginManager::class, [], [$serviceManager]);
+        $workerPluginManager = $this->createMock(WorkerPluginManager::class);
 
-        $queue = new SimpleQueue('DefaultQueue', $jobPluginManager);
+        $queue = new SimpleQueue('DefaultQueue', $jobPluginManager, $workerPluginManager);
 
         $queuePluginManager->expects($this->once())
             ->method('has')
@@ -118,9 +120,10 @@ class QueueTest extends TestCase
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager = new JobPluginManager($serviceManager);
+        $workerPluginManager = $this->createMock(WorkerPluginManager::class);
 
         $name = 'DefaultQueue';
-        $queue = new SimpleQueue('queue', $jobPluginManager);
+        $queue = new SimpleQueue('queue', $jobPluginManager, $workerPluginManager);
         $job = new SimpleJob();
 
         $queuePluginManager->setService($name, $queue);
@@ -140,9 +143,10 @@ class QueueTest extends TestCase
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager = new JobPluginManager($serviceManager);
+        $workerPluginManager = $this->createMock(WorkerPluginManager::class);
 
         $name = 'DefaultQueue';
-        $queue = new SimpleQueue('queue', $jobPluginManager);
+        $queue = new SimpleQueue('queue', $jobPluginManager, $workerPluginManager);
         $job = new SimpleJob();
 
         $queuePluginManager->setService($name, $queue);
@@ -161,8 +165,9 @@ class QueueTest extends TestCase
         $serviceManager = new ServiceManager();
         $queuePluginManager = new QueuePluginManager($serviceManager);
         $jobPluginManager = new JobPluginManager($serviceManager);
+        $workerPluginManager = $this->createMock(WorkerPluginManager::class);
 
-        $queue = new SimpleQueue('default', $jobPluginManager);
+        $queue = new SimpleQueue('default', $jobPluginManager, $workerPluginManager);
 
         $queuePluginManager->setService('default', $queue);
 
