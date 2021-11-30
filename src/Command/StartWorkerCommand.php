@@ -16,7 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class StartWorkerCommand extends Command
 {
-    protected static $defaultName = 'slm-queue:start';
     protected QueuePluginManager $queuePluginManager;
     protected WorkerPluginManager $workerPluginManager;
 

@@ -1,10 +1,10 @@
 <?php
 
+use SlmQueue\Command\StartWorkerCommand;
 use SlmQueue\Factory\JobPluginManagerFactory;
 use SlmQueue\Factory\QueueControllerPluginFactory;
 use SlmQueue\Factory\QueuePluginManagerFactory;
 use SlmQueue\Factory\StrategyPluginManagerFactory;
-use SlmQueue\Factory\WorkerAbstractFactory;
 use SlmQueue\Factory\WorkerPluginManagerFactory;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueuePluginManager;
@@ -29,6 +29,12 @@ return [
             StrategyPluginManager::class => StrategyPluginManagerFactory::class,
             QueuePluginManager::class => QueuePluginManagerFactory::class,
             WorkerPluginManager::class => WorkerPluginManagerFactory::class,
+        ],
+    ],
+
+    'laminas-cli' => [
+        'commands' => [
+            'slm-queue:start' => StartWorkerCommand::class,
         ],
     ],
 
