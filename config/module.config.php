@@ -1,5 +1,6 @@
 <?php
 
+use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use SlmQueue\Command\StartWorkerCommand;
 use SlmQueue\Factory\JobPluginManagerFactory;
 use SlmQueue\Factory\QueueControllerPluginFactory;
@@ -29,6 +30,8 @@ return [
             StrategyPluginManager::class => StrategyPluginManagerFactory::class,
             QueuePluginManager::class => QueuePluginManagerFactory::class,
             WorkerPluginManager::class => WorkerPluginManagerFactory::class,
+
+            StartWorkerCommand::class => ReflectionBasedAbstractFactory::class,
         ],
     ],
 
