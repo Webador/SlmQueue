@@ -33,7 +33,7 @@ class StartWorkerCommandTest extends TestCase
 
         /** @var SimpleWorker */
         $worker = $this->queuePluginManager->get('basic-queue')->getWorker();
-        $eventManager = $worker->getEventManager(); 
+        $eventManager = $worker->getEventManager();
 
         (new ProcessQueueStrategy())->attach($eventManager);
         (new MaxRunsStrategy(['max_runs' => 1]))->attach($eventManager);

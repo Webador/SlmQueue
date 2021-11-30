@@ -39,7 +39,7 @@ class StartWorkerCommand extends Command
         $worker = $queue->getWorker();
 
         try {
-          $messages = $worker->processQueue($queue, $input->getArguments());
+            $messages = $worker->processQueue($queue, $input->getArguments());
         } catch (ExceptionInterface $e) {
             throw new WorkerProcessException(
                 'Caught exception while processing queue',
