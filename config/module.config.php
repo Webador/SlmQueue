@@ -53,12 +53,10 @@ return [
          */
         'worker_strategies' => [
             'default' => [ // per worker
-                /*
                 AttachQueueListenersStrategy::class, // attaches strategies per queue
                 MaxRunsStrategy::class => ['max_runs' => 100000],
                 MaxMemoryStrategy::class => ['max_memory' => 100 * 1024 * 1024],
                 InterruptStrategy::class,
-                 */
             ],
             'queues' => [ // per queue
                 'default' => [
