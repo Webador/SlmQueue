@@ -19,11 +19,12 @@ class StartWorkerCommand extends Command
     protected QueuePluginManager $queuePluginManager;
     protected WorkerPluginManager $workerPluginManager;
 
-    public function __construct(QueuePluginManager $queuePluginManager)
+    public function __construct(QueuePluginManager $queuePluginManager, WorkerPluginManager $workerPluginManager)
     {
         parent::__construct();
 
         $this->queuePluginManager = $queuePluginManager;
+        $this->workerPluginManager = $workerPluginManager;
     }
 
     protected function configure(): void
@@ -35,7 +36,7 @@ class StartWorkerCommand extends Command
     {
         $queueName = $input->getArgument('queue');
         $queue = $this->queuePluginManager->get($queueName);
-        $worker = $queue->getWorker();
+        $worker = $this->workerPluginManager->get($queue->getWorkerName());
 
         try {
             $messages = $worker->processQueue($queue, $input->getArguments());

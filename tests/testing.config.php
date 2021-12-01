@@ -37,12 +37,10 @@ return [
                         $parentLocator = $locator->getServiceLocator();
                     }
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
-                    $workerPluginManager = $parentLocator->get('SlmQueue\Worker\WorkerPluginManager');
 
                     return new SimpleQueue(
                         'basic-queue',
-                        $jobPluginManager,
-                        $workerPluginManager
+                        $jobPluginManager
                     );
                 },
             ],

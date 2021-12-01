@@ -10,6 +10,7 @@ use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
+use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleJob;
 use SlmQueueTest\Asset\SimpleWorker;
@@ -24,15 +25,19 @@ class StartWorkerCommandTest extends TestCase
     private OutputInterface $output;
 
     private QueuePluginManager $queuePluginManager;
+    private WorkerPluginManager $workerPluginManager;
     private StartWorkerCommand $command;
 
     public function setUp(): void
     {
         $serviceManager = ServiceManagerFactory::getServiceManager();
         $this->queuePluginManager = $serviceManager->get(QueuePluginManager::class);
+        $this->workerPluginManager = $serviceManager->get(WorkerPluginManager::class);
+
+        $queue = $this->queuePluginManager->get('basic-queue');
 
         /** @var SimpleWorker */
-        $worker = $this->queuePluginManager->get('basic-queue')->getWorker();
+        $worker = $this->workerPluginManager->get($queue->getWorkerName());
         $eventManager = $worker->getEventManager();
 
         (new ProcessQueueStrategy())->attach($eventManager);
@@ -41,7 +46,7 @@ class StartWorkerCommandTest extends TestCase
         $this->queuePluginManager = $serviceManager->get(QueuePluginManager::class);
         $this->output = $this->createMock(OutputInterface::class);
 
-        $this->command = new StartWorkerCommand($this->queuePluginManager);
+        $this->command = new StartWorkerCommand($this->queuePluginManager, $this->workerPluginManager);
     }
 
     public function testThrowExceptionIfQueueIsUnknown(): void

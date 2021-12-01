@@ -25,12 +25,11 @@ class AbstractQueueTest extends TestCase
     public function testGetters(): void
     {
         $jobPluginManager = $this->serviceManager->get('SlmQueue\Job\JobPluginManager');
-        $workerPluginManager = $this->serviceManager->get('SlmQueue\Worker\WorkerPluginManager');
 
-        $queue = new SimpleQueue('name', $jobPluginManager, $workerPluginManager);
+        $queue = new SimpleQueue('name', $jobPluginManager);
 
         $this->assertSame('name', $queue->getName());
         $this->assertSame($jobPluginManager, $queue->getJobPluginManager());
-        $this->assertInstanceOf(SimpleWorker::class, $queue->getWorker());
+        $this->assertSame(SimpleWorker::class, $queue->getWorkerName());
     }
 }

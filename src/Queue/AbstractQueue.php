@@ -4,8 +4,6 @@ namespace SlmQueue\Queue;
 
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
-use SlmQueue\Worker\WorkerInterface;
-use SlmQueue\Worker\WorkerPluginManager;
 
 abstract class AbstractQueue implements QueueInterface
 {
@@ -13,16 +11,13 @@ abstract class AbstractQueue implements QueueInterface
     protected string $name;
 
     protected JobPluginManager $jobPluginManager;
-    protected WorkerPluginManager $workerPluginManager;
 
     public function __construct(
         string $name,
-        JobPluginManager $jobPluginManager,
-        WorkerPluginManager $workerPluginManager
+        JobPluginManager $jobPluginManager
     ) {
         $this->name = $name;
         $this->jobPluginManager = $jobPluginManager;
-        $this->workerPluginManager = $workerPluginManager;
     }
 
     public function getName(): string
@@ -30,9 +25,9 @@ abstract class AbstractQueue implements QueueInterface
         return $this->name;
     }
 
-    public function getWorker(): WorkerInterface
+    public function getWorkerName(): string
     {
-        return $this->workerPluginManager->get(static::$defaultWorkerName);
+        return static::$defaultWorkerName;
     }
 
     public function getJobPluginManager(): JobPluginManager

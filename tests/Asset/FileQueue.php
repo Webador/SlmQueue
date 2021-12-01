@@ -5,7 +5,6 @@ namespace SlmQueueTest\Asset;
 use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\AbstractQueue;
-use SlmQueue\Worker\WorkerPluginManager;
 
 class FileQueue extends AbstractQueue
 {
@@ -14,9 +13,9 @@ class FileQueue extends AbstractQueue
     protected string $filename;
     protected array $jobs = [];
 
-    public function __construct(string $filename, string $name, JobPluginManager $jobPluginManager, WorkerPluginManager $workerPluginManager)
+    public function __construct(string $filename, string $name, JobPluginManager $jobPluginManager)
     {
-        parent::__construct($name, $jobPluginManager, $workerPluginManager);
+        parent::__construct($name, $jobPluginManager);
 
         $this->filename = $filename;
         if (file_exists($filename)) {
