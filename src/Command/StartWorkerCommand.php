@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Worker controller
+ * Worker CLI command
  */
 class StartWorkerCommand extends Command
 {
