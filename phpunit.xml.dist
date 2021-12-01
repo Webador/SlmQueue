@@ -11,7 +11,7 @@
     backupGlobals="false"
 >
     <testsuite name="SlmQueue tests">
-      <directory>./tests/src</directory>
+        <directory>./tests/src</directory>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
