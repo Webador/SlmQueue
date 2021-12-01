@@ -20,10 +20,10 @@
 
 use SlmQueueTest\Util\ServiceManagerFactory;
 
-$loader = @include __DIR__ . '/../vendor/autoload.php';
+$loader = @include __DIR__ . '/../../vendor/autoload.php';
 
 if (! $loader) {
-    $loader = @include __DIR__ . '/../../../autoload.php';
+    $loader = @include __DIR__ . '/../../../../autoload.php';
 }
 
 if (! $loader) {

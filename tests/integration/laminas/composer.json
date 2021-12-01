@@ -6,20 +6,20 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../../.."
+            "url": "lib/"
         }
     ],
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "TestModule\\": "module/TestModule/src",
-            "SlmQueueTest\\": "../../"
+            "SlmQueueTest\\": "lib/tests/src"
         }
     },
     "scripts": {
         "test": [
            "echo Running Laminas integration tests...",
-           "@composer update",
+           "./install.sh",
            "@php test.php"
         ]
     }

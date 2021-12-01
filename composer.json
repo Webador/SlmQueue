@@ -71,12 +71,16 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SlmQueueTest\\": "tests/"
+            "SlmQueueTest\\": "tests/src"
         }
     },
     "scripts": {
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "test": "phpunit"
+        "test": [
+            "phpunit",
+            "@composer test --working-dir=tests/integration/laminas",
+            "@composer test --working-dir=tests/integration/mezzio"
+        ]
     }
 }
