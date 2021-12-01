@@ -18,6 +18,8 @@
  * <http://www.doctrine-project.org>.
  */
 
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueueTest\Asset\SimpleQueue;
 
 return [
@@ -43,6 +45,17 @@ return [
                         $jobPluginManager
                     );
                 },
+            ],
+        ],
+
+        'worker_strategies' => [
+            'queues' => [
+                'basic-queue' => [
+                    ProcessQueueStrategy::class,
+                    MaxRunsStrategy::class => [
+                        'max_runs' => 1,
+                    ],
+                ],
             ],
         ],
     ],

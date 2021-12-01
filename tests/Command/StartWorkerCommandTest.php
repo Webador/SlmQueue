@@ -8,8 +8,6 @@ use PHPUnit\Framework\TestCase;
 use SlmQueue\Command\StartWorkerCommand;
 use SlmQueue\Controller\Exception\WorkerProcessException;
 use SlmQueue\Queue\QueuePluginManager;
-use SlmQueue\Strategy\MaxRunsStrategy;
-use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueue\Worker\WorkerPluginManager;
 use SlmQueueTest\Asset\FailingJob;
 use SlmQueueTest\Asset\SimpleJob;
@@ -39,9 +37,6 @@ class StartWorkerCommandTest extends TestCase
         /** @var SimpleWorker */
         $worker = $this->workerPluginManager->get($queue->getWorkerName());
         $eventManager = $worker->getEventManager();
-
-        (new ProcessQueueStrategy())->attach($eventManager);
-        (new MaxRunsStrategy(['max_runs' => 1]))->attach($eventManager);
 
         $this->queuePluginManager = $serviceManager->get(QueuePluginManager::class);
         $this->output = $this->createMock(OutputInterface::class);
