@@ -10,7 +10,11 @@ $application = Laminas\Mvc\Application::init(include 'config/application.config.
 $serviceManager = $application->getServiceManager();
 
 // Populate with a job
-$application->getServiceManager()->get(\SlmQueue\Queue\QueuePluginManager::class)->get('default')->push(new \TestModule\TestJob());
+$application
+  ->getServiceManager()
+  ->get(\SlmQueue\Queue\QueuePluginManager::class)
+  ->get('default')
+  ->push(new \TestModule\TestJob());
 
 // Run the queue for a single job
 exec('vendor/bin/laminas slm-queue:start default', $output, $result);
