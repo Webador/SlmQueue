@@ -12,6 +12,7 @@
 >
     <testsuite name="SlmQueue tests">
         <directory>./tests</directory>
+        <exclude>./tests/integration</exclude>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
