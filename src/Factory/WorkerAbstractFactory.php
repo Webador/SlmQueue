@@ -9,9 +9,6 @@ use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerInterface;
 
-/**
- * TODO extend with deprecated WorkerFactory for compatibility
- */
 class WorkerAbstractFactory implements AbstractFactoryInterface
 {
     public function canCreate(ContainerInterface $container, $requestedName)
