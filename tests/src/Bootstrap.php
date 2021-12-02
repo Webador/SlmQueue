@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,14 +17,21 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
-return array(
-    'modules' => array(
-        'SlmQueue',
-    ),
-    'module_listener_options' => array(
-        'config_glob_paths' => array(
-            __DIR__ . '/testing.config.php',
-        ),
-        'module_paths' => array(),
-    ),
-);
+
+use SlmQueueTest\Util\ServiceManagerFactory;
+
+$loader = @include __DIR__ . '/../../vendor/autoload.php';
+
+if (! $loader) {
+    $loader = @include __DIR__ . '/../../../../autoload.php';
+}
+
+if (! $loader) {
+    throw new RuntimeException('vendor/autoload.php could not be found. Did you run `php composer.phar install`?');
+}
+
+if (! $config = @include __DIR__ . '/TestConfiguration.php') {
+    $config = require __DIR__ . '/TestConfiguration.php.dist';
+}
+
+ServiceManagerFactory::setConfig($config);

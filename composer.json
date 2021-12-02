@@ -32,10 +32,11 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ~8.0",
         "laminas/laminas-eventmanager": "^3.3",
         "laminas/laminas-servicemanager": "^3.6",
-        "laminas/laminas-stdlib": "^3.3"
+        "laminas/laminas-stdlib": "^3.3",
+        "laminas/laminas-cli": "^1.1.1"
     },
     "require-dev": {
         "laminas/laminas-mvc": "^3.2",
@@ -45,7 +46,8 @@
         "laminas/laminas-log": "^2.13",
         "laminas/laminas-i18n": "^2.11",
         "laminas/laminas-config": "^3.4",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.3",
+        "squizlabs/php_codesniffer": "3.*"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
@@ -69,11 +71,16 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SlmQueueTest\\": "tests/"
+            "SlmQueueTest\\": "tests/src"
         }
     },
     "scripts": {
         "cs-check": "phpcs",
-        "cs-fix": "phpcbf"
+        "cs-fix": "phpcbf",
+        "test": [
+            "phpunit",
+            "@composer test --working-dir=tests/integration/laminas",
+            "@composer test --working-dir=tests/integration/mezzio"
+        ]
     }
 }

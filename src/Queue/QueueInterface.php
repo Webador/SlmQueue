@@ -9,6 +9,8 @@ interface QueueInterface
 {
     public function getName(): string;
 
+    public function getWorkerName(): string;
+
     public function getJobPluginManager(): JobPluginManager;
 
     public function push(JobInterface $job, array $options = []): void;

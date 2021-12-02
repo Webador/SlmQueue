@@ -49,7 +49,7 @@ or [SlmQueueDoctrine](https://github.com/JouwWeb/SlmQueueDoctrine)
 
 Requirements
 ------------
-* PHP >= 7.3
+* PHP >= 7.4
 * [laminas-servicemanager >= 3.3.1](https://github.com/laminas/laminas-servicemanager)
 
 
@@ -134,9 +134,12 @@ class MyController extends AbstractActionController
 ```
 
 Now the above code lets you insert jobs in a queue, but then you need to spin up a worker which can process these jobs.
-Giving an example with beanstalkd and a queue which you called "default", you can start a worker with this command:
 
-    php public/index.php queue beanstalkd default
+SlmQueue integrates with [`laminas-cli`](https://github.com/laminas/laminas-servicemanager) for command line usage. You can start up a worker for queue "default" with the following command:
+
+```sh
+$ vendor/bin/laminas slm-queue:start default
+```
 
 Contributing
 ------------

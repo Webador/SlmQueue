@@ -15,7 +15,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.3"
                     - "7.4"
                     - "8.0"
                 dependencies:
@@ -24,13 +23,22 @@ jobs:
         steps:
             - name: "Checkout"
               uses: "actions/checkout@v2"
+
             - name: "Install PHP"
               uses: "shivammathur/setup-php@v2"
               with:
                   php-version: "${{ matrix.php-version }}"
+              env:
+                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
             - name: "Install dependencies with Composer"
               uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
+              env:
+                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
             - name: "Run PHPUnit"
-              run: "vendor/bin/phpunit --configuration phpunit.xml.dist"
+              run: "composer test"
+              env:
+                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}

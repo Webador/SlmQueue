@@ -18,14 +18,11 @@
  * <http://www.doctrine-project.org>.
  */
 
+use SlmQueue\Strategy\MaxRunsStrategy;
+use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueueTest\Asset\SimpleQueue;
 
 return [
-    'service_manager' => [
-        'factories' => [
-            'SlmQueueTest\Asset\SimpleWorker' => 'SlmQueue\Factory\WorkerFactory',
-        ],
-    ],
     'slm_queue' => [
         /**
          * Queues config
@@ -43,8 +40,22 @@ return [
                     }
                     $jobPluginManager = $parentLocator->get('SlmQueue\Job\JobPluginManager');
 
-                    return new SimpleQueue('basic-queue', $jobPluginManager);
+                    return new SimpleQueue(
+                        'basic-queue',
+                        $jobPluginManager
+                    );
                 },
+            ],
+        ],
+
+        'worker_strategies' => [
+            'queues' => [
+                'basic-queue' => [
+                    ProcessQueueStrategy::class,
+                    MaxRunsStrategy::class => [
+                        'max_runs' => 1,
+                    ],
+                ],
             ],
         ],
     ],

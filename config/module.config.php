@@ -1,9 +1,12 @@
 <?php
 
+use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use SlmQueue\Command\StartWorkerCommand;
 use SlmQueue\Factory\JobPluginManagerFactory;
 use SlmQueue\Factory\QueueControllerPluginFactory;
 use SlmQueue\Factory\QueuePluginManagerFactory;
 use SlmQueue\Factory\StrategyPluginManagerFactory;
+use SlmQueue\Factory\WorkerPluginManagerFactory;
 use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
@@ -18,6 +21,7 @@ use SlmQueue\Strategy\MaxRunsStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Strategy\WorkerLifetimeStrategy;
+use SlmQueue\Worker\WorkerPluginManager;
 
 return [
     'service_manager' => [
@@ -25,6 +29,15 @@ return [
             JobPluginManager::class => JobPluginManagerFactory::class,
             StrategyPluginManager::class => StrategyPluginManagerFactory::class,
             QueuePluginManager::class => QueuePluginManagerFactory::class,
+            WorkerPluginManager::class => WorkerPluginManagerFactory::class,
+
+            StartWorkerCommand::class => ReflectionBasedAbstractFactory::class,
+        ],
+    ],
+
+    'laminas-cli' => [
+        'commands' => [
+            'slm-queue:start' => StartWorkerCommand::class,
         ],
     ],
 
@@ -66,6 +79,11 @@ return [
          * Queue manager configuration
          */
         'queue_manager' => [],
+
+        /**
+         * Worker manager configuration
+         */
+        'worker_manager' => [],
 
         /**
          * Strategy manager configuration

@@ -1,0 +1,26 @@
+{
+    "require": {
+        "slm/queue": "*",
+        "laminas/laminas-mvc": "4.0.x-dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "lib/"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "TestModule\\": "module/TestModule/src",
+            "SlmQueueTest\\": "lib/tests/src"
+        }
+    },
+    "scripts": {
+        "test": [
+           "echo Running Laminas integration tests...",
+           "./install.sh",
+           "@php test.php"
+        ]
+    }
+}

@@ -7,22 +7,15 @@ use SlmQueue\Job\JobPluginManager;
 
 abstract class AbstractQueue implements QueueInterface
 {
-    /**
-     * @var JobPluginManager
-     */
-    protected $jobPluginManager;
+    protected static $defaultWorkerName;
+    protected string $name;
 
-    /**
-     * @var string
-     */
-    protected $name;
+    protected JobPluginManager $jobPluginManager;
 
-    /**
-     * @param string           $name
-     * @param JobPluginManager $jobPluginManager
-     */
-    public function __construct($name, JobPluginManager $jobPluginManager)
-    {
+    public function __construct(
+        string $name,
+        JobPluginManager $jobPluginManager
+    ) {
         $this->name = $name;
         $this->jobPluginManager = $jobPluginManager;
     }
@@ -30,6 +23,11 @@ abstract class AbstractQueue implements QueueInterface
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getWorkerName(): string
+    {
+        return static::$defaultWorkerName;
     }
 
     public function getJobPluginManager(): JobPluginManager

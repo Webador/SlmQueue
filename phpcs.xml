@@ -10,5 +10,6 @@
   <file>docs</file>
   <file>tests</file>
 
+  <exclude-pattern>tests/integration/*/vendor/*$</exclude-pattern>
 </ruleset>
 

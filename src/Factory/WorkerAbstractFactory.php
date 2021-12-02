@@ -5,12 +5,17 @@ namespace SlmQueue\Factory;
 use Interop\Container\ContainerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use SlmQueue\Strategy\StrategyPluginManager;
 use SlmQueue\Worker\WorkerInterface;
 
-class WorkerFactory implements FactoryInterface
+class WorkerAbstractFactory implements AbstractFactoryInterface
 {
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        return in_array(WorkerInterface::class, class_implements($requestedName), true);
+    }
+
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): WorkerInterface
     {
         $config = $container->get('config');

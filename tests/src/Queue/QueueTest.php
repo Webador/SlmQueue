@@ -3,8 +3,11 @@
 namespace SlmQueueTest\Queue;
 
 use Laminas\ServiceManager\ServiceManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use SlmQueue\Job\JobInterface;
 use SlmQueue\Job\JobPluginManager;
+use SlmQueue\Queue\QueueInterface;
 use SlmQueueTest\Asset\BinaryJob;
 use SlmQueueTest\Asset\QueueAwareJob;
 use SlmQueueTest\Asset\SimpleJob;
@@ -12,10 +15,14 @@ use SlmQueueTest\Asset\SimpleQueue;
 
 class QueueTest extends TestCase
 {
-    protected $job;
-    protected $jobName;
-    protected $jobPluginManager;
-    protected $queue;
+    /**
+     * @var JobPluginManager&MockObject
+     */
+    private JobPluginManager $jobPluginManager;
+
+    private JobInterface $job;
+    private string $jobName;
+    private QueueInterface $queue;
 
     public function setUp(): void
     {

@@ -1,0 +1,32 @@
+{
+    "require": {
+        "slm/queue": "*",
+        "mezzio/mezzio": "^3.2.1",
+        "laminas/laminas-diactoros": "^2.3.0",
+        "laminas/laminas-config-aggregator": "^1.2"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "lib/"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:koenkivits/SlmQueue.git"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/App/",
+            "SlmQueueTest\\": "lib/tests/src"
+        }
+    },
+    "scripts": {
+        "test": [
+            "echo Running Mezzio integration tests...",
+            "./install.sh",
+            "@php test.php"
+        ]
+    }
+}
