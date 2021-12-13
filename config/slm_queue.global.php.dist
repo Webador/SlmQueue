@@ -5,7 +5,6 @@
  * forget to remove the .dist extension from the file), and configure it as you want
  */
 
-use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueue\Strategy\MaxMemoryStrategy;
 use SlmQueue\Strategy\ProcessQueueStrategy;
 
@@ -64,7 +63,7 @@ return [
          *
          * 'strategy_manager' => [
          *    'factories' => [
-         *        LogJobStrategy::class => 'MyVeryOwn\LogJobStrategyFactory',
+         *        MyVeryOwn\LogJobStrategy::class => 'MyVeryOwn\LogJobStrategyFactory',
          *    ]
          * ],
          */
