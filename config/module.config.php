@@ -11,10 +11,8 @@ use SlmQueue\Job\JobPluginManager;
 use SlmQueue\Queue\QueuePluginManager;
 use SlmQueue\Strategy\AttachQueueListenersStrategy;
 use SlmQueue\Strategy\Factory\AttachQueueListenersStrategyFactory;
-use SlmQueue\Strategy\Factory\LogJobStrategyFactory;
 use SlmQueue\Strategy\FileWatchStrategy;
 use SlmQueue\Strategy\InterruptStrategy;
-use SlmQueue\Strategy\LogJobStrategy;
 use SlmQueue\Strategy\MaxMemoryStrategy;
 use SlmQueue\Strategy\MaxPollingFrequencyStrategy;
 use SlmQueue\Strategy\MaxRunsStrategy;
@@ -100,7 +98,6 @@ return [
             ],
             'factories' => [
                 AttachQueueListenersStrategy::class => AttachQueueListenersStrategyFactory::class,
-                LogJobStrategy::class => LogJobStrategyFactory::class,
             ],
         ],
     ],
