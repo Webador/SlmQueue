@@ -5,12 +5,11 @@ SlmQueue
 
 SlmQueue is a job queue abstraction layer for Laminas (formerly Zend Framework) and Mezzio (formerly Zend Expressive) applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
-own adapter-module and are the following:
+own adapter library:
 
-* Beanstalk: use [SlmQueueBeanstalkd](https://github.com/JouwWeb/SlmQueueBeanstalkd)
-* Amazon SQS: use [SlmQueueSqs](https://github.com/JouwWeb/SlmQueueSqs)
-* Doctrine ORM: use [SlmQueueDoctrine](https://github.com/JouwWeb/SlmQueueDoctrine)
-* RabbitMQ: use [SlmQueueRabbitMq](https://github.com/rnd-cosoft/slm-queue-rabbitmq)
+* [Doctrine ORM](https://github.com/JouwWeb/SlmQueueDoctrine)
+* [RabbitMQ](https://github.com/rnd-cosoft/slm-queue-rabbitmq)
+* [Amazon SQS](https://github.com/JouwWeb/SlmQueueSqs) (outdated, [maintainers wanted](https://github.com/Webador/SlmQueueSqs/issues/58))
 
 A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Laminas
 application. This will make your response times shorter and your visitors happier. There are many use cases
