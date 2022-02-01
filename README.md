@@ -11,6 +11,9 @@ own adapter library:
 * [RabbitMQ](https://github.com/rnd-cosoft/slm-queue-rabbitmq)
 * [Amazon SQS](https://github.com/JouwWeb/SlmQueueSqs) (outdated, [maintainers wanted](https://github.com/Webador/SlmQueueSqs/issues/58))
 
+When to use
+-----------
+
 A job queue helps to offload long or memory-intensive processes from the HTTP requests clients sent to the Laminas
 application. This will make your response times shorter and your visitors happier. There are many use cases
 for asynchronous jobs and a few examples are:
