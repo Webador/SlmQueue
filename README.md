@@ -44,7 +44,7 @@ After installation of the package, you need to complete the following steps to u
 your `config/autoload` folder and apply any setting you want.
 
 NB. SlmQueue is a skeleton and therefore useless by itself. Enable an adapter to give you the implementation details
-you need to push jobs into the queue. Install one of the available adapters ([SlmQueueDoctrine](https://github.com/Webador/SlmQueueDoctrine), [RabbitMQ](https://github.com/rnd-cosoft/slm-queue-rabbitmq), or [SlmQueueSqs](https://github.com/Webador/SlmQueueSqs)).
+you need to push jobs into the queue. Install one of the available adapters ([SlmQueueDoctrine](https://github.com/Webador/SlmQueueDoctrine), [SlmQueueRabbitMq](https://github.com/rnd-cosoft/slm-queue-rabbitmq), or [SlmQueueSqs](https://github.com/Webador/SlmQueueSqs)).
 
 Requirements
 ------------
