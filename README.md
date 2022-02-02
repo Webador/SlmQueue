@@ -1,15 +1,15 @@
 SlmQueue
 ========
 
-[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/JouwWeb/slm-queue)
+[![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/slm/queue)
 
 SlmQueue is a job queue abstraction layer for Laminas (formerly Zend Framework) and Mezzio (formerly Zend Expressive) applications. It supports various job queue systems and
 makes your application independent from the underlying system you use. The currently supported systems have each their
 own adapter library:
 
-* [Doctrine ORM](https://github.com/JouwWeb/SlmQueueDoctrine)
+* [Doctrine ORM](https://github.com/Webador/SlmQueueDoctrine)
 * [RabbitMQ](https://github.com/rnd-cosoft/slm-queue-rabbitmq)
-* [Amazon SQS](https://github.com/JouwWeb/SlmQueueSqs) (outdated, [maintainers wanted](https://github.com/Webador/SlmQueueSqs/issues/58))
+* [Amazon SQS](https://github.com/Webador/SlmQueueSqs) (outdated, [maintainers wanted](https://github.com/Webador/SlmQueueSqs/issues/58))
 
 When to use
 -----------
@@ -44,10 +44,7 @@ After installation of the package, you need to complete the following steps to u
 your `config/autoload` folder and apply any setting you want.
 
 NB. SlmQueue is a skeleton and therefore useless by itself. Enable an adapter to give you the implementation details
-you need to push jobs into the queue. Choose one of the available adapters
-[SlmQueueBeanstalkd](https://github.com/JouwWeb/SlmQueueBeanstalkd),
-[SlmQueueSqs](https://github.com/JouwWeb/SlmQueueSqs)
-or [SlmQueueDoctrine](https://github.com/JouwWeb/SlmQueueDoctrine)
+you need to push jobs into the queue. Install one of the available adapters ([SlmQueueDoctrine](https://github.com/Webador/SlmQueueDoctrine), [RabbitMQ](https://github.com/rnd-cosoft/slm-queue-rabbitmq), or [SlmQueueSqs](https://github.com/Webador/SlmQueueSqs)).
 
 Requirements
 ------------
@@ -149,7 +146,7 @@ Contributing
 SlmQueue is developed by various fanatic Laminas users. The code is written to be as generic as possible for
 Laminas applications. If you want to contribute to SlmQueue, fork this repository and start hacking!
 
-Any bugs can be reported as an [issue](https://github.com/JouwWeb/SlmQueue/issues) at GitHub. If you want to
+Any bugs can be reported as an [issue](https://github.com/Webador/SlmQueue/issues) at GitHub. If you want to
 contribute, please be aware of the following guidelines:
 
  1. Fork the project to your own repository
