@@ -2,9 +2,9 @@
 
 namespace SlmQueue\Factory;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Container\ContainerInterface;
 use SlmQueue\Job\JobPluginManager;
 
 class JobPluginManagerFactory implements FactoryInterface

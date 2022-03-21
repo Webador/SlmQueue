@@ -2,8 +2,8 @@
 
 namespace SlmQueueTest\Asset;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 use SlmQueue\Job\JobPluginManager;
 
 class FileQueueFactory implements FactoryInterface
