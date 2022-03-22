@@ -9,7 +9,7 @@ use SlmQueue\Worker\Event\WorkerEventInterface;
 class MaxPollingFrequencyStrategy extends AbstractStrategy
 {
     /**
-     * @var int
+     * @var float
      */
     protected $maxFrequency;
 
@@ -45,12 +45,12 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
         $this->lastTime = microtime(true);
     }
 
-    public function setMaxFrequency(int $maxFrequency): void
+    public function setMaxFrequency(float $maxFrequency): void
     {
         $this->maxFrequency = $maxFrequency;
     }
 
-    public function getMaxFrequency(): int
+    public function getMaxFrequency(): float
     {
         return $this->maxFrequency;
     }

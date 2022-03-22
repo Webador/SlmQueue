@@ -37,6 +37,13 @@ class MaxPollingFrequencyStrategyTest extends TestCase
         static::assertEquals(100, $this->listener->getMaxFrequency());
     }
 
+    public function testMaxPollingFrequencySetterFractional(): void
+    {
+        $this->listener->setMaxFrequency(0.1);
+
+        static::assertEquals(0.1, $this->listener->getMaxFrequency());
+    }
+
     public function testListensToCorrectEventAtCorrectPriority(): void
     {
         $evm = $this->createMock(EventManagerInterface::class);
