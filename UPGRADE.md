@@ -1,4 +1,4 @@
-# Ugrade to 3.0
+# Upgrade to 3.0
 
 This release adds support for PHP 8.0.
 

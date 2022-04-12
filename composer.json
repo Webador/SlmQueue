@@ -33,21 +33,21 @@
     ],
     "require": {
         "php": "^7.4 || ~8.0",
-        "laminas/laminas-eventmanager": "^3.3",
+        "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-servicemanager": "^3.11",
-        "laminas/laminas-stdlib": "^3.3",
-        "laminas/laminas-cli": "^1.1.1"
+        "laminas/laminas-stdlib": "^3.7.1",
+        "laminas/laminas-cli": "^1.2"
     },
     "require-dev": {
-        "laminas/laminas-mvc": "^3.2",
-        "laminas/laminas-modulemanager": "^2.10",
-        "laminas/laminas-view": "^2.12",
-        "laminas/laminas-serializer": "^2.10.1",
-        "laminas/laminas-log": "^2.13",
-        "laminas/laminas-i18n": "^2.11",
-        "laminas/laminas-config": "^3.4",
+        "laminas/laminas-mvc": "^3.3",
+        "laminas/laminas-modulemanager": "^2.11",
+        "laminas/laminas-view": "^2.13",
+        "laminas/laminas-serializer": "^2.11",
+        "laminas/laminas-log": "^2.15",
+        "laminas/laminas-i18n": "^2.12",
+        "laminas/laminas-config": "^3.7",
         "phpunit/phpunit": "^9.3",
-        "squizlabs/php_codesniffer": "3.*"
+        "squizlabs/php_codesniffer": "^3.6.2"
     },
     "suggest": {
         "slm/queue-sqs": "If you are using Amazon SQS",
