@@ -1,7 +1,7 @@
 {
     "require": {
         "slm/queue": "*",
-        "laminas/laminas-mvc": "4.0.x-dev"
+        "laminas/laminas-mvc": "3.3"
     },
     "repositories": [
         {

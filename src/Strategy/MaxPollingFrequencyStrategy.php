@@ -14,9 +14,9 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
     protected $maxFrequency;
 
     /**
-     * @var int
+     * @var float
      */
-    protected $lastTime = 0;
+    protected $lastTime = 0.0;
 
     /**
      * {@inheritDoc}
@@ -35,11 +35,11 @@ class MaxPollingFrequencyStrategy extends AbstractStrategy
         $startTime = microtime(true);
         $time = ($startTime - $this->lastTime);
 
-        $minTime = 1 / $this->maxFrequency;
+        $minTime = 1.0 / $this->maxFrequency;
 
         if ($time < $minTime) {
             $waitTime = $minTime - $time;
-            usleep($waitTime * 1000000);
+            usleep(round($waitTime * 1000000));
         }
 
         $this->lastTime = microtime(true);
