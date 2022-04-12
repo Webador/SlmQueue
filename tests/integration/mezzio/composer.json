@@ -9,10 +9,6 @@
         {
             "type": "path",
             "url": "lib/"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:koenkivits/SlmQueue.git"
         }
     ],
     "minimum-stability": "dev",
