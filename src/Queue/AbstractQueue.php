@@ -90,6 +90,6 @@ abstract class AbstractQueue implements QueueInterface
             $data['content'] = base64_encode($data['content']);
         }
 
-        return json_encode($data);
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 }
