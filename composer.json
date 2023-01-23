@@ -32,7 +32,7 @@
         }
     ],
     "require": {
-        "php": "~7.4.0 || ~8.0.0 || ~8.1.0",
+        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0",
         "ext-json": "*",
         "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-servicemanager": "^3.11",
@@ -40,7 +40,7 @@
         "laminas/laminas-cli": "^1.2"
     },
     "require-dev": {
-        "laminas/laminas-mvc": "^3.3",
+        "laminas/laminas-mvc": "^3.3 || ^3.4",
         "laminas/laminas-modulemanager": "^2.11",
         "laminas/laminas-view": "^2.13",
         "laminas/laminas-serializer": "^2.11",
