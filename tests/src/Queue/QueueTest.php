@@ -2,6 +2,7 @@
 
 namespace SlmQueueTest\Queue;
 
+use JsonException;
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -131,6 +132,17 @@ class QueueTest extends TestCase
         $actual = $this->queue->serializeJob($job);
 
         static::assertEquals($expected, $actual);
+    }
+
+    public function testInvalidSerializeJobContent(): void
+    {
+        $job = new SimpleJob();
+        $job->setMetadata('__name__', 'SimpleJob');
+        $job->setContent(chr(128));
+
+        $this->expectException(JsonException::class);
+
+        $this->queue->serializeJob($job);
     }
 
     public function testCanCreateJobWithFQCN(): void
