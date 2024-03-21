@@ -32,7 +32,7 @@
         }
     ],
     "require": {
-        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0",
+        "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
         "ext-json": "*",
         "laminas/laminas-eventmanager": "^3.4",
         "laminas/laminas-servicemanager": "^3.11",
