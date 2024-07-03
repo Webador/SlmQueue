@@ -1,6 +1,12 @@
 SlmQueue
 ========
 
+Important notice
+----------
+
+**We decided to move onto Symfony Messenger and we are therefore not maintaining this repository anymore. Feel free to fork it and
+make it your own.**
+
 [![Latest Stable Version](https://poser.pugx.org/slm/queue/v/stable.png)](https://packagist.org/packages/slm/queue)
 
 SlmQueue is a job queue abstraction layer for Laminas (formerly Zend Framework) and Mezzio (formerly Zend Expressive) applications. It supports various job queue systems and
